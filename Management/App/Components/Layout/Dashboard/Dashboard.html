@@ -1,0 +1,117 @@
+﻿<div class="sidebar-wrapper" dir="rtl">
+    <div class="logo">
+        <a href="https://sadad.almadar.ly/" class="simple-text">
+            Sadad system for banks
+        </a>
+    </div>
+
+    <div class="user">
+        <div class="photo">
+            <img :src="'http://localhost:4810/Api/Admin/User/' + loginDetails.userId + '/image'" />
+        </div>
+        <!-- collapse show -->
+        <div class="user-info">
+            <a @click="openProfile()" id="profile" class="collapsed"
+               data-toggle="collapse" style="cursor: pointer;" aria-expanded="false">
+                <!--href="#collapseExample"-->
+                <span style="font-size: 18px;font-weight: bold;color: linen;">  <b class="caret"></b> {{loginDetails.fullName.slice(0,20)}} </span>
+            </a>
+            <div class="collapse" id="collapseExample" style="">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" @click.prevent="href('/EditUsersProfile')">
+                            <!--<span class="sidebar-mini">MP</span>-->
+                            <span class="sidebar-normal">تعديل بيانات</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+
+                        <a class="nav-link" href="#" @click.prevent="href('/ChangePassword')">
+                            <!--<span class="sidebar-mini">MP</span>-->
+                            <span class="sidebar-normal"> تغيير كلمه المرور</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        </div>
+    <ul class="nav">
+        <li @click="active = 1" :class="{'active':1 == active}">
+            <a href="#" @click.prevent="href('/')">
+                <i class="pe-7s-home"></i>
+                <p>الرئــيسية</p>
+
+            </a>
+        </li>
+        <!--v-if="loginDetails.userType==1"-->
+        <li @click="active = 2" :class="{'active':2 == active}">
+            <a href="#" @click.prevent="href('/bank')">
+                <i class="pe-7s-culture"></i>
+                <p> المصـارف</p>
+            </a>
+        </li>
+        <!--v-if="loginDetails.userType==1"-->
+        <li @click="active = 3" :class="{'active':3 == active}">
+            <a href="#" @click.prevent="href('/Branch')">
+                <i class="pe-7s-culture"></i>
+                <p> الفروع</p>
+            </a>
+        </li>
+        <li @click="active = 7" :class="{'active':7 == active}">
+            <a href="#" @click.prevent="href('/User')">
+                <i class="pe-7s-users"></i>
+                <p>المستخدمين</p>
+            </a>
+        </li>
+
+        <li @click="active = 4" :class="{'active':4 == active}">
+            <a href="#" @click.prevent="href('/Registration')">
+                <i class="pe-7s-server"></i>
+                <p>تسجيل زبون</p>
+            </a>
+        </li>
+        <li @click="active = 5" :class="{'active':5 == active}">
+            <a href="#" @click.prevent="href('/CashIn')">
+                <i class="pe-7s-notebook"></i>
+                <p>التعبئة النقدية</p>
+            </a>
+        </li>
+        <li @click="active = 6" :class="{'active':6 == active}">
+            <a href="#" @click.prevent="href('/Courses')">
+                <i class="pe-7s-news-paper"></i>
+                <p>التعبئة النقدية (فاحص)</p>
+            </a>
+        </li>
+
+        <!--<li @click="active = 8" :class="{'active':8 == active}">
+        <a href="typography.html">
+            <i class="pe-7s-news-paper"></i>
+            <p>الفواتير ودفعات</p>
+        </a>
+    </li>-->
+        <!--<li>
+        <a href="icons.html">
+            <i class="pe-7s-science"></i>
+            <p>Icons</p>
+        </a>
+    </li>
+    <li>
+        <a href="maps.html">
+            <i class="pe-7s-map-marker"></i>
+            <p>Maps</p>
+        </a>
+    </li>
+    <li>
+        <a href="notifications.html">
+            <i class="pe-7s-bell"></i>
+            <p>Notifications</p>
+        </a>
+    </li>
+    <li class="active-pro">
+        <a href="upgrade.html">
+            <i class="pe-7s-rocket"></i>
+            <p>Upgrade to PRO</p>
+        </a>
+    </li>-->
+    </ul>
+    </div>

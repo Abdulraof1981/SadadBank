@@ -1,0 +1,94 @@
+﻿
+<div class="container-fluid" dir="rtl">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card" style="height: 449px;">
+                <div class="header">
+                
+                    <div class="row">
+                        <div class="col-lg-11">
+                            <h4 class="title">بيانات  فروع المصارف</h4>
+                        </div>
+                        <div class="col-lg-1">
+                            <el-button type="danger" @click="$parent.state=0" style="margin-left: 6px;"><i class="fa fa-arrow-left" style="color:white"></i></el-button>
+                        </div>
+                    </div>
+                </div>
+                <div class="content" style="color:black!important">
+                    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
+                        <el-form-item class="form-group" prop="name">
+                            <label class="control-label">اسم الفرع</label>
+                            <el-input placeholder="اسم الــفرع" v-model="ruleForm.name"></el-input>
+                        </el-form-item>    
+                        <el-form-item class="form-group" prop="description">
+                            <label class="control-label"> معلومــات</label>
+                            <el-input type="textarea" placeholder="معـلومات عن الفرع" v-model="ruleForm.description"></el-input>
+                        </el-form-item>
+                        <el-col :span="5" style="margin-top: 4%;">
+                         
+                            <el-button @click="resetForm('ruleForm')">إلـغاء</el-button>
+                            <el-button type="primary" @click="submitForm('ruleForm')">حفـظ</el-button>
+                        </el-col>
+                    </el-form>
+                    <!--<form>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>اسم الدورة</label>
+                    <input type="text" class="form-control" placeholder="اسم الدورة" v-model="form.Name">
+                </div>
+            </div>
+
+
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>اللــون</label>
+                    <el-color-picker v-model="form.Color" size="small"></el-color-picker>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>معــلومات</label>
+                    <textarea type="text" class="form-control" placeholder="معــلومات" v-model="form.Description" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>السـعر للأفراد</label>
+                    <input type="text" class="form-control" placeholder="السـعر للأفراد" v-model="form.PricePersonal">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>السـعر للشركات</label>
+                    <input type="text" class="form-control" placeholder="السـعر للشركات" v-model="form.PriceCompany">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>التخفيض</label>
+                    <input type="number" class="form-control" placeholder="التخفيض (1 الي 100)" v-model="form.Discount">
+                </div>
+            </div>
+        </div>
+
+
+
+
+            <button type="submit" @click.prevent="Save()" class="btn btn-info btn-fill pull-right">حـفظ</button>
+            <button type="submit" @click.prevent="Back()" class="btn btn-danger btn-fill pull-right" style="margin-left: 4px;">رجوع</button>
+            <div class="clearfix"></div>
+    </form>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

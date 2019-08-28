@@ -1,0 +1,204 @@
+﻿<div class="content" dir="rtl">
+    <add-User v-if="state==1"></add-User>
+    <!--<edit-Courses v-if="state==2"></edit-Courses>-->
+    <div class="container-fluid" v-if="state==0">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card" style="height: 5%!important;">
+                    <div class="card-header card-header-primary card-header-icon">
+                        <div class="card-icon">
+                            <i class="fa fa-bars" aria-hidden="true" style="color:white;"></i>
+                        </div>
+                        <h4 class="card-title"> المســتخدمين</h4>
+
+                    </div>
+                    <div class="headerCustom">
+                        <div class="title">
+                            <div class="row">
+                                <div class="col-lg-2">
+                                    <el-select style="width: 200px;" v-model="SelecteUserType" @change="FilterUserType()" filterable placeholder="الصلاحيات">
+                                        <el-option v-for="item in [{id:0,userType:'الكل'},{id:1,userType:'مدير النظام'},{id:2,userType:'مدير المصرف'},{id:3,userType:'موظف المصرف'}]"
+                                                   :key="item.id"
+                                                   :label="item.userType"
+                                                   :value="item.id">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                                <div class="col-lg-2">
+                                    <el-select v-if="SelecteUserType==2 || SelecteUserType==3" style="width: 200px;" v-model="BankId" @change="FilterBranchByBankId($event)" filterable placeholder="المصارف">
+                                        <el-option v-for="item in Banks"
+                                                   :key="item.bankId"
+                                                   :label="item.name"
+                                                   :value="item.bankId">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+
+                                <div class="col-lg-2">
+
+                                    <el-select v-if="BankId!=''" style="width: 200px;" v-model="BranchId" @change="FilterBranch($event)" filterable placeholder="الــفروع">
+                                        <el-option v-for="item in Branchs"
+                                                   :key="item.branchId"
+                                                   :label="item.name"
+                                                   :value="item.branchId">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                                <div class="col-lg-6">
+                                    <!--@click.prevent="AddUsers()" v-if="SelecteUserType!='' && SelectUserType!=0"-->
+                                    <el-button type="primary" v-if="SelecteUserType==1 || BranchId!=''" @click.prevent="AddUsers()">إضافة مستخدم</el-button>
+                                </div>
+                            </div>
+
+                        </div>
+                        <p class="category"></p>
+                    </div>
+                    <div style="padding-left:22px">
+                        <!--view companet-->
+                        <div style="margin: 35px;font-size: 35px;" v-if="Users==0">
+                            <el-alert title="عفــوا! لاتوجد بيانات المستخدمين"
+                                      type="info">
+                            </el-alert>
+                        </div>
+
+                        <table id="customers" v-if="Users!=0">
+                            <tr>
+                                <th style="text-align: center; vertical-align: middle;">اسم المستخدم</th>
+                                <th style="text-align: center; vertical-align: middle;">البريد الإلكتروني</th>
+                                <th style="text-align: center; vertical-align: middle;">الاسم التلاثي</th>
+                                <th style="text-align: center; vertical-align: middle;">نوع المستخدم</th>
+                                <th style="text-align: center; vertical-align: middle;">المصرف/الفرع</th>
+                                <th style="text-align: center; vertical-align: middle;">تسجيل زبون - مبدئي</th>
+                                <th style="text-align: center; vertical-align: middle;">تسجيل زبون - نهائي</th>
+                                <th style="text-align: center; vertical-align: middle;">تعبئه نقديه - مبدئي</th>
+                                <th style="text-align: center; vertical-align: middle;">تعبئه نقديه - نهائي</th>
+                                <th style="text-align: center; vertical-align: middle;">Photo</th>
+                                <th style="text-align: center; vertical-align: middle;">Status</th>
+
+                                <th style="text-align: center; vertical-align: middle;">Operations</th>
+                            </tr>
+                            <tr v-for="u in Users">
+                                <td style="text-align: center; vertical-align: middle;">{{u.loginName}}</td>
+                                <td style="text-align: center; vertical-align: middle;">{{u.email}}</td>
+                                <td style="text-align: center; vertical-align: middle;">{{u.fullName}}</td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <span v-if="u.userType==1">
+                                        مدير النظام
+                                    </span>
+                                    <span v-if="u.userType==2">
+                                        مدير المصرف
+                                    </span>
+                                    <span v-if="u.userType==3">
+                                        موظف المصرف
+                                    </span>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <span v-if="u.bankName==null && u.branchName==null">
+                                        لايوجد
+                                    </span>
+                                    <span v-if="u.bankName!=null && u.branchName!=null">
+                                        {{u.bankName}} / {{u.branchName}}
+                                    </span>
+                                </td>
+                             
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <el-tag type="success" v-if="u.registerMaker==1">Active</el-tag>
+                                    <el-tag type="danger" v-if="u.registerMaker!=1">Not Active</el-tag>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;">
+
+                                    <el-tag type="success" v-if="u.registerChecker==1">Active</el-tag>
+                                    <el-tag type="danger" v-if="u.registerChecker!=1">Not Active</el-tag>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <el-tag type="success" v-if="u.cashInMaker==1">Active</el-tag>
+                                    <el-tag type="danger" v-if="u.cashInMaker!=1">Not Active</el-tag>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <el-tag type="success" v-if="u.cashInChecker==1">Active</el-tag>
+                                    <el-tag type="danger" v-if="u.cashInChecker!=1">Not Active</el-tag>
+                                </td>
+
+                                <td style="text-align: center;"><a :href="'http://localhost:4810/Api/Admin/User/' + u.userId + '/image'"><img :src="'http://localhost:4810/Api/Admin/User/' + u.userId + '/image'" style="height: 80px; width:120px" /></a></td>
+
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <div v-if="u.status==1">
+                                        <el-tag type="success">Active</el-tag>
+                                    </div>
+                                    <div v-if="u.status==0">
+                                        <el-tag type="danger"> Not Active</el-tag>
+                                    </div>
+                                </td>
+
+                                <td style="text-align: center; vertical-align: middle;width: 9%;
+}">
+                                    <el-popover placement="right"
+                                                width="600"
+                                                trigger="click">
+
+                                        <div style="margin: 35px;font-size: 35px;" v-if="u.userBranch==0">
+                                            <el-alert title="عفــوا! لاتوجد صلاحيات اخري"
+                                                      type="info">
+                                            </el-alert>
+                                        </div>
+
+                                        <table id="customers" v-if="u.userBranch!=0" dir="rtl">
+                                            <tr>
+                                                <th style="text-align: center; vertical-align: middle;background-color:orange!important"> اسم الفرع</th>
+                                                <th style="text-align: center; vertical-align: middle;background-color:orange!important">تسجيل مبدئي</th>
+                                                <th style="text-align: center; vertical-align: middle;background-color:orange!important">تسجيل نهائي</th>
+                                                <th style="text-align: center; vertical-align: middle;background-color:orange!important">شحن مبدئي</th>
+                                                <th style="text-align: center; vertical-align: middle;background-color:orange!important">شحن نهائي</th>
+
+                                            </tr>
+                                            <tr v-for="u in u.userBranch">
+                                                <td style="text-align: center; vertical-align: middle;">
+                                                    {{u.name}}
+                                                </td>
+                                                <td style="text-align: center; vertical-align: middle;">
+
+                                                    <el-tag type="success" v-if="u.registerMaker==1">Active</el-tag>
+                                                    <el-tag type="danger" v-if="u.registerMaker!=1">Not Active</el-tag>
+                                                </td>
+                                                <td style="text-align: center; vertical-align: middle;">
+                                                    <el-tag type="success" v-if="u.registerChecker==1">Active</el-tag>
+                                                    <el-tag type="danger" v-if="u.registerChecker!=1">Not Active</el-tag>
+                                                </td>
+                                                <td style="text-align: center; vertical-align: middle;">
+                                                    <el-tag type="success" v-if="u.cashInMaker==1">Active</el-tag>
+                                                    <el-tag type="danger" v-if="u.cashInMaker!=1">Not Active</el-tag>
+                                                </td>
+                                                <td style="text-align: center; vertical-align: middle;">
+                                                    <el-tag type="success" v-if="u.cashInChecker==1">Active</el-tag>
+                                                    <el-tag type="danger" v-if="u.cashInChecker!=1">Not Active</el-tag>
+                                                </td>
+
+                                            </tr>
+                                        </table>
+
+                                        <el-button slot="reference" style="border:unset;background:unset"><i class="fa fa-info-circle"></i></el-button>
+                                    </el-popover>
+
+                                    <a href="#" @click.prevent="RemoveUser(u.userId)"><i class="fa fa-remove"></i></a>
+                                    <a title="المستخدم غير مفعل" href="#" @click.prevent="ActiveUser(1,u.userId)"><i class="fa fa-lock" v-if="u.status==0"></i></a>
+                                    <a title="المستخدم مفعل" href="#" @click.prevent="ActiveUser(0,u.userId)"><i class="fa fa-unlock" v-if="u.status==1"></i></a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    
+                    <div style="text-align: center;padding-bottom:11px;padding-top: 41px;">
+                        <el-pagination background
+                                       layout="prev, pager, next"
+                                       :current-page="pageNo"
+                                       :page-size="pageSize"
+                                       :total="pages"
+                                       @current-change="GetUser($event)">
+                        </el-pagination>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,43 @@
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions{
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
+}
+
+<!DOCTYPE html>
+<html class="ltr">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Abdullah Elamir for Communications and Information Technology">
+    <meta name="csrf-token" content="@GetAntiXsrfRequestToken()">
+    <link rel="shortcut icon" href="~/img/favicon.png" type="image/x-icon">
+    @*<title>IFES - Citizenship Matters App</title>*@
+    <title>Sadad Banks System</title>
+    <link rel="stylesheet" href="~/css/vendor.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+    <link rel="stylesheet" id="vueui" href="~/css/vueui.css" asp-append-version="true" />
+
+
+    <script>
+                //var v = navigator.userAgent.match(/Chrome\/(\S+)/);
+                //var res = v ? v[1] : 0;
+                //if (parseInt(res) < 50) {
+                //    location.replace('/Security/Unsupported');
+                //}
+    </script>
+</head>
+<body>
+
+    <div id="app2"></div>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="~/js/manifest.js" asp-append-version="true"></script>
+    <script src="~/js/vendor.js" asp-append-version="true"></script>
+    <script src="~/js/login.js" asp-append-version="true"></script>
+</body>
+</html>
+

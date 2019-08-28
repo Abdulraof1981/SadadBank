@@ -1,0 +1,75 @@
+﻿<div class="content" dir="rtl">
+    <add-Branch v-if="state==1"></add-Branch>
+    <!--<edit-Courses v-if="state==2"></edit-Courses>-->
+    <div class="container-fluid" v-if="state==0">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card" style="height: 5%!important;">
+                    <div class="card-header card-header-primary card-header-icon">
+                        <div class="card-icon">
+                            <i class="fa fa-bars" aria-hidden="true" style="color:white;"></i>
+                        </div>
+                        <h4 class="card-title">  المصارف الفرعية</h4>
+
+                    </div>
+                    <div class="headerCustom">
+                        <div class="title">
+                            <el-button type="primary" @click.prevent="AddBranch()" v-if="SelectedBank!=0">إضافة الفروع المصرفية</el-button>
+                            <div class="selectCompany">
+                                <el-select style="width: 200px;" v-model="SelectedBank" @change="FilterBranch()" filterable placeholder="المصارف">
+                                    <el-option v-for="item in Banks"
+                                               :key="item.bankId"
+                                               :label="item.name"
+                                               :value="item.bankId">
+                                    </el-option>
+                                </el-select>
+
+                            </div>
+                        </div>
+                        <p class="category"></p>
+                    </div>
+
+                    <div style="padding-left:22px">
+                        <!--view companet-->
+                        <div style="margin: 35px;font-size: 35px;" v-if="Branchs==0">
+                            <el-alert title="عفــوا! لاتوجد بيانات للفرع المصرفي"
+                                      type="info">
+                            </el-alert>
+                        </div>
+
+                        <table id="customers" v-if="Branchs!=0">
+                            <tr>
+                                <th style="text-align: center; vertical-align: middle;">Branch Name</th>
+                                <th style="text-align: center; vertical-align: middle;">Bank Name</th>
+                                <th style="text-align: center; vertical-align: middle;">Descriptions</th>
+                                <th style="text-align: center; vertical-align: middle;">Created On</th>
+                                <th style="text-align: center; vertical-align: middle;">Operations</th>
+                            </tr>
+                            <tr v-for="b in Branchs">
+                                <td style="text-align: center; vertical-align: middle;">{{b.name}}</td>
+                                <td style="text-align: center; vertical-align: middle;color:red">{{b.bankName}}</td>
+                                
+                                <td style="text-align: center; vertical-align: middle;">{{b.description}}</td>
+                                <td style="text-align: center; vertical-align: middle;">{{b.createdOn | moment}}</td>
+                                <td style="text-align: center; vertical-align: middle;"><a href="#" @click.prevent="RemoveBranch(b.branchId)"><i class="fa fa-remove"></i></a></td>
+                            </tr>
+
+                        </table>
+                    </div>
+                    <div style="text-align: center;padding-bottom:11px;padding-top:20px;">
+                        <el-pagination background
+                                       layout="prev, pager, next"
+                                       :current-page="pageNo"
+                                       :page-size="pageSize"
+                                       :total="pages"
+                                       @current-change="GetBank($event)">
+                        </el-pagination>
+                    </div>
+                </div>
+
+             
+
+            </div>
+        </div>
+    </div>
+</div>

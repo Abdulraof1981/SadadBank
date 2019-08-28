@@ -1,0 +1,177 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TypeScriptToolsVersion>2.8</TypeScriptToolsVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.4" />
+    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.11" />
+    <PackageReference Include="System.ServiceModel.Duplex" Version="4.4.*" />
+    <PackageReference Include="System.ServiceModel.Http" Version="4.4.*" />
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.4.*" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.5.3" />
+    <PackageReference Include="System.ServiceModel.Security" Version="4.4.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
+  </ItemGroup>
+  
+
+  <ItemGroup>
+    <!-- Files not to show in IDE -->
+    <None Remove="App\Components\Packages\SuperPackages.html~RF22273dc6.TMP" />
+    <None Remove="Content\csselement.css" />
+    <None Remove="Content\cssvuetify.css" />
+    <None Remove="Content\font-awesome.less" />
+    <None Remove="Content\font-face-last.css" />
+    <None Remove="Content\font-face.css" />
+    <None Remove="Content\fonts\index.html" />
+    <None Remove="Content\fonts\MYRIADPROREGULAR-bg.png" />
+    <None Remove="Content\fonts\MYRIADPROREGULAR-thumb.png" />
+    <None Remove="Content\fonts\MYRIADPROREGULAR.eot" />
+    <None Remove="Content\fonts\MYRIADPROREGULAR.png" />
+    <None Remove="Content\fonts\MYRIADPROREGULAR.ttf" />
+    <None Remove="Content\fonts\MYRIADPROREGULAR.woff" />
+    <None Remove="Content\fonts\readme.txt" />
+    <None Remove="Content\icon.css" />
+    <None Remove="Content\vendor.less" />
+    <None Remove="Content\veustyles.less" />
+    <!--<None Remove="webpack.config.vendor-css.js" />-->
+    <None Remove="yarn.lock" />
+    <None Remove="package-lock.json" />
+    <Compile Remove="App\Components\Branch\EditCourses\**" />
+    <Compile Remove="App\Components\Home\NewFolder\**" />
+    <Compile Remove="App\Components\Library\CourseChaptersKill\**" />
+    <Compile Remove="App\Components\Library\Library\**" />
+    <Compile Remove="App\Components\Library\ModuleDetails\**" />
+    <Compile Remove="App\Components\Library\UserExamold\**" />
+    <Compile Remove="App\Components\NewsFeed\NewFolder\**" />
+    <Compile Remove="App\Components\Workout\Game\**" />
+    <Compile Remove="App\Components\Workout\Library\**" />
+    <Compile Remove="App\SharedComponents\**" />
+    <Compile Remove="Content\css\**" />
+    <Compile Remove="Content\element-ui\**" />
+    <Compile Remove="Content\Quiz\**" />
+    <Compile Remove="Content\vuetify\**" />
+    <Compile Remove="ModelsTable\**" />
+    <Compile Remove="ModelsV1\**" />
+    <Compile Remove="ModelsV2\**" />
+    <Compile Remove="ModelsV3\**" />
+    <Compile Remove="ModelsV4\**" />
+    <Compile Remove="Modelsxxx\**" />
+    <Compile Remove="Models{2\**" />
+    <Compile Remove="Uploads\**" />
+    <Compile Remove="Views\Game\**" />
+
+    <!-- Files not to publish (note that the 'dist' subfolders are re-added below) -->
+    <Content Remove="App\**" />
+    <Content Remove="Content\**" />
+    <Content Remove="ModelsTable\**" />
+    <Content Remove="ModelsV1\**" />
+    <Content Remove="ModelsV2\**" />
+    <Content Remove="ModelsV3\**" />
+    <Content Remove="ModelsV4\**" />
+    <Content Remove="Modelsxxx\**" />
+    <Content Remove="Models{2\**" />
+    <Content Remove="Uploads\**" />
+    <Content Remove="Views\Game\**" />
+    <EmbeddedResource Remove="App\Components\Branch\EditCourses\**" />
+    <EmbeddedResource Remove="App\Components\Home\NewFolder\**" />
+    <EmbeddedResource Remove="App\Components\Library\CourseChaptersKill\**" />
+    <EmbeddedResource Remove="App\Components\Library\Library\**" />
+    <EmbeddedResource Remove="App\Components\Library\ModuleDetails\**" />
+    <EmbeddedResource Remove="App\Components\Library\UserExamold\**" />
+    <EmbeddedResource Remove="App\Components\NewsFeed\NewFolder\**" />
+    <EmbeddedResource Remove="App\Components\Workout\Game\**" />
+    <EmbeddedResource Remove="App\Components\Workout\Library\**" />
+    <EmbeddedResource Remove="App\SharedComponents\**" />
+    <EmbeddedResource Remove="Content\css\**" />
+    <EmbeddedResource Remove="Content\element-ui\**" />
+    <EmbeddedResource Remove="Content\Quiz\**" />
+    <EmbeddedResource Remove="Content\vuetify\**" />
+    <EmbeddedResource Remove="ModelsTable\**" />
+    <EmbeddedResource Remove="ModelsV1\**" />
+    <EmbeddedResource Remove="ModelsV2\**" />
+    <EmbeddedResource Remove="ModelsV3\**" />
+    <EmbeddedResource Remove="ModelsV4\**" />
+    <EmbeddedResource Remove="Modelsxxx\**" />
+    <EmbeddedResource Remove="Models{2\**" />
+    <EmbeddedResource Remove="Uploads\**" />
+    <EmbeddedResource Remove="Views\Game\**" />
+    <None Remove="App\Components\Branch\EditCourses\**" />
+    <None Remove="App\Components\Home\NewFolder\**" />
+    <None Remove="App\Components\Library\CourseChaptersKill\**" />
+    <None Remove="App\Components\Library\Library\**" />
+    <None Remove="App\Components\Library\ModuleDetails\**" />
+    <None Remove="App\Components\Library\UserExamold\**" />
+    <None Remove="App\Components\NewsFeed\NewFolder\**" />
+    <None Remove="App\Components\Workout\Game\**" />
+    <None Remove="App\Components\Workout\Library\**" />
+    <None Remove="App\SharedComponents\**" />
+    <None Remove="Content\css\**" />
+    <None Remove="Content\element-ui\**" />
+    <None Remove="Content\Quiz\**" />
+    <None Remove="Content\vuetify\**" />
+    <None Remove="ModelsTable\**" />
+    <None Remove="ModelsV1\**" />
+    <None Remove="ModelsV2\**" />
+    <None Remove="ModelsV3\**" />
+    <None Remove="ModelsV4\**" />
+    <None Remove="Modelsxxx\**" />
+    <None Remove="Models{2\**" />
+    <None Remove="Uploads\**" />
+    <None Remove="Views\Game\**" />
+    <Compile Remove="Controllers\CoursesController.cs" />
+    <Compile Remove="Controllers\CustometsController.cs" />
+    <Compile Remove="Controllers\DateController.cs" />
+    <Compile Remove="Controllers\Security.cs" />
+    <Compile Remove="Controllers\Validation.cs" />
+    <Content Remove="package-lock.json" />
+   
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Properties\wwwroot\css\site.rtl.less" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
+  </ItemGroup>
+
+ <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot') ">
+    <!-- Ensure Node.js is installed -->
+    <Exec Command="node --version" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+
+    <!-- In development, the dist files won't exist on the first run or when cloning to
+         a different machine, so rebuild them if not already present. -->
+    <Message Importance="high" Text="Performing first-run Webpack build..." />
+   
+    <Exec Command="node node_modules/webpack/bin/webpack.js" />
+  </Target>
+
+  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+    <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
+  
+    <Exec Command="node node_modules/webpack/bin/webpack.js --env.prod" />
+
+    <!-- Include the newly-built files in the publish output -->
+    <ItemGroup>
+      <DistFiles Include="Properties\wwwroot\**; App\dist\**" />
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>%(DistFiles.Identity)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+</Project>

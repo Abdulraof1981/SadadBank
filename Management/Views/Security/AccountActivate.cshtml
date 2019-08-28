@@ -1,0 +1,413 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Appointment - Generate Password</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+
+* {
+	margin: 0px;
+	padding: 0px;
+	box-sizing: border-box;
+}
+
+body, html {
+	height: 100%;
+	font-family: Poppins-Regular, sans-serif;
+}
+
+/*---------------------------------------------*/
+a {
+	font-family: Poppins-Regular;
+	font-size: 14px;
+	line-height: 1.7;
+	color: #666666;
+	margin: 0px;
+	transition: all 0.4s;
+	-webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+}
+
+
+
+/*---------------------------------------------*/
+h1,h2,h3,h4,h5,h6 {
+	margin: 0px;
+}
+
+p {
+	font-family: Poppins-Regular;
+	font-size: 14px;
+	line-height: 1.7;
+	color: #666666;
+	margin: 0px;
+}
+
+ul, li {
+	margin: 0px;
+	list-style-type: none;
+}
+
+
+/*---------------------------------------------*/
+input {
+	outline: none;
+	border: none;
+}
+
+textarea {
+  outline: none;
+  border: none;
+}
+
+textarea:focus, input:focus {
+  border-color: transparent !important;
+}
+
+
+/*---------------------------------------------*/
+button {
+	outline: none !important;
+	border: none;
+	background: transparent;
+}
+
+button:hover {
+	cursor: pointer;
+}
+
+iframe {
+	border: none !important;
+}
+
+
+/*//////////////////////////////////////////////////////////////////
+[ Utility ]*/
+.txt1 {
+  font-family: Poppins-Regular;
+  font-size: 13px;
+  color: #666666;
+  line-height: 1.5;
+}
+
+.txt2 {
+  font-family: Poppins-Regular;
+  font-size: 13px;
+  color: #333333;
+  line-height: 1.5;
+}
+
+/*//////////////////////////////////////////////////////////////////
+[ login ]*/
+
+.limiter {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.container-login100 {
+  width: 100%;
+  min-height: 100vh;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  background: #f2f2f2;
+}
+
+.wrap-login100 {
+  width: 390px;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 77px 55px 33px 55px;
+
+  box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+  -o-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+  -ms-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+}
+
+
+/*------------------------------------------------------------------
+[ Form ]*/
+
+.login100-form {
+  width: 100%;
+}
+
+.login100-form-title {
+  display: block;
+  font-family: Poppins-Bold;
+  font-size: 30px;
+  color: #333333;
+  line-height: 1.2;
+  text-align: center;
+}
+.login100-form-title i {
+  font-size: 60px;
+}
+
+/*------------------------------------------------------------------
+[ Input ]*/
+
+.wrap-input100 {
+  width: 100%;
+  position: relative;
+  border-bottom: 2px solid #adadad;
+  margin-bottom: 37px;
+}
+
+.input100 {
+  font-family: Poppins-Regular;
+  font-size: 15px;
+  color: #555555;
+  line-height: 1.2;
+
+  display: block;
+  width: 100%;
+  height: 45px;
+  background: transparent;
+  padding: 0 5px;
+}
+
+.btn {
+    background: #144aa0;
+    background-image: -webkit-linear-gradient(top, #144aa0, #2980b9);
+    background-image: -moz-linear-gradient(top, #144aa0, #2980b9);
+    background-image: -ms-linear-gradient(top, #144aa0, #2980b9);
+    background-image: -o-linear-gradient(top, #144aa0, #2980b9);
+    background-image: linear-gradient(to bottom, #144aa0, #2980b9);
+    -webkit-border-radius: 28;
+    -moz-border-radius: 28;
+    border-radius: 28px;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 20px;
+    padding: 10px 20px 10px 20px;
+    text-decoration: none;
+}
+
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 100px;
+  height: 100px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+  margin-left:85px;
+  margin-bottom:40px;
+}
+
+/* Safari */
+@@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+        .img-rsp {
+            width: 2.0625in;
+            height: .5833in
+        }
+
+        .red-x {
+            border: 1px solid red;
+            margin-right: 5px;
+            border-radius: 100%;
+            padding: 1px 3px 0 3px;  
+        }
+
+        .err-msg {
+            font-size: 12px;
+        }
+
+@@media only screen and (max-width: 350px){
+    .active-title {
+        font-size: 21px;
+    }
+
+    .img-rsp {
+        width: 100%;
+    }
+
+    .err-msg {
+        font-size: 11px;
+        padding-left: 0; 
+    }
+
+        .input-hold  input{
+            font-size: 12px;
+        }
+}
+
+
+    </style>
+</head>
+<body>
+    <div id="app2">
+        <div class="limiter">
+            <div class="container-login100">
+                <div class="wrap-login100">
+                    <div class="loader" v-if="ShowLoading"></div>
+                    <div v-else>
+                        <form class="login100-form validate-form">
+                            <span class="login100-form-title p-b-48">
+                                <i class="zmdi zmdi-font">
+                                    <img class="images img-rsp" border="0" width="198" height="56" src="/img/logo.jpg">
+                                </i>
+                            </span>
+                            <br><br>
+                            <span class="login100-form-title p-b-26 active-title">
+                                Generate Password
+                            </span>
+                            <br><br>
+                            <span style="color:red;padding:5px" v-if="message" class="err-msg">
+                                <span class="red-x">X</span>{{message}}
+                                <br /><br />
+                            </span>
+
+                            <div class="wrap-input100 validate-input input-hold">
+                                <input class="input100" type="Password" placeholder="Enter Your New Password" v-model="activate.password">
+                            </div>
+
+                            <div class="wrap-input100 validate-input input-hold">
+                                <input class="input100" type="Password" placeholder="Repeat Your New Password" v-model="activate.cpassword">
+                            </div>
+                            <center>
+                                <button class="btn" v-on:click.prevent="Check()">
+                                    Generate
+                                </button>
+                            </center>
+
+                            <br><br>
+                            <div class="text-center p-t-115">
+                                <center>
+                                    <span class="txt1">
+                                        Act-Libya - Citizenship Matters System
+                                    </span>
+                                </center>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script>
+
+        var app = new Vue({
+            el: '#app2',
+            created() {
+                //console.log("@ViewData["ApiServer"]");
+            },
+            data: {
+
+                activate: {
+                    confirm: null,
+                    account: null,
+                    password: null,
+                    cpassword: null,
+                },
+                message: null,
+                ShowLoading: false
+            },
+            methods: {
+                Check() {
+
+                    var strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{7,})");
+
+                    if (!this.activate.password) {
+                        this.message = 'Please input the password';
+                        return;
+                    }
+                    if (!strongRegex.test(this.activate.password)) {
+                        this.message = 'Password must contain at least 1 uppercase, 1 lowercase, 1 number and length bigger than 6';
+                        return;
+                    }
+                    else if (!this.activate.cpassword) {
+                        this.message = 'Please repeat the password';
+                        return;
+                    }
+                    if (this.activate.password != this.activate.cpassword) {
+                        this.message = 'Passwords don\'t match!';
+                        return;
+                    } else {
+                        this.message = null;
+
+                        let urlParams = new URLSearchParams(window.location.search);
+
+                        this.activate.confirm = urlParams.get('confirm');
+                        this.activate.account = urlParams.get('account');
+
+
+                        const baseUrl= "@ViewData["ApiServer"]";
+
+                        this.ShowLoading = true;
+
+                        axios.post(baseUrl + `/api/security/ActivateUser/`, this.activate)
+                            .then(function (response) {
+                                this.ShowLoading = false;
+                                swal({
+                                    title: "Success",
+                                    text: response.data,
+                                    icon: "success",
+                                    button: "Ok",
+                                })
+                                .then((value) => {
+                                    window.location.href = "/";
+                                });
+                                
+                            })
+                            .catch(function (error) {
+                                this.ShowLoading = false;
+                                if (error.response.status == 400 ) {
+                                    swal({
+                                        title: "Bad Request",
+                                        text: error.response.data,
+                                        icon: "warning",
+                                    });
+                                    return;
+                                }
+                                if (error.response.status == 404 ) {
+                                    swal({
+                                        title: "Not Found",
+                                        text: error.response.data,
+                                        icon: "error",
+                                    });
+                                    return;
+
+                                }
+
+                            });
+                    }
+                },
+            }
+        })
+
+
+    </script>
+
+</body>
+</html>

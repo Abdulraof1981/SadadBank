@@ -1,0 +1,158 @@
+﻿<div class="container-fluid" dir="rtl">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card" style="height: 995px;">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-lg-11">
+                            <h4 class="title"> زبون جديد</h4>
+                        </div>
+                        <div class="col-lg-1">
+                            <el-button type="danger" @click="$parent.state=0" style="margin-left: 6px;"><i class="fa fa-arrow-left" style="color:white"></i></el-button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content" style="padding-bottom:11px;padding-top:20px">
+                    
+                    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
+
+                        <div class="row">
+                            <div class="col-md-4" style="padding-right: 30px;">
+                                <el-form-item class="form-group" prop="Nid">
+                                    <label class="control-label">الرقم الوطني <i class="fa fa-star" aria-hidden="true"></i></label>
+                                    <el-input id="NID" autofocus data-autoclose="1" placeholder="أدخل الرقم الوطني" v-model="ruleForm.Nid" maxlength="12"></el-input>
+                                </el-form-item>
+                            </div>
+
+                            <div class="col-md-3 form-group">
+                                <el-form-item class="form-group">
+                                    <label class="control-label"></label>
+                                    <br />
+                                    <el-button type="primary" id="showBtn" icon="el-icon-search" @click.prevent="getNidInfo(ruleForm.Nid)"> عرض </el-button>
+                                    <el-button type="danger" icon="el-icon-delete" @click.prevent="resetNid()"> إزالة </el-button>
+                                </el-form-item>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <el-form-item class="form-group" prop="Name">
+                                <label class="control-label">الأسم<i class="fa fa-star" aria-hidden="true"></i></label>
+                                <el-input id="Name" placeholder="أدخل الاسم" v-model="ruleForm.Name" readonly style="cursor: not-allowed;background-color: #eee;"></el-input>
+                            </el-form-item>
+                        </div>
+                        <div class="col-md-3">
+                            <el-form-item class="form-group" prop="FatherName">
+                                <label class="control-label">اسم الاب<i class="fa fa-star" aria-hidden="true"></i></label>
+                                <el-input id="FatherName" placeholder="ادخل اسم الاب" v-model="ruleForm.FatherName" readonly style="cursor: not-allowed;background-color: #eee;"></el-input>
+                            </el-form-item>
+                        </div>
+                        <div class="col-md-3">
+                            <el-form-item class="form-group" prop="GrandName">
+                                <label class="control-label">اسم الجد<i class="fa fa-star" aria-hidden="true"></i></label>
+                                <el-input id="GrandName" placeholder="أدخل اسم الجد" v-model="ruleForm.GrandName" readonly style="cursor: not-allowed;background-color: #eee;"></el-input>
+                            </el-form-item>
+                        </div>
+                        <div class="col-md-3">
+                            <el-form-item class="form-group" prop="SurName">
+                                <label class="control-label">اللقب<i class="fa fa-star" aria-hidden="true"></i></label>
+                                <el-input id="SurName" placeholder="أدخل اللقب" v-model="ruleForm.SurName" readonly style="cursor: not-allowed;background-color: #eee;"></el-input>
+                            </el-form-item>
+                        </div>
+
+                        <div class="col-md-3">
+                            <el-form-item class="form-group" prop="BirthDate">
+                                <label class="control-label">تاريخ الميلاد <i class="fa fa-star" aria-hidden="true"></i></label>
+                                <el-input id="BirthDate" placeholder="أدخل تاريخ الميلاد" v-model="ruleForm.BirthDate" readonly style="cursor: not-allowed;background-color: #eee;"></el-input>
+                            </el-form-item>
+                        </div>
+                        <div class="col-md-3">
+                            <el-form-item class="form-group" prop="Gender">
+                                <label class="control-label">الجنس<i class="fa fa-star" aria-hidden="true"></i></label>
+                                <el-input id="Gender" placeholder="أدخل الجنس" v-model="ruleForm.Gender" readonly style="cursor: not-allowed;background-color: #eee;"></el-input>
+                            </el-form-item>
+                        </div>
+                        <div class="col-md-3">
+                            <el-form-item class="form-group" prop="Email">
+                                <label class="control-label">البريد الإلكتروني</label>
+                                <el-input id="Email" placeholder="أدخل البريد الإلكتروني" v-model="ruleForm.Email"></el-input>
+                            </el-form-item>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4" style="padding-right: 30px;">
+                                <el-form-item class="form-group" prop="Phone">
+                                    <label class="control-label">رقم هاتف مستخدم الخدمة <i class="fa fa-star" aria-hidden="true"></i></label>
+                                    <el-input id="Phone" autofocus data-autoclose="1" placeholder="أدخل رقم الهاتف" v-model="ruleForm.Phone" maxlength="9"></el-input>
+                                </el-form-item>
+                            </div>
+
+                            <div class="col-md-3 form-group">
+                                <el-form-item class="form-group">
+                                    <label class="control-label"></label>
+                                    <br />
+                                    <el-button type="primary" id="showPhoneBtn" icon="el-icon-search" @click.prevent="getPhoneInfo(ruleForm.Phone)"> عرض </el-button>
+                                    <el-button type="danger" icon="el-icon-delete" @click.prevent="resetPhone()"> إزالة </el-button>
+                                </el-form-item>
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <el-form-item class="form-group" prop="CustomerName">
+                                <label class="control-label">اسم الزبون<i class="fa fa-star" aria-hidden="true"></i></label>
+                                <el-input id="CustomerName" placeholder="أسم الزبون" v-model="ruleForm.CustomerName" readonly style="cursor: not-allowed;background-color: #eee;"></el-input>
+                            </el-form-item>
+                        </div>
+
+                        <div class="col-md-3">
+                            <el-form-item class="form-group" prop="Cityid">
+                                <label class="control-label">المدينة<i class="fa fa-star" aria-hidden="true"></i></label>
+                                <el-select id="Cityid" v-model="ruleForm.Cityid" filterable placeholder="اختر المدينة">
+                                    <el-option style="text-align:right" v-for='item in AllCities' :key="item.cityId" :label="item.cityName" :value="item.cityId"> </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </div>
+
+                        <div class="col-md-4">
+                            <el-form-item class="form-group" prop="Address">
+                                <label class="control-label">العنوان</label>
+                                <el-input id="Address" placeholder="أدخل العنوان" v-model="ruleForm.Address"></el-input>
+                            </el-form-item>
+                        </div>
+
+                        <div class="col-md-5">
+                            <el-form-item class="form-group" prop="PassportNumber">
+                                <label class="control-label">رقم جواز السفر<i class="fa fa-star" aria-hidden="true"></i></label>
+                                <el-input id="PassportNumber" placeholder="أدخل رقم جواز السفر" v-model="ruleForm.PassportNumber"></el-input>
+                            </el-form-item>
+                        </div>
+
+                        <div class="col-md-4">
+                            <el-form-item class="form-group" prop="PassportExportDate">
+                                <label class="control-label">تاريخ إنتهاء صلاحية جواز السفر<i class="fa fa-star" aria-hidden="true"></i></label>
+                                <el-date-picker type="date" id="PassportExportDate" placeholder="تاريخ انتهاء جواز السفر" v-model="ruleForm.PassportExportDate"></el-date-picker>
+                            </el-form-item>
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <div class="col-lg-11">
+                                <h4 style="font-size: 15px!important;font-family: 'DroidArabicKufiRegular';color: red;"> يجب التأكد من مطابقة الاسم من منظومة الرقم الوطني مع اسم مستخدم الخدمة</h4>
+                            </div>
+                        </div>
+
+                        <el-col :span="5" style="margin-top: 4%;">
+                            <el-button @click="resetForm('ruleForm')">إلـغاء</el-button>
+                            <el-button type="primary" @click="submitForm('ruleForm')">حفـظ</el-button>
+                        </el-col>
+
+                    </el-form>
+
+                </div>
+           
+
+            </div>
+        </div>
+    </div>
+</div>
+
+

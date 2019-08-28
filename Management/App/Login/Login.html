@@ -1,0 +1,50 @@
+﻿<div>
+    <header style="background-image: linear-gradient(to right top, #f8a407, #f5aa2e, #f2af46, #efb55a, #ecba6d, #edc071, #efc776, #f0cd7b, #f4d773, #f4e36b, #f2ef65, #edfb5f);"></header>
+    <div class="center">
+        <div class="login register">
+            <div class="logo"></div>
+            <div class="content">
+               
+                <form id="app" dir="rtl" v-if="!IsMultiPermissions">
+                    <h3 class="title">هذا النظام للمخولين فقط بنظام سداد للمصارف</h3>
+
+                    <div class="mail-group">
+                        <label for="email">البريد الإلكتروني</label>
+                        <input type="email" v-model="form.Email" placeholder="you@example.com" class="form-control" />
+                        <!--<span class="help-block">For account activation & notifications</span>-->
+                    </div>
+                    <div class="password-group">
+                        <label for="password">الرقم السري</label>
+                        <input type="password" v-model="form.Password" placeholder="*************" class="form-control" />
+                        <!--<span class="help-block">Min six characters</span>-->
+                    </div>
+                    <button class="btn" @click.prevent="Save()">الــدخول</button>
+                </form>
+                <form id="app" dir="rtl" v-if="IsMultiPermissions">
+                    <el-row style="margin-bottom: 30px;">
+                        <label style="font-size:19px;font-weight:bold">الصلاحية الرئيسية</label>
+                        <el-button type="primary" style="width:301px;font-size: 17px;font-weight: bold;" @click.prevent="GoToMainBranch()">{{userInfo.bankName}}  / {{userInfo.branchName}}</el-button>
+
+                    </el-row>
+                    <!--{{Branchs}}-->
+                    <el-row>
+                        <label style="font-size:19px;font-weight:bold">صلاحيات اخرى</label>
+                        <el-select v-model="SelectedBranch" filterable placeholder="اختيار صلاحيات اخري" style="width:100%" @change="SelectBranch()">
+                            <el-option v-for="item in userInfo.userBranch"
+                                       :key="item.branchId"
+                                       :label="item.name"
+                                       :value="item.branchId">
+                            </el-option>
+                        </el-select>
+                    </el-row>
+
+                </form>
+            </div>
+            <footer dir="rtl">
+                <p>
+                    لأي استفسار الرجاء التواصل مع مدراء النظام <a href="" class="terms">Cantuct us</a>
+                </p>
+            </footer>
+        </div>
+    </div>
+</div>

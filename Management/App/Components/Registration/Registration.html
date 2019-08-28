@@ -1,0 +1,98 @@
+﻿<div class="content" dir="rtl">
+    <New-Register v-if="state==1"></New-Register>
+    <div class="container-fluid" v-if="state==0">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card" style="height:5%!important">
+                    <div class="card-header card-header-primary card-header-icon">
+                        <div class="card-icon">
+                            <i class="fa fa-bars" aria-hidden="true" style="color:white;"></i>
+                        </div>
+                        <h4 class="card-title">الزبائن</h4>
+                    </div>
+                    <div class="headerCustom">
+                        <div class="title">
+                            <div class="col-sm-4">
+                                <el-input placeholder="رقم الهاتف" v-model="Search"></el-input>
+                            </div>
+                            <div class="col-sm-1">
+                                <el-button type="primary" icon="el-icon-search" @click.prevent="GetCustomers(pageNo)"> بحـث </el-button>
+                            </div>
+
+                            <el-button v-if="userType == 2 || userType == 3" type="primary" @click.prevent="AddCustomers()">إضافة زبون</el-button>
+                            <!--<div class="selectCompany">
+                <el-select style="width: 200px;" v-model="SuperPacakgeValue" @change="SelectedSupaerPackage()" filterable placeholder="نوع الدورات">
+                    <el-option v-for="item in [{value:1,label:'الكل'},{value:2,label:'باقة الحزم'},{value:3,label:'الحزم الفردية'}]"
+                               :key="item.value"
+                               :label="item.label"
+                               :value="item.value">
+                    </el-option>
+                </el-select>
+            </div>-->
+                        </div>
+                        <p class="category"></p>
+                    </div>
+                    <div style="padding-left:22px">
+                        <!--view companet-->
+                        <div style="margin: 35px;font-size: 35px;" v-if="Customers==0">
+                            <el-alert title="عفــوا! لا توجد اي بيانات زبائن لعرضها"
+                                      type="info">
+                            </el-alert>
+                        </div>
+
+                        <table id="customers" v-if="Customers!=0">
+                            <tr>
+                                <th style="text-align: center; vertical-align: middle;">الاسم</th>
+                                <th style="text-align: center; vertical-align: middle;">تاريخ الميلاد</th>
+                                <th style="text-align: center; vertical-align: middle;">الرقم الوطني</th>
+                                <th style="text-align: center; vertical-align: middle;">الهاتف</th>
+                                <th style="text-align: center; vertical-align: middle;">تاريخ الانشاء</th>
+                                <th style="text-align: center; vertical-align: middle;">الحالة</th>
+                                <th style="text-align: center; vertical-align: middle;">المزيد</th>
+                                <th style="text-align: center; vertical-align: middle;">عمليات</th>
+                            </tr>
+
+                            <tr v-for="b in Customers">
+                                <td style="text-align: center; vertical-align: middle;">{{b.firstName + " " +  b.fatherName + " " + b.surName}}</td>
+                                <td style="text-align: center; vertical-align: middle;">{{b.birthDate | moment}}</td>
+                                <td style="text-align: center; vertical-align: middle;">{{b.nid}}</td>
+                                <td style="text-align: center; vertical-align: middle;">{{b.phone}}</td>
+                                <td style="text-align: center; vertical-align: middle;">{{b.lastModifiedOn | moment2}}</td>
+                                <td v-if="b.status == 0" style="text-align: center; background-color:red; vertical-align: middle;">{{ "مرفوض" }}</td>
+                                <td v-if="b.status == 2" style="text-align: center; background-color:yellow; vertical-align: middle;">{{ "تأكيد مبدئي" }}</td>
+                                <td v-if="b.status == 3" style="text-align: center; background-color:green; vertical-align: middle;">{{ "تأكيد نهائي" }}</td>
+                                <td v-if="b.status == 5" style="text-align: center; background-color:cyan; vertical-align: middle;">{{ "خطأ mPay" }}</td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <a href="#" @click="showMore(b.allActions)"><i class="fa fa-history"></i> عرض المزيد </a>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <a v-if="b.status == 2 && (userType == 2 || userType == 3)" href="#" @click.prevent="RejectCustomer(b.bankActionId)"><i class="fa fa-remove"></i> رفض </a><br>
+                                    <a v-if="b.status == 2 && (userType == 2 || userType == 3)" href="#" @click.prevent="LastConfirm(b.bankActionId)"><i class="fa fa-save"></i> تأكيد نهائي </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="text-align: center;padding-bottom:11px;padding-top:20px;">
+                        <el-pagination background
+                                       layout="prev, pager, next"
+                                       :current-page="pageNo"
+                                       :page-size="pageSize"
+                                       :total="pages"
+                                       @current-change="GetCustomers($event)">
+                        </el-pagination>
+                    </div>
+
+                    <el-dialog style="width:1900px" title="الحركات" :visible.sync="dialogTableVisible">
+                        <el-table :data="gridData" style="width:700px">
+                            <el-table-column  property="actionDate" label="تاريخ الحركة" width="150"></el-table-column>
+                            <el-table-column style="text-align:right;" property="actionType" label="نوع الحركة" width="150"></el-table-column>
+                            <el-table-column style="text-align:right;" property="userFullName" label="اسم الموظف" width="150"></el-table-column>
+                            <el-table-column style="text-align:right;" property="bankName" label="اسم المصرف" width="150"></el-table-column>
+                            <el-table-column style="text-align:right;" property="branchName" label="اسم الفرع" width="150"></el-table-column>
+                        </el-table>
+                    </el-dialog>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

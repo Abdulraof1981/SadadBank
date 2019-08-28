@@ -1,0 +1,123 @@
+﻿<div class="content" dir="rtl">
+    <add-CashIn v-if="state==1"></add-CashIn>
+
+    <div class="container-fluid" v-if="state==0">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card" style="height:5%!important">
+                    <div class="card-header card-header-primary card-header-icon">
+                        <div class="card-icon">
+                            <i class="fa fa-bars" aria-hidden="true" style="color:white;"></i>
+                        </div>
+                        <h4 class="card-title">التعبئة النقدية</h4>
+                    </div>
+     
+                    <div class="headerCustom">
+                        <div class="title">
+
+                            <div class="row">
+                                <div class="col-lg-2">
+                                    <el-select v-model="SearchSelect" filterable placeholder="البحث بـ">
+                                        <el-option v-for="item in [{value:1,label:'الرقم الوطني'},{value:2,label:'رقم الهاتف'}]"
+                                                   :key="item.value"
+                                                   :label="item.label"
+                                                   :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                                <div class="col-lg-4">
+                                    <el-input placeholder="الرجاء ادخال البيانات" v-model="SearchText" v-if="SearchSelect!=''"></el-input>
+                                </div>
+                                <div class="col-lg-2">
+                                    <el-button type="primary" icon="el-icon-search" @click.pervent="Search()" v-if="SearchSelect!=''">بحث</el-button>
+                                </div>
+                                <div class="col-lg-4">
+                                    <el-button type="primary" @click.prevent="AddCashIn()" v-if="CitizenInfo!=''">تعبئة المحفظه</el-button>
+                                </div>
+                            </div>
+                            <br />
+                            <br />
+                          
+                            <!--{{CashIn}}-->
+                            <div class="row" v-if="CitizenInfo!=''">
+                                <div class="col-lg-8">
+                                    <el-tag style="font-size: 21px;">الاسم : {{CitizenInfo.name}} {{CitizenInfo.fatherName}} {{CitizenInfo.grandName}} {{CitizenInfo.surName}}</el-tag>
+                                    <el-tag style="font-size: 21px;">الهاتف :  {{CitizenInfo.phone}}</el-tag>
+                                    <el-tag style="font-size: 21px;">الرقم الوطني :  {{CitizenInfo.nid}}</el-tag>
+                                </div>
+                                <!--<div class="col-lg-2">
+            <el-tag style="font-size: 21px;">الهاتف :  {{CitizenInfo.phone}}</el-tag>
+        </div>
+        <div class="col-lg-2">
+            <el-tag style="font-size: 21px;">الرقم الوطني :  {{CitizenInfo.nid}}</el-tag>
+        </div>-->
+                                <div class="col-lg-4">
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <p class="category"></p>
+                    </div>
+                   
+                    <div style="padding-left:22px;margin-top: 6%;">
+                        <!--view companet-->
+                        <div style="margin: 35px;font-size: 35px;" v-if="CashIn==''">
+                            <el-alert title="عفــوا! لاتوجد بيانات المحفظه"
+                                      type="info">
+                            </el-alert>
+                        </div>
+
+                        <table id="customers" v-if="CashIn!=''">
+                            <tr>
+                                <th style="text-align: center; vertical-align: middle;">القيمة</th>
+
+                                <th style="text-align: center; vertical-align: middle;">رقم إيصال الإيداع</th>
+                                <th style="text-align: center; vertical-align: middle;">الفرع/المصرف</th>
+
+                                <th style="text-align: center; vertical-align: middle;">معلومات اخري</th>
+                                <th style="text-align: center; vertical-align: middle;">تاريخ العملية</th>
+                                <th style="text-align: center; vertical-align: middle;">الحالة</th>
+                                <th style="text-align: center; vertical-align: middle;">العمليات</th>
+                            </tr>
+                            <tr v-for="c in CashIn">
+                                <td style="text-align: center; vertical-align: middle;">{{c.valuedigits}}</td>
+                                <td style="text-align: center; vertical-align: middle;">{{c.numInvoiceDep}}</td>
+                                <td style="text-align: center; vertical-align: middle;">{{c.bank.name}} / {{c.branch.name}}</td>
+
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <span v-if="c.description==''">
+                                        لا يوجد
+                                    </span>
+                                    <span v-if="c.description!=''">
+                                        {{c.description}}
+                                    </span>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;">{{c.actionDate | moment}}</td>
+                                <td style="text-align: center; vertical-align: middle;">
+
+                                    <el-tag v-if="c.status==1" type="warning">تأكيد مبدئي</el-tag>
+                                    <el-tag v-if="c.status==2" type="success">تأكيد نهائي</el-tag>
+                                    <el-tag v-if="c.status==0" type="danger">مرفوض</el-tag>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;"><a href="#" @click.prevent="RejectCashIn(c.cashInId)"><i class="fa fa-remove"></i></a></td>
+                            </tr>
+                        </table>
+                    </div>
+                 <div style="text-align: center;padding-bottom:11px;padding-top:20px;">
+                        <!--<el-pagination background
+                                       layout="prev, pager, next"
+                                       :current-page="pageNo"
+                                       :page-size="pageSize"
+                                       :total="pages"
+                                       @current-change="GetBank($event)">
+                        </el-pagination>-->
+                    </div>
+                </div>
+
+               
+
+            </div>
+        </div>
+    </div>
+</div>
