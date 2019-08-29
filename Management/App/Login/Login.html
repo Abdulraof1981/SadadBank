@@ -10,12 +10,12 @@
 
                     <div class="mail-group">
                         <label for="email">البريد الإلكتروني</label>
-                        <input type="email" v-model="form.Email" placeholder="you@example.com" class="form-control" />
+                        <input type="email" v-model="form.Email" placeholder="you@example.com" autocomplete="new-password" class="form-control" />
                         <!--<span class="help-block">For account activation & notifications</span>-->
                     </div>
                     <div class="password-group">
                         <label for="password">الرقم السري</label>
-                        <input type="password" v-model="form.Password" placeholder="*************" class="form-control" />
+                        <input type="password" v-model="form.Password" placeholder="*************" autocomplete="new-password" class="form-control" />
                         <!--<span class="help-block">Min six characters</span>-->
                     </div>
                     <button class="btn" @click.prevent="Save()">الــدخول</button>
