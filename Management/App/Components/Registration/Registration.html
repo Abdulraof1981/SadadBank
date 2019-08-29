@@ -68,17 +68,16 @@
 
                                 <td style="text-align: center; vertical-align: middle; ">
                                     <el-popover placement="right"
-                                                width="600"
+                                                
                                                 trigger="click">
 
-                                        <table id="AllActions" v-if="b.allActions!=0" dir="rtl">
+                                        <table id="customers" v-if="b.allActions!=0" dir="rtl" >
                                             <tr>
                                                 <th style="text-align: center; vertical-align: middle;background-color:orange!important"> تاريخ الحركة</th>
                                                 <th style="text-align: center; vertical-align: middle;background-color:orange!important"> نوع الحركة</th>
                                                 <th style="text-align: center; vertical-align: middle;background-color:orange!important">اسم الموظف </th>
                                                 <th style="text-align: center; vertical-align: middle;background-color:orange!important">المصرف</th>
                                                 <th style="text-align: center; vertical-align: middle;background-color:orange!important">الصفة</th>
-
                                             </tr>
                                             <tr v-for="u in b.allActions">
                                                 <td style="text-align: center; vertical-align: middle;">
