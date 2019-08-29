@@ -10,6 +10,7 @@
                         </div>
                         <h4 class="card-title">الزبائن</h4>
                     </div>
+                    
                     <div class="headerCustom">
                         <div class="title">
                             <div class="col-sm-4">
@@ -19,16 +20,7 @@
                                 <el-button type="primary" icon="el-icon-search" @click.prevent="GetCustomers(pageNo)"> بحـث </el-button>
                             </div>
 
-                            <el-button v-if="userType == 2 || userType == 3" type="primary" @click.prevent="AddCustomers()">إضافة زبون</el-button>
-                            <!--<div class="selectCompany">
-                <el-select style="width: 200px;" v-model="SuperPacakgeValue" @change="SelectedSupaerPackage()" filterable placeholder="نوع الدورات">
-                    <el-option v-for="item in [{value:1,label:'الكل'},{value:2,label:'باقة الحزم'},{value:3,label:'الحزم الفردية'}]"
-                               :key="item.value"
-                               :label="item.label"
-                               :value="item.value">
-                    </el-option>
-                </el-select>
-            </div>-->
+                            <el-button v-if="(loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" type="primary" @click.prevent="AddCustomers()">إضافة زبون</el-button>
                         </div>
                         <p class="category"></p>
                     </div>
@@ -58,7 +50,7 @@
                                 <td style="text-align: center; vertical-align: middle;">{{b.nid}}</td>
                                 <td style="text-align: center; vertical-align: middle;">{{b.phone}}</td>
                                 <td style="text-align: center; vertical-align: middle;">{{b.lastModifiedOn | moment2}}</td>
-                                
+
                                 <td style="text-align: center; vertical-align: middle;">
                                     <el-tag type="danger" v-if="b.status == 0">مرفوض</el-tag>
                                     <el-tag v-if="b.status == 2">تأكيد مبدئي</el-tag>
@@ -68,10 +60,9 @@
 
                                 <td style="text-align: center; vertical-align: middle; ">
                                     <el-popover placement="right"
-                                                
                                                 trigger="click">
 
-                                        <table id="customers" v-if="b.allActions!=0" dir="rtl" >
+                                        <table id="customers" v-if="b.allActions!=0" dir="rtl">
                                             <tr>
                                                 <th style="text-align: center; vertical-align: middle;background-color:orange!important"> تاريخ الحركة</th>
                                                 <th style="text-align: center; vertical-align: middle;background-color:orange!important"> نوع الحركة</th>
@@ -96,9 +87,9 @@
                                                     {{u.bankName + " / " + u.branchName}}
                                                 </td>
                                                 <td style="text-align: center; vertical-align: middle;">
-                                                    <el-tag v-if="u.userType == 1">موظف</el-tag>
+                                                    <el-tag v-if="u.userType == 3">موظف</el-tag>
                                                     <el-tag type="success" v-if="u.userType == 2">مدير مصرف</el-tag>
-                                                    <el-tag type="danger" v-if="u.userType == 3">مدير النظام</el-tag>
+                                                    <el-tag type="danger" v-if="u.userType == 1">مدير النظام</el-tag>
                                                 </td>
                                             </tr>
                                         </table>
@@ -106,9 +97,10 @@
                                         <el-button slot="reference" style="border:unset;background:unset"><i class="fa fa-info-circle"></i></el-button>
                                     </el-popover>
                                 </td>
+
                                 <td style="text-align: center; vertical-align: middle;">
-                                    <a v-if="b.status == 2 && (userType == 2 || userType == 3)" href="#" @click.prevent="RejectCustomer(b.bankActionId)"><i class="fa fa-remove"></i> رفض </a><br>
-                                    <a v-if="b.status == 2 && (userType == 2 || userType == 3)" href="#" @click.prevent="LastConfirm(b.bankActionId)"><i class="fa fa-save"></i> تأكيد نهائي </a>
+                                    <a v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rm == 1)" href="#" @click.prevent="RejectCustomer(b.bankActionId)"><i class="fa fa-remove"></i> رفض </a><br>
+                                    <a v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rm == 1)" href="#" @click.prevent="LastConfirm(b.bankActionId)"><i class="fa fa-save"></i> تأكيد نهائي </a>
                                 </td>
                             </tr>
                         </table>
@@ -122,7 +114,7 @@
                                        @current-change="GetCustomers($event)">
                         </el-pagination>
                     </div>
-                 </div>
+                </div>
             </div>
         </div>
     </div>

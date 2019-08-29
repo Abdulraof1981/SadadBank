@@ -4,7 +4,16 @@ export default {
     name: 'Registrations',    
     created() {
         this.GetCustomers(this.pageNo);
-        this.GetCurrentUserType();
+        var loginDetails = sessionStorage.getItem('currentUser');
+        this.loginDetails = JSON.parse(loginDetails);
+        if (loginDetails != null) {
+            this.loginDetails = JSON.parse(loginDetails);
+            if (this.loginDetails.userType == 5) {
+                this.ColorCode = '#933c3c';
+            }
+        } else {
+            window.location.href = '/Security/Login';
+        }
     },
     components: {
         'New-Register': newRegister,
@@ -27,23 +36,16 @@ export default {
     },
     data() {
         return {
+            loginDetails: {},
             pageNo: 1,
             pageSize: 10,
             pages: 0,  
             Customers: [],
             state: 0,
             Search: null,
-            userType: 0
         };
     },
     methods: {
-        GetCurrentUserType() {
-            this.$http.GetCurrentUserType().then(response => {
-                this.userType = response.data.userType;
-            }).catch((err) => {
-                console.error(err);
-            });
-        },
 
         LastConfirm(BankActionId) {
             this.$confirm('هل انت متأكد من التأكيد النهائي لهذه الحركة؟', 'تـحذير', {
@@ -123,7 +125,6 @@ export default {
                 .then(response => {
                 this.$blockUI.Stop();
                 this.Customers = response.data.customers;
-                console.log(this.Customers);
                 this.pages = response.data.count;
             })
             .catch((err) => {
