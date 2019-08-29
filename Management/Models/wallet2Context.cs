@@ -45,14 +45,14 @@ namespace Management.Models
         // Unable to generate entity type for table 'dbo.UserMpay'. Please see the warning messages.
         // Unable to generate entity type for table 'dbo.Table_1'. Please see the warning messages.
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer(@"server=GUJ-DEVDB-T01;Database=wallet2;User Id=alm_nid;Password=alm_nid;");
-            }
-        }
+//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//        {
+//            if (!optionsBuilder.IsConfigured)
+//            {
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+//                optionsBuilder.UseSqlServer(@"server=GUJ-DEVDB-T01;Database=wallet2;User Id=alm_nid;Password=alm_nid;");
+//            }
+//        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
