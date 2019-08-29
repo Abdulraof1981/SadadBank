@@ -77,6 +77,7 @@ export default {
                     this.pages = response.data.count;
                 })
                 .catch((err) => {
+
                     this.$blockUI.Stop();
                     console.error(err);
                     this.pages = 0;

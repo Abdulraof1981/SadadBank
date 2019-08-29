@@ -1,5 +1,6 @@
 ﻿import addCashIn from './AddCashIn/AddCashIn.vue';
 import moment from 'moment';
+
 export default {
     name: 'CashIn',    
     created() {

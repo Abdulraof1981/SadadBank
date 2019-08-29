@@ -38,7 +38,7 @@
         },
 
         SelectBranch() {
-          //  debugger;
+
             let $blockUI = this.$loading({
                 fullscreen: true,
                 text: 'loading ...'

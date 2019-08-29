@@ -40,6 +40,7 @@
     <None Remove="Content\icon.css" />
     <None Remove="Content\vendor.less" />
     <None Remove="Content\veustyles.less" />
+    <None Remove="webpack.config.vendor-css.js" />
     <!--<None Remove="webpack.config.vendor-css.js" />-->
     <None Remove="yarn.lock" />
     <None Remove="package-lock.json" />
