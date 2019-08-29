@@ -30,15 +30,10 @@ export default {
         return axios.post(`/Api/Admin/User/${Status}/${UserId}/Activate`);
     },
 
-
-
-
-
-
-
-
-
-
+    UserActions(CashInId) {
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
+        return axios.post(`/Api/Admin/User/${CashInId}/UserActions`);
+    },
 
     // **************************** Bank *****************************
     GetBank(pageNo, pageSize) {

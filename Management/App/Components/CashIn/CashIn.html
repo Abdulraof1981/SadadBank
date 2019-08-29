@@ -11,7 +11,7 @@
                         </div>
                         <h4 class="card-title">التعبئة النقدية</h4>
                     </div>
-     
+
                     <div class="headerCustom">
                         <div class="title">
 
@@ -37,7 +37,7 @@
                             </div>
                             <br />
                             <br />
-                          
+
                             <!--{{CashIn}}-->
                             <div class="row" v-if="CitizenInfo!=''">
                                 <div class="col-lg-8">
@@ -46,11 +46,11 @@
                                     <el-tag style="font-size: 21px;">الرقم الوطني :  {{CitizenInfo.nid}}</el-tag>
                                 </div>
                                 <!--<div class="col-lg-2">
-            <el-tag style="font-size: 21px;">الهاتف :  {{CitizenInfo.phone}}</el-tag>
-        </div>
-        <div class="col-lg-2">
-            <el-tag style="font-size: 21px;">الرقم الوطني :  {{CitizenInfo.nid}}</el-tag>
-        </div>-->
+                    <el-tag style="font-size: 21px;">الهاتف :  {{CitizenInfo.phone}}</el-tag>
+                </div>
+                <div class="col-lg-2">
+                    <el-tag style="font-size: 21px;">الرقم الوطني :  {{CitizenInfo.nid}}</el-tag>
+                </div>-->
                                 <div class="col-lg-4">
                                 </div>
 
@@ -59,7 +59,7 @@
                         </div>
                         <p class="category"></p>
                     </div>
-                   
+
                     <div style="padding-left:22px;margin-top: 6%;">
                         <!--view companet-->
                         <div style="margin: 35px;font-size: 35px;" v-if="CashIn==''">
@@ -67,6 +67,7 @@
                                       type="info">
                             </el-alert>
                         </div>
+     
 
                         <table id="customers" v-if="CashIn!=''">
                             <tr>
@@ -84,7 +85,6 @@
                                 <td style="text-align: center; vertical-align: middle;">{{c.valuedigits}}</td>
                                 <td style="text-align: center; vertical-align: middle;">{{c.numInvoiceDep}}</td>
                                 <td style="text-align: center; vertical-align: middle;">{{c.bank.name}} / {{c.branch.name}}</td>
-
                                 <td style="text-align: center; vertical-align: middle;">
                                     <span v-if="c.description==''">
                                         لا يوجد
@@ -100,18 +100,83 @@
                                     <el-tag v-if="c.status==2" type="success">تأكيد نهائي</el-tag>
                                     <el-tag v-if="c.status==0" type="danger">مرفوض</el-tag>
                                 </td>
-                                <td style="text-align: center; vertical-align: middle;"><a href="#" @click.prevent="RejectCashIn(c.cashInId)"><i class="fa fa-remove"></i></a></td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <a href="#" @click.prevent="RejectCashIn(c.cashInId)"><i class="fa fa-remove"></i></a>
+                                    <a href="#" @click.prevent="ShowLogs(c.cashInId)"><i class="fa fa-archive"></i></a>
+                                </td>
                             </tr>
                         </table>
                     </div>
-                 <div style="text-align: center;padding-bottom:11px;padding-top:20px;">
+                    <el-dialog title="الحركات النقدية للمستخدمين" :visible.sync="dialogTableVisible" :modalAppendToBody="false">
+                
+                        <table id="customers" v-if="CashIn!=''" style="margin-right: 6px;
+">
+                            <tr>
+                                <th style="text-align: center; vertical-align: middle;background-color: #ff594d;">اسم ألمستخدم</th>
+                                <th style="text-align: center; vertical-align: middle;background-color: #ff594d;">صلاحية المستخدم</th>
+                                <th style="text-align: center; vertical-align: middle;background-color: #ff594d;">الفرع/المصرف</th>
+                                <th style="text-align: center; vertical-align: middle;background-color: #ff594d;">معلومات عن الحركة</th>
+
+
+                                <th style="text-align: center; vertical-align: middle;background-color: #ff594d;">القيمة</th>
+                                <th style="text-align: center; vertical-align: middle;background-color: #ff594d;">تاريخ العملية</th>
+
+
+                            </tr>
+                            <tr v-for="L in Logs">
+                                <td style="text-align: center; vertical-align: middle;">{{L.fullName}}</td>
+                                <td style="text-align: center; vertical-align: middle;">
+
+                                    <span v-if="L.userType==1">
+                                        مدير النظام
+                                    </span>
+                                    <span v-if="L.userType==2">
+                                        مدير المصرف
+                                    </span>
+                                    <span v-if="L.userType==3">
+                                        موظف المصرف
+                                    </span>
+
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;">{{L.bankName}} / {{L.branchName}}</td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <span v-if="L.description==''">
+                                        لا يوجد
+                                    </span>
+                                    <span v-if="L.description!=''">
+                                        {{L.description}}
+                                    </span>
+                                </td>
+
+                                <td style="text-align: center; vertical-align: middle;">{{L.valuedigits}}</td>
+                                <td style="text-align: center; vertical-align: middle;">{{L.actionDate | moment}}</td>
+                                <!--<td style="text-align: center; vertical-align: middle;">
+
+        <el-tag v-if="c.status==1" type="warning">تأكيد مبدئي</el-tag>
+        <el-tag v-if="c.status==2" type="success">تأكيد نهائي</el-tag>
+        <el-tag v-if="c.status==0" type="danger">مرفوض</el-tag>
+    </td>-->
+                                <!--<td style="text-align: center; vertical-align: middle;">
+        <a href="#" @click.prevent="RejectCashIn(c.cashInId)"><i class="fa fa-remove"></i></a>
+        <a href="#" @click.prevent="ShowLogs(c.cashInId)"><i class="fa fa-archive"></i></a>
+    </td>-->
+                            </tr>
+                        </table>
+                        <!--<el-table :data="gridData">
+        <el-table-column property="date" label="Date" width="150"></el-table-column>
+        <el-table-column property="name" label="Name" width="200"></el-table-column>
+        <el-table-column property="address" label="Address"></el-table-column>
+    </el-table>-->
+                    </el-dialog>
+
+                    <div style="text-align: center;padding-bottom:11px;padding-top:20px;">
                         <!--<el-pagination background
-                                       layout="prev, pager, next"
-                                       :current-page="pageNo"
-                                       :page-size="pageSize"
-                                       :total="pages"
-                                       @current-change="GetBank($event)">
-                        </el-pagination>-->
+                       layout="prev, pager, next"
+                       :current-page="pageNo"
+                       :page-size="pageSize"
+                       :total="pages"
+                       @current-change="GetBank($event)">
+        </el-pagination>-->
                     </div>
                 </div>
 

@@ -25,9 +25,11 @@ export default {
             Banks: [],
             state: 0,
             SearchSelect: '',
-            SearchText: '',
+            SearchText: '119830502922',
             CitizenInfo: '',
-            CashIn:''
+            CashIn: '',
+            Logs: [],
+            dialogTableVisible: false
 
           
         };
@@ -52,13 +54,35 @@ export default {
                     })
                     .catch((err) => {
                         this.$blockUI.Stop();
+                        this.$message({
+                            type: 'info',
+                            dangerouslyUseHTMLString: true,
+                            message: '<strong>' + err.response.data + '</strong>'
+                        });
                         console.error(err);
                         this.pages = 0;
                     });
-
-
             });
+        },
 
+        ShowLogs(CashInId) {
+            this.dialogTableVisible = true;
+            this.$blockUI.Start();
+            this.$http.UserActions(CashInId)
+                .then(response => {
+                    this.$blockUI.Stop();
+                    this.Logs = response.data.logs;
+                })
+                .catch((err) => {
+                    this.$blockUI.Stop();
+                    console.error(err);
+                    this.$message({
+                        type: 'error',
+                        dangerouslyUseHTMLString: true,
+                        message: '<strong>' + err.response.data + '</strong>'
+                    });
+                    this.pages = 0;
+                });
         },
 
         Search() {

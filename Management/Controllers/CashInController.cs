@@ -208,7 +208,7 @@ namespace Management.Controllers
                     if (CashInData == null)
                     {
                         transaction.Rollback();
-                        return NotFound("خــطأ : العملية النقدية غير موجوده");
+                        return NotFound("!خــطأ : العملية النقدية غير موجوده او مرفوضه مسبقا");
                     }
 
                     CashInData.Status = 0;

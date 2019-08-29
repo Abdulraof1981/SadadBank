@@ -338,6 +338,32 @@ namespace Management.Controllers
         }
 
 
+        [HttpPost("{CashInId}/UserActions")]
+        public IActionResult UserActions(long CashInId)
+        {
+            try
+            {
+                var userId = this.help.GetCurrentUser(HttpContext);
+                if (userId <= 0)
+                {
+                    return StatusCode(401, "الرجاء الـتأكد من أنك قمت بتسجيل الدخول");
+                }
+
+                var Users = (from p in db.BanksysBankActions
+                              where p.CashInId == CashInId
+                              select p).Select(x=> new { x.UserType,x.ActionDate,x.User.FullName,x.User.LoginName,x.CashIn.Valuedigits,x.Description,BranchName=x.Branch.Name,BankName=x.Branch.Bank.Name}).ToList();
+
+                db.SaveChanges();
+                return Ok(new { Logs = Users });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+
+
         [HttpPost("{Status}/{UserId}/Activate")]
         public IActionResult ActivateUser(short Status, long UserId)
         {
@@ -350,9 +376,9 @@ namespace Management.Controllers
                 }
 
                 var Users = (from p in db.BanksysUsers
-                              where p.UserId == UserId
-                              && (p.Status!=9)
-                              select p).SingleOrDefault();
+                             where p.UserId == UserId
+                             && (p.Status != 9)
+                             select p).SingleOrDefault();
 
                 if (Users == null)
                 {
@@ -370,7 +396,6 @@ namespace Management.Controllers
                 return StatusCode(500, e.Message);
             }
         }
-
 
 
 
