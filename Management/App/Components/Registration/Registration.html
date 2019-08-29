@@ -48,7 +48,7 @@
                                 <th style="text-align: center; vertical-align: middle;">الهاتف</th>
                                 <th style="text-align: center; vertical-align: middle;">تاريخ الانشاء</th>
                                 <th style="text-align: center; vertical-align: middle;">الحالة</th>
-                                <th style="text-align: center; vertical-align: middle;">المزيد</th>
+                                <th style="text-align: center; vertical-align: middle;">معلومات</th>
                                 <th style="text-align: center; vertical-align: middle;">عمليات</th>
                             </tr>
 
@@ -58,12 +58,54 @@
                                 <td style="text-align: center; vertical-align: middle;">{{b.nid}}</td>
                                 <td style="text-align: center; vertical-align: middle;">{{b.phone}}</td>
                                 <td style="text-align: center; vertical-align: middle;">{{b.lastModifiedOn | moment2}}</td>
-                                <td v-if="b.status == 0" style="text-align: center; background-color:red; vertical-align: middle;">{{ "مرفوض" }}</td>
-                                <td v-if="b.status == 2" style="text-align: center; background-color:yellow; vertical-align: middle;">{{ "تأكيد مبدئي" }}</td>
-                                <td v-if="b.status == 3" style="text-align: center; background-color:green; vertical-align: middle;">{{ "تأكيد نهائي" }}</td>
-                                <td v-if="b.status == 5" style="text-align: center; background-color:cyan; vertical-align: middle;">{{ "خطأ mPay" }}</td>
+                                
                                 <td style="text-align: center; vertical-align: middle;">
-                                    <a href="#" @click="showMore(b.allActions)"><i class="fa fa-history"></i> عرض المزيد </a>
+                                    <el-tag type="danger" v-if="b.status == 0">مرفوض</el-tag>
+                                    <el-tag v-if="b.status == 2">تأكيد مبدئي</el-tag>
+                                    <el-tag type="success" v-if="b.status == 3">تأكيد نهائي</el-tag>
+                                    <el-tag type="danger" v-if="b.status == 5">خطأ mPay</el-tag>
+                                </td>
+
+                                <td style="text-align: center; vertical-align: middle; ">
+                                    <el-popover placement="right"
+                                                width="600"
+                                                trigger="click">
+
+                                        <table id="AllActions" v-if="b.allActions!=0" dir="rtl">
+                                            <tr>
+                                                <th style="text-align: center; vertical-align: middle;background-color:orange!important"> تاريخ الحركة</th>
+                                                <th style="text-align: center; vertical-align: middle;background-color:orange!important"> نوع الحركة</th>
+                                                <th style="text-align: center; vertical-align: middle;background-color:orange!important">اسم الموظف </th>
+                                                <th style="text-align: center; vertical-align: middle;background-color:orange!important">المصرف</th>
+                                                <th style="text-align: center; vertical-align: middle;background-color:orange!important">الصفة</th>
+
+                                            </tr>
+                                            <tr v-for="u in b.allActions">
+                                                <td style="text-align: center; vertical-align: middle;">
+                                                    {{u.actionDate}}
+                                                </td>
+                                                <td style="text-align: center; vertical-align: middle;">
+                                                    <el-tag type="danger" v-if="u.actionType == 0">مرفوض</el-tag>
+                                                    <el-tag v-if="u.actionType == 1">تأكيد مبدئي</el-tag>
+                                                    <el-tag type="success" v-if="u.actionType == 2">تأكيد نهائي</el-tag>
+                                                    <el-tag type="danger" v-if="u.actionType == 5">خطأ mPay</el-tag>
+                                                </td>
+                                                <td style="text-align: center; vertical-align: middle;">
+                                                    {{u.userFullName}}
+                                                </td>
+                                                <td style="text-align: center; vertical-align: middle;">
+                                                    {{u.bankName + " / " + u.branchName}}
+                                                </td>
+                                                <td style="text-align: center; vertical-align: middle;">
+                                                    <el-tag v-if="u.userType == 1">موظف</el-tag>
+                                                    <el-tag type="success" v-if="u.userType == 2">مدير مصرف</el-tag>
+                                                    <el-tag type="danger" v-if="u.userType == 3">مدير النظام</el-tag>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <el-button slot="reference" style="border:unset;background:unset"><i class="fa fa-info-circle"></i></el-button>
+                                    </el-popover>
                                 </td>
                                 <td style="text-align: center; vertical-align: middle;">
                                     <a v-if="b.status == 2 && (userType == 2 || userType == 3)" href="#" @click.prevent="RejectCustomer(b.bankActionId)"><i class="fa fa-remove"></i> رفض </a><br>
@@ -81,17 +123,7 @@
                                        @current-change="GetCustomers($event)">
                         </el-pagination>
                     </div>
-
-                    <el-dialog style="width:1900px" title="الحركات" :visible.sync="dialogTableVisible">
-                        <el-table :data="gridData" style="width:700px">
-                            <el-table-column  property="actionDate" label="تاريخ الحركة" width="150"></el-table-column>
-                            <el-table-column style="text-align:right;" property="actionType" label="نوع الحركة" width="150"></el-table-column>
-                            <el-table-column style="text-align:right;" property="userFullName" label="اسم الموظف" width="150"></el-table-column>
-                            <el-table-column style="text-align:right;" property="bankName" label="اسم المصرف" width="150"></el-table-column>
-                            <el-table-column style="text-align:right;" property="branchName" label="اسم الفرع" width="150"></el-table-column>
-                        </el-table>
-                    </el-dialog>
-                </div>
+                 </div>
             </div>
         </div>
     </div>

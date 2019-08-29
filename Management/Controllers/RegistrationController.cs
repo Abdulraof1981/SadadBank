@@ -71,7 +71,8 @@ namespace Management.Controllers
                                                     BranchName = a.Branch.Name,
                                                     BankName = a.Branch.Bank.Name,
                                                     ActionDate = a.ActionDate.ToString("dd'/'MM'/'yyyy hh:mm:ss"),
-                                                    ActionType = ((a.ActionType == 1)? ("إنشاء زبون") : ((a.ActionType == 2)? "تأكيد نهائي" : "رفض"))
+                                                    a.ActionType,
+                                                    a.UserType,
                                                 }).ToList(),
 
                                         rec.PersonalInfo.Status,
@@ -109,7 +110,8 @@ namespace Management.Controllers
                                                           BranchName = a.Branch.Name,
                                                           BankName = a.Branch.Bank.Name,
                                                           ActionDate = a.ActionDate.ToString("dd'/'MM'/'yyyy hh:mm:ss"),
-                                                          ActionType = ((a.ActionType == 1) ? ("إنشاء زبون") : ((a.ActionType == 2) ? "تأكيد نهائي" : "رفض"))
+                                                          a.ActionType,
+                                                          a.UserType,
                                                       }).ToList(),
 
                                         rec.PersonalInfo.Status,
@@ -144,7 +146,8 @@ namespace Management.Controllers
                                                           BranchName = a.Branch.Name,
                                                           BankName = a.Branch.Bank.Name,
                                                           ActionDate = a.ActionDate.ToString("dd'/'MM'/'yyyy hh:mm:ss"),
-                                                          ActionType = ((a.ActionType == 1) ? ("إنشاء زبون") : ((a.ActionType == 2) ? "تأكيد نهائي" : "رفض"))
+                                                          a.ActionType,
+                                                          a.UserType,
                                                       }).ToList(),
 
                                         rec.PersonalInfo.Status,

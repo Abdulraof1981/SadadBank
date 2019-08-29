@@ -33,19 +33,10 @@ export default {
             Customers: [],
             state: 0,
             Search: null,
-            userType: 0,
-            dialogTableVisible: false,
-            gridData: []
+            userType: 0
         };
     },
     methods: {
-
-        showMore(ob) {
-            this.gridData = ob;
-            this.dialogTableVisible = true;      
-            return true;
-        },
-
         GetCurrentUserType() {
             this.$http.GetCurrentUserType().then(response => {
                 this.userType = response.data.userType;
@@ -62,33 +53,33 @@ export default {
             }).then(() => {
                 this.$blockUI.Start();
                 this.$http.LastConfirm(BankActionId)
-                    .then(response => {
-                        this.$blockUI.Stop();
-                        this.GetCustomers(this.pageNo);
-                        if (response.data.code == 0) {
-                            this.$message({
-                                type: 'info',
-                                dangerouslyUseHTMLString: true,
-                                message: '<strong>' + response.data.message + '</strong>'
-                            });
-                        } else if (response.data.code == 1) {
-                            this.$message({
-                                type: 'info',
-                                dangerouslyUseHTMLString: true,
-                                message: '<strong> خطأ: ' + response.data.message + '</strong>'
-                            });
-                        } else {
-                            this.$message({
-                                type: 'error',
-                                dangerouslyUseHTMLString: true,
-                                message: '<strong>' + response.data.message + '</strong>'
-                            });
-                        }
-                    }).catch((err) => {
-                        this.$blockUI.Stop();
-                        console.error(err);
-                        this.pages = 0;
-                    });
+                .then(response => {
+                    this.$blockUI.Stop();
+                    this.GetCustomers(this.pageNo);
+                    if (response.data.code == 0) {
+                        this.$message({
+                            type: 'info',
+                            dangerouslyUseHTMLString: true,
+                            message: '<strong>' + response.data.message + '</strong>'
+                        });
+                    } else if (response.data.code == 1) {
+                        this.$message({
+                            type: 'info',
+                            dangerouslyUseHTMLString: true,
+                            message: '<strong> خطأ: ' + response.data.message + '</strong>'
+                        });
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            dangerouslyUseHTMLString: true,
+                            message: '<strong>' + response.data.message + '</strong>'
+                        });
+                    }
+                }).catch((err) => {
+                    this.$blockUI.Stop();
+                    console.error(err);
+                    this.pages = 0;
+                });
             });
         },
 
@@ -100,20 +91,20 @@ export default {
             }).then(() => {
                 this.$blockUI.Start();
                 this.$http.RejectCustomer(BankActionId)
-                    .then(response => {
-                        this.$blockUI.Stop();
-                        this.GetCustomers(this.pageNo);
-                        this.$message({
-                            type: 'info',
-                            dangerouslyUseHTMLString: true,
-                            message: '<strong>' + 'تم رفض الحركة بنجاح' + '</strong>'
-                        });
-                    })
-                    .catch((err) => {
-                        this.$blockUI.Stop();
-                        console.error(err);
-                        this.pages = 0;
+                .then(response => {
+                    this.$blockUI.Stop();
+                    this.GetCustomers(this.pageNo);
+                    this.$message({
+                        type: 'info',
+                        dangerouslyUseHTMLString: true,
+                        message: '<strong>' + 'تم رفض الحركة بنجاح' + '</strong>'
                     });
+                })
+                .catch((err) => {
+                    this.$blockUI.Stop();
+                    console.error(err);
+                    this.pages = 0;
+                });
             });
         },
         AddCustomers() {
@@ -129,9 +120,10 @@ export default {
             }
             this.$blockUI.Start();
             this.$http.GetCustomers(this.pageNo, this.pageSize, this.Search)
-            .then(response => {
+                .then(response => {
                 this.$blockUI.Stop();
                 this.Customers = response.data.customers;
+                console.log(this.Customers);
                 this.pages = response.data.count;
             })
             .catch((err) => {
