@@ -62,7 +62,7 @@ namespace Management.Controllers
                                         rec.PersonalInfo.BirthDate,
                                         rec.PersonalInfo.Nid,
                                         rec.PersonalInfo.Phone,
-                                        rec.PersonalInfo.LastModifiedOn,
+                                        LastModifiedOn = rec.PersonalInfo.LastModifiedOn.Value.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
 
                                         AllActions = (from a in db.BanksysBankActions where a.PersonalInfoId == rec.PersonalInfo.Id && (a.ActionType == 0 || a.ActionType == 1 || a.ActionType == 2)
                                                 select new
@@ -70,9 +70,10 @@ namespace Management.Controllers
                                                     UserFullName = a.User.FullName,
                                                     BranchName = a.Branch.Name,
                                                     BankName = a.Branch.Bank.Name,
-                                                    ActionDate = a.ActionDate.ToString("dd'/'MM'/'yyyy hh:mm:ss"),
+                                                    ActionDate = a.ActionDate.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
                                                     a.ActionType,
                                                     a.UserType,
+                                                    a.Description,
                                                 }).ToList(),
 
                                         rec.PersonalInfo.Status,
@@ -100,7 +101,7 @@ namespace Management.Controllers
                                         rec.PersonalInfo.BirthDate,
                                         rec.PersonalInfo.Nid,
                                         rec.PersonalInfo.Phone,
-                                        rec.PersonalInfo.LastModifiedOn,
+                                        LastModifiedOn = rec.PersonalInfo.LastModifiedOn.Value.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
 
                                         AllActions = (from a in db.BanksysBankActions
                                                       where a.PersonalInfoId == rec.PersonalInfo.Id && (a.ActionType == 0 || a.ActionType == 1 || a.ActionType == 2)
@@ -112,6 +113,7 @@ namespace Management.Controllers
                                                           ActionDate = a.ActionDate.ToString("dd'/'MM'/'yyyy hh:mm:ss"),
                                                           a.ActionType,
                                                           a.UserType,
+                                                          a.Description,
                                                       }).ToList(),
 
                                         rec.PersonalInfo.Status,
@@ -136,7 +138,7 @@ namespace Management.Controllers
                                         rec.PersonalInfo.BirthDate,
                                         rec.PersonalInfo.Nid,
                                         rec.PersonalInfo.Phone,
-                                        rec.PersonalInfo.LastModifiedOn,
+                                        LastModifiedOn = rec.PersonalInfo.LastModifiedOn.Value.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
 
                                         AllActions = (from a in db.BanksysBankActions
                                                       where a.PersonalInfoId == rec.PersonalInfo.Id && (a.ActionType == 0 || a.ActionType == 1 || a.ActionType == 2)
@@ -148,6 +150,7 @@ namespace Management.Controllers
                                                           ActionDate = a.ActionDate.ToString("dd'/'MM'/'yyyy hh:mm:ss"),
                                                           a.ActionType,
                                                           a.UserType,
+                                                          a.Description,
                                                       }).ToList(),
 
                                         rec.PersonalInfo.Status,
@@ -243,9 +246,7 @@ namespace Management.Controllers
                 db.PersonalInfo.Add(info);
 
                 db.SaveChanges();
-
                 
-
                 BanksysBankActions action = new BanksysBankActions();
                 action.ActionType = 1;
                 action.PersonalInfoId = info.Id;
@@ -253,6 +254,7 @@ namespace Management.Controllers
                 action.BranchId = this.help.GetCurrentBranche(HttpContext);
                 action.UserType = this.help.GetCurrentUserType(HttpContext);
                 action.CashInId = null;
+                action.Description = "تسجيل زبون - تأكيد مبدئي";
                 action.ActionDate = DateTime.Now;
                 db.BanksysBankActions.Add(action);
                 db.SaveChanges();
@@ -431,6 +433,7 @@ namespace Management.Controllers
                 action.BranchId = this.help.GetCurrentBranche(HttpContext);
                 action.UserType = this.help.GetCurrentUserType(HttpContext);
                 action.CashInId = null;
+                action.Description = "رفض عملية تسجيل زبون";
                 action.ActionDate = DateTime.Now;
                 db.BanksysBankActions.Add(action);
                 
@@ -489,6 +492,7 @@ namespace Management.Controllers
                     action.BranchId = this.help.GetCurrentBranche(HttpContext);
                     action.UserType = this.help.GetCurrentUserType(HttpContext);
                     action.CashInId = null;
+                    action.Description = "تسجيل زبون - تأكيد نهائي";
                     action.ActionDate = DateTime.Now;
                     db.BanksysBankActions.Add(action);
                     
@@ -497,7 +501,7 @@ namespace Management.Controllers
                     return Json(new { code = 0 , message = "تم التسجيل بنجاح" });
                 }
                 else
-                {
+                { // Error in mPay response:
                     /*
                     bankAction.PersonalInfo.LastModifiedOn = DateTime.Now;
                     bankAction.PersonalInfo.LastModifiedBy = (int)userId;
@@ -505,9 +509,7 @@ namespace Management.Controllers
                     bankAction.p.ActionType = 5;
                     bankAction.p.Description = result.responseString;
                     db.SaveChanges();
-
-
-
+                    
                     bankAction.PersonalInfo.Status = 5;
                     bankAction.PersonalInfo.LastModifiedOn = DateTime.Now;
                     bankAction.PersonalInfo.LastModifiedBy = (int)userId;
