@@ -321,6 +321,8 @@ namespace Management.Controllers
                 var bankUser = (from rec in db.BanksysUsers
                                 where rec.UserId == userId
                                 select rec).SingleOrDefault();
+               // bankUser.
+
                 return Json(new { userType = bankUser.UserType });
 
             }
