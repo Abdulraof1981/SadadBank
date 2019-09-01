@@ -175,7 +175,7 @@
                 this.$message({
                     type: 'info',
                     dangerouslyUseHTMLString: true,
-                    message: '<strong>' + 'رقم الهاتف غير صحيح الرجاء المحاولة مرة أخرى' + '</strong>'
+                    message: '<strong>' + 'رقم الهاتف غير صحيح الرجاء المحاولة مرة أخرى 91XXXXXXXX' + '</strong>'
                 });
                 return;
             }
