@@ -38,10 +38,9 @@
                                 <th style="text-align: center; vertical-align: middle;">تاريخ الميلاد</th>
                                 <th style="text-align: center; vertical-align: middle;">الرقم الوطني</th>
                                 <th style="text-align: center; vertical-align: middle;">الهاتف</th>
-                                <th style="text-align: center; vertical-align: middle;">تاريخ الانشاء</th>
+                                <th style="text-align: center; vertical-align: middle;">تاريخ آخر تعديل</th>
                                 <th style="text-align: center; vertical-align: middle;">الحالة</th>
-                                <th style="text-align: center; vertical-align: middle;">معلومات</th>
-                                <th style="text-align: center; vertical-align: middle;">عمليات</th>
+                                <th style="text-align: center; vertical-align: middle;">العمليات</th>
                             </tr>
 
                             <tr v-for="b in Customers">
@@ -49,7 +48,7 @@
                                 <td style="text-align: center; vertical-align: middle;">{{b.birthDate | moment}}</td>
                                 <td style="text-align: center; vertical-align: middle;">{{b.nid}}</td>
                                 <td style="text-align: center; vertical-align: middle;">{{b.phone}}</td>
-                                <td style="text-align: center; vertical-align: middle;">{{b.lastModifiedOn | moment2}}</td>
+                                <td style="text-align: center; vertical-align: middle;">{{b.lastModifiedOn}}</td>
 
                                 <td style="text-align: center; vertical-align: middle;">
                                     <el-tag type="danger" v-if="b.status == 0">مرفوض</el-tag>
@@ -64,21 +63,18 @@
 
                                         <table id="customers" v-if="b.allActions!=0" dir="rtl">
                                             <tr>
-                                                <th style="text-align: center; vertical-align: middle;background-color:orange!important"> تاريخ الحركة</th>
-                                                <th style="text-align: center; vertical-align: middle;background-color:orange!important"> نوع الحركة</th>
-                                                <th style="text-align: center; vertical-align: middle;background-color:orange!important">اسم الموظف </th>
-                                                <th style="text-align: center; vertical-align: middle;background-color:orange!important">المصرف</th>
-                                                <th style="text-align: center; vertical-align: middle;background-color:orange!important">الصفة</th>
+                                                <th style="text-align: center; vertical-align: middle; background-color: rgb(255, 89, 77);"> تاريخ الحركة</th>
+                                                <th style="text-align: center; vertical-align: middle; background-color: rgb(255, 89, 77);"> معلومات عن الحركة</th>
+                                                <th style="text-align: center; vertical-align: middle; background-color: rgb(255, 89, 77);">اسم الموظف </th>
+                                                <th style="text-align: center; vertical-align: middle; background-color: rgb(255, 89, 77);">المصرف</th>
+                                                <th style="text-align: center; vertical-align: middle; background-color: rgb(255, 89, 77);">الصفة</th>
                                             </tr>
                                             <tr v-for="u in b.allActions">
                                                 <td style="text-align: center; vertical-align: middle;">
                                                     {{u.actionDate}}
                                                 </td>
                                                 <td style="text-align: center; vertical-align: middle;">
-                                                    <el-tag type="danger" v-if="u.actionType == 0">مرفوض</el-tag>
-                                                    <el-tag v-if="u.actionType == 1">تأكيد مبدئي</el-tag>
-                                                    <el-tag type="success" v-if="u.actionType == 2">تأكيد نهائي</el-tag>
-                                                    <el-tag type="danger" v-if="u.actionType == 5">خطأ mPay</el-tag>
+                                                    {{u.description}}
                                                 </td>
                                                 <td style="text-align: center; vertical-align: middle;">
                                                     {{u.userFullName}}
@@ -96,12 +92,10 @@
 
                                         <el-button slot="reference" style="border:unset;background:unset"><i class="fa fa-info-circle"></i></el-button>
                                     </el-popover>
+                                    <a title="رفض" v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rm == 1)" href="#" @click.prevent="RejectCustomer(b.bankActionId)"><i class="fa fa-remove"></i></a>
+                                    <a title="تأكيد نهائي" v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rm == 1)" href="#" @click.prevent="LastConfirm(b.bankActionId)"><i class="fa fa-save"></i></a>
                                 </td>
 
-                                <td style="text-align: center; vertical-align: middle;">
-                                    <a v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rm == 1)" href="#" @click.prevent="RejectCustomer(b.bankActionId)"><i class="fa fa-remove"></i> رفض </a><br>
-                                    <a v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rm == 1)" href="#" @click.prevent="LastConfirm(b.bankActionId)"><i class="fa fa-save"></i> تأكيد نهائي </a>
-                                </td>
                             </tr>
                         </table>
                     </div>

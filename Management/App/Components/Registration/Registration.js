@@ -68,7 +68,7 @@ export default {
                         this.$message({
                             type: 'info',
                             dangerouslyUseHTMLString: true,
-                            message: '<strong> خطأ: ' + response.data.message + '</strong>'
+                            message: '<strong> Warning: ' + response.data.message + '</strong>'
                         });
                     } else {
                         this.$message({
