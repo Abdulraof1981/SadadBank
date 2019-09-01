@@ -57,6 +57,10 @@ namespace Management
             var policy = new AuthorizationPolicyBuilder()
                        .RequireAuthenticatedUser()
                        .Build();
+            services.Configure<Models.settings>(Configuration.GetSection("settings"));
+            services.Configure<Models.MPay>(Configuration.GetSection("MPayObject"));
+            services.Configure<Models.MpayCashIn>(Configuration.GetSection("MpayCashIn"));
+
 
             services.AddMvc(opt =>
             {

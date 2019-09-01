@@ -92,6 +92,10 @@ export default {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
         return axios.get(`/Api/Admin/CashIn/Get?pageno=${pageNo}&pagesize=${pageSize}`);
     },
+    LastConfirmCashIn(CashInId) {
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
+        return axios.post(`/Api/Admin/CashIn/${CashInId}/Confirm`);
+    },
 
    
 

@@ -44,6 +44,38 @@ export default {
         };
     },
     methods: {
+        LastConfirm(CashInId) {
+            //LastConfirm
+            this.$confirm('سيؤدي ذلك إلى التأكيد النهائي للعملية. استمر؟', 'تـحذير', {
+                confirmButtonText: 'نـعم',
+                cancelButtonText: 'لا',
+                type: 'warning'
+            }).then(() => {
+                this.$http.LastConfirmCashIn(CashInId)
+                    .then(response => {
+                        this.$blockUI.Stop();
+                        this.refreshOrGet();
+                        this.$message({
+                            type: 'info',
+                            dangerouslyUseHTMLString: true,
+                            message: '<strong>' + 'تم التأكيد النهائي للعملية' + '</strong>'
+                        });
+                    })
+                    .catch((err) => {
+                        this.$blockUI.Stop();
+                        this.$message({
+                            type: 'info',
+                            dangerouslyUseHTMLString: true,
+                            message: '<strong>' + err.response.data + '</strong>'
+                        });
+                        console.error(err);
+                        this.pages = 0;
+                    });
+            });
+
+        },
+
+
         Refresh() {
             this.CitizenInfo = '';
             this.SerachText = '';
