@@ -13,6 +13,7 @@ import User from './Components/User/User.vue';
 import CashIn from './Components/CashIn/CashIn.vue';
 
 import Registration from './Components/Registration/Registration.vue';
+import CashInChecker from './Components/CashInChecker/CashInChecker.vue';
 
 import DataService from './Shared/DataService';
 import messages from './i18n';
@@ -47,8 +48,8 @@ const router = new VueRouter({
         { path: '/Branch', component: Branch }, 
         { path: '/User', component: User }, 
         { path: '/CashIn', component: CashIn },
-
         { path: '/Registration', component: Registration },
+        { path: '/CashInChecker', component: CashInChecker }
         ]
 
 });

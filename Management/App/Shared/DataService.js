@@ -88,6 +88,11 @@ export default {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
         return axios.post(`/Api/Admin/CashIn/${CashInId}/delete`);
     },
+    GetCashIn(pageNo, pageSize) {
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
+        return axios.get(`/Api/Admin/CashIn/Get?pageno=${pageNo}&pagesize=${pageSize}`);
+    },
+
    
 
 
@@ -125,6 +130,10 @@ export default {
     AddCustomer(ob) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
         return axios.post(`/Api/Admin/Registration/Add`, ob);
-    }
+    },
+
+    // ********************************** CashIn **************************************
+
+
 
 }

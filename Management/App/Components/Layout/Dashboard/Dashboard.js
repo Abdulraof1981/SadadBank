@@ -34,7 +34,7 @@
                 this.active = 7;
             } else if (route =="CashIn") { 
                 this.active = 5;
-            } else if (route == "Courses") { 
+            } else if (route == "CashInChecker") { 
                 this.active = 6;
             } else {
                 this.active = 1;

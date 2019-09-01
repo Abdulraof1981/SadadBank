@@ -99,14 +99,35 @@ namespace Management.Controllers
                 dynamic CashIn = null;
                 if (UserType==1)
                 {
-                     CashIn = db.BanksysBankActions.Where(x => x.PersonalInfoId == PersonalInfoList.Id && x.CashIn.DepositType == 3 && x.CashIn.Refrence == 3 && x.ActionType==3).Select(t => new { t.CashIn.Valuedigits,t.CashIn.NumInvoiceDep,t.CashInId,t.CashIn.Description,t.Branch,t.Branch.Bank,t.CashIn.Status,t.ActionDate}).ToList();
+                     CashIn = db.BanksysBankActions.Where(x => x.CashIn.Personal.Id == PersonalInfoList.Id && x.CashIn.DepositType == 3 && x.CashIn.Refrence == 3 && x.ActionType==3).Select(t => new { t.CashIn.Valuedigits,t.CashIn.NumInvoiceDep,t.CashInId,t.CashIn.Description,t.Branch,t.Branch.Bank,t.CashIn.Status,t.ActionDate,
+                         FName = t.CashIn.Personal.Name,
+                         t.CashIn.Personal.FatherName,
+                         t.CashIn.Personal.SurName,
+                         t.CashIn.Personal.GrandName,
+                         t.CashIn.Personal.Nid,
+                         t.CashIn.Personal.Phone
+                     }).OrderByDescending(x => x.ActionDate).ToList();
                 } else if (UserType == 2)
                 {
-                    CashIn = db.BanksysBankActions.Where(x => x.Branch.BankId == BankId && x.ActionType == 3).Select(t => new { t.CashIn.Valuedigits, t.CashIn.NumInvoiceDep, t.CashInId, t.CashIn.Description, t.Branch, t.Branch.Bank, t.CashIn.Status, t.ActionDate }).ToList();
+                    CashIn = db.BanksysBankActions.Where(x => x.CashIn.Personal.Id == PersonalInfoList.Id &&  x.CashIn.DepositType == 3 && x.CashIn.Refrence == 3 && x.Branch.BankId == BankId && x.ActionType == 3).Select(t => new { t.CashIn.Valuedigits, t.CashIn.NumInvoiceDep, t.CashInId, t.CashIn.Description, t.Branch, t.Branch.Bank, t.CashIn.Status, t.ActionDate,
+                        FName = t.CashIn.Personal.Name,
+                        t.CashIn.Personal.FatherName,
+                        t.CashIn.Personal.SurName,
+                        t.CashIn.Personal.GrandName,
+                        t.CashIn.Personal.Nid,
+                        t.CashIn.Personal.Phone
+                    }).OrderByDescending(x => x.ActionDate).ToList();
                 }
                 else
                 {
-                     CashIn = db.BanksysBankActions.Where(x=>x.BranchId == BranchId && x.ActionType == 3).Select(t => new { t.CashIn.Valuedigits, t.CashIn.NumInvoiceDep, t.CashInId, t.CashIn.Description, t.Branch, t.Branch.Bank, t.CashIn.Status, t.ActionDate }).ToList();
+                     CashIn = db.BanksysBankActions.Where(x=> x.CashIn.Personal.Id == PersonalInfoList.Id && x.CashIn.DepositType == 3 && x.CashIn.Refrence == 3 && x.BranchId == BranchId && x.ActionType == 3).Select(t => new { t.CashIn.Valuedigits, t.CashIn.NumInvoiceDep, t.CashInId, t.CashIn.Description, t.Branch, t.Branch.Bank, t.CashIn.Status, t.ActionDate,
+                         FName = t.CashIn.Personal.Name,
+                         t.CashIn.Personal.FatherName,
+                         t.CashIn.Personal.SurName,
+                         t.CashIn.Personal.GrandName,
+                         t.CashIn.Personal.Nid,
+                         t.CashIn.Personal.Phone
+                     }).OrderByDescending(x=>x.ActionDate).ToList();
                 }
               
                 return Ok(new { PersonalInfo = PersonalInfoList, CashIn = CashIn });
@@ -116,6 +137,78 @@ namespace Management.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
+
+
+
+        [HttpGet("Get")]
+        public IActionResult Get(int pageNo, int pageSize)
+        {
+            try
+            {
+                var BranchId = this.help.GetCurrentBranche(HttpContext);
+
+                var BankId = db.BanksysBranch.Where(u => u.BranchId == BranchId).Single().BankId;
+                IQueryable<BanksysBankActions> BankActionsQuery;
+
+                var UserType = this.help.GetCurrentUserType(HttpContext);
+                // admin see every thing
+
+                if (UserType == 1)
+                {
+                    BankActionsQuery = from t in db.BanksysBankActions
+                                     where  t.ActionType == 3
+                                       select t;
+                }
+                else if (UserType == 2)
+                {
+                    BankActionsQuery = from t in db.BanksysBankActions
+                                       where t.Branch.BankId == BankId && t.ActionType == 3
+                                       select t;
+                }   
+                 else
+                {
+                    BankActionsQuery = from t in db.BanksysBankActions
+                                       where  t.BranchId == BranchId && t.ActionType == 3
+                                       select t;
+                }
+                  
+
+                var CashInCount = (from t in BankActionsQuery
+                                 select t).Count();
+
+                var CashInList = (from t in BankActionsQuery
+                                orderby t.ActionDate descending
+                                select new
+                                {
+                                    t.CashIn.Valuedigits,
+                                    t.CashIn.NumInvoiceDep,
+                                    t.CashInId,
+                                    t.CashIn.Description,
+                                    t.Branch,
+                                    t.Branch.Bank,
+                                    t.CashIn.Status,
+                                    t.ActionDate,
+                                    FName = t.CashIn.Personal.Name,
+                                    t.CashIn.Personal.FatherName,
+                                    t.CashIn.Personal.SurName,
+                                    t.CashIn.Personal.GrandName,
+                                    t.CashIn.Personal.Nid,
+                                    t.CashIn.Personal.Phone
+                                }).Skip((pageNo - 1) * pageSize).Take(pageSize).ToList();
+
+                return Ok(new { CashIn = CashInList, count = CashInCount });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+
+
+
 
 
 

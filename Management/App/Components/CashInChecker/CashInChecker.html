@@ -9,7 +9,7 @@
                         <div class="card-icon">
                             <i class="fa fa-bars" aria-hidden="true" style="color:white;"></i>
                         </div>
-                        <h4 class="card-title" style="font-weight:bold;">  الـتعبئة النقديــة ( مبدئي )</h4>
+                        <h4 class="card-title" style="font-weight:bold;">التعبئة النقدية ( نهائي )</h4>
                     </div>
 
                     <div class="headerCustom">
@@ -33,13 +33,13 @@
                                     <el-button type="success" icon="el-icon-refresh" @click.pervent="Refresh()" v-if="SearchSelect!=''"></el-button>
                                 </div>
                                 <div class="col-lg-4">
-                                    <el-button type="primary" @click.prevent="AddCashIn()" v-if="CitizenInfo!=''">تعبئة المحفظه</el-button>
+                                    <!--<el-button type="primary" @click.prevent="AddCashIn()" v-if="CitizenInfo!=''">تعبئة المحفظه</el-button>-->
                                 </div>
                             </div>
                             <br />
                             <br />
 
-                            <!--{{CashIn}}-->
+
                             <div class="row" v-if="CitizenInfo!=''">
                                 <div class="col-lg-8">
                                     <el-tag style="font-size: 21px;">الاسم : {{CitizenInfo.name}} {{CitizenInfo.fatherName}} {{CitizenInfo.grandName}} {{CitizenInfo.surName}}</el-tag>
@@ -60,7 +60,7 @@
                         </div>
                         <p class="category"></p>
                     </div>
-
+                  
                     <div style="padding-left:22px;margin-top: 6%;">
                         <!--view companet-->
 
@@ -82,6 +82,9 @@
                         </div>
                         <table id="customers" v-if="CashIn!=''">
                             <tr>
+                                <th style="text-align: center; vertical-align: middle;">الاسم</th>
+                                <th style="text-align: center; vertical-align: middle;">الرقم الوطني</th>
+                                <th style="text-align: center; vertical-align: middle;">رقم الهاتف</th>
                                 <th style="text-align: center; vertical-align: middle;">القيمة</th>
 
                                 <th style="text-align: center; vertical-align: middle;">رقم إيصال الإيداع</th>
@@ -93,6 +96,9 @@
                                 <th style="text-align: center; vertical-align: middle;">العمليات</th>
                             </tr>
                             <tr v-for="c in CashIn">
+                                <td style="text-align: center; vertical-align: middle;">{{c.fName}} {{c.fatherName}} {{c.grandName}} {{c.surName}}</td>
+                                <td style="text-align: center; vertical-align: middle;">{{c.nid}}</td>
+                                <td style="text-align: center; vertical-align: middle;">{{c.phone}}</td>
                                 <td style="text-align: center; vertical-align: middle;">{{c.valuedigits}}</td>
                                 <td style="text-align: center; vertical-align: middle;">{{c.numInvoiceDep}}</td>
                                 <td style="text-align: center; vertical-align: middle;">{{c.bank.name}} / {{c.branch.name}}</td>
@@ -119,7 +125,7 @@
                         </table>
                     </div>
                     <el-dialog title="الحركات النقدية للمستخدمين" :visible.sync="dialogTableVisible" :modalAppendToBody="false">
-                
+
                         <table id="customers" v-if="CashIn!=''" style="margin-right: 6px;
 ">
                             <tr>
@@ -163,31 +169,31 @@
                                 <td style="text-align: center; vertical-align: middle;">{{L.actionDate | moment}}</td>
                                 <!--<td style="text-align: center; vertical-align: middle;">
 
-        <el-tag v-if="c.status==1" type="warning">تأكيد مبدئي</el-tag>
-        <el-tag v-if="c.status==2" type="success">تأكيد نهائي</el-tag>
-        <el-tag v-if="c.status==0" type="danger">مرفوض</el-tag>
-    </td>-->
+                    <el-tag v-if="c.status==1" type="warning">تأكيد مبدئي</el-tag>
+                    <el-tag v-if="c.status==2" type="success">تأكيد نهائي</el-tag>
+                    <el-tag v-if="c.status==0" type="danger">مرفوض</el-tag>
+                </td>-->
                                 <!--<td style="text-align: center; vertical-align: middle;">
-        <a href="#" @click.prevent="RejectCashIn(c.cashInId)"><i class="fa fa-remove"></i></a>
-        <a href="#" @click.prevent="ShowLogs(c.cashInId)"><i class="fa fa-archive"></i></a>
-    </td>-->
+                    <a href="#" @click.prevent="RejectCashIn(c.cashInId)"><i class="fa fa-remove"></i></a>
+                    <a href="#" @click.prevent="ShowLogs(c.cashInId)"><i class="fa fa-archive"></i></a>
+                </td>-->
                             </tr>
                         </table>
                         <!--<el-table :data="gridData">
-        <el-table-column property="date" label="Date" width="150"></el-table-column>
-        <el-table-column property="name" label="Name" width="200"></el-table-column>
-        <el-table-column property="address" label="Address"></el-table-column>
-    </el-table>-->
+            <el-table-column property="date" label="Date" width="150"></el-table-column>
+            <el-table-column property="name" label="Name" width="200"></el-table-column>
+            <el-table-column property="address" label="Address"></el-table-column>
+        </el-table>-->
                     </el-dialog>
 
                     <div style="text-align: center;padding-bottom:11px;padding-top:20px;">
-                        <!--<el-pagination background
+                        <el-pagination background
                        layout="prev, pager, next"
                        :current-page="pageNo"
                        :page-size="pageSize"
                        :total="pages"
-                       @current-change="GetBank($event)">
-        </el-pagination>-->
+                       @current-change="GetCashIn($event)">
+        </el-pagination>
                     </div>
                 </div>
 

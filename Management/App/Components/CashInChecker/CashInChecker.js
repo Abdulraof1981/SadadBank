@@ -1,4 +1,4 @@
-﻿import addCashIn from './AddCashIn/AddCashIn.vue';
+﻿
 import moment from 'moment';
 
 export default {
@@ -9,16 +9,13 @@ export default {
         this.loginDetails = JSON.parse(loginDetails);
         if (loginDetails != null) {
             this.loginDetails = JSON.parse(loginDetails);
-            if (this.loginDetails.userType == 5) {
-                this.ColorCode = '#933c3c';
-            }
+     
         } else {
             window.location.href = '/Security/Login';
         }
+        this.GetCashIn(this.pageNo);
     },
-    components: {
-        'add-CashIn': addCashIn,
-    },
+ 
     filters: {
         moment: function (date) {
             if (date === null) {
@@ -51,7 +48,8 @@ export default {
             this.CitizenInfo = '';
             this.SerachText = '';
             this.SearchSelect = '';
-            this.CashIn = '';
+           // this.CashIn = '';
+            this.GetCashIn(this.pageNo);
         },
 
         RejectCashIn(CashInId) {
@@ -64,7 +62,7 @@ export default {
                 this.$http.RemoveCashIn(CashInId)
                     .then(response => {
                         this.$blockUI.Stop();
-                        this.Search(this.pageNo);
+                        this.refreshOrGet();
                         this.$message({
                             type: 'info',
                             dangerouslyUseHTMLString: true,
@@ -102,6 +100,41 @@ export default {
                     });
                     this.pages = 0;
                 });
+        },
+
+
+        GetCashIn(pageNo) {
+            this.pageNo = pageNo;
+            if (this.pageNo === undefined) {
+                this.pageNo = 1;
+            }
+            this.$blockUI.Start();
+            this.$http.GetCashIn(this.pageNo,this.pageSize)
+                .then(response => {
+                    this.$blockUI.Stop();
+                  //  this.CitizenInfo = response.data.personalInfo;
+                    this.CashIn = response.data.cashIn;
+                    //this.Banks = response.data.banks;
+                    this.pages = response.data.count;
+                })
+                .catch((err) => {
+                    this.$blockUI.Stop();
+                    console.error(err);
+                    this.$message({
+                        type: 'error',
+                        dangerouslyUseHTMLString: true,
+                        message: '<strong>' + err.response.data + '</strong>'
+                    });
+                    this.pages = 0;
+                });
+        },
+
+        refreshOrGet() {
+            if (this.CitizenInfo == '') {
+                this.GetCashIn(this.pageNo);
+            } else {
+                this.Search();
+            }
         },
 
         Search() {
