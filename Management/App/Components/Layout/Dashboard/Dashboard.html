@@ -44,39 +44,39 @@
             </a>
         </li>
         <!--v-if="loginDetails.userType==1"-->
-        <li @click="active = 2" :class="{'active':2 == active}">
+        <li v-if="loginDetails.userType==1" @click="active = 2" :class="{'active':2 == active}">
             <a href="#" @click.prevent="href('/bank')">
                 <i class="pe-7s-culture"></i>
                 <p> المصـارف</p>
             </a>
         </li>
         <!--v-if="loginDetails.userType==1"-->
-        <li @click="active = 3" :class="{'active':3 == active}">
+        <li v-if="loginDetails.userType==1" @click="active = 3" :class="{'active':3 == active}">
             <a href="#" @click.prevent="href('/Branch')">
                 <i class="pe-7s-culture"></i>
                 <p> الفروع</p>
             </a>
         </li>
-        <li @click="active = 7" :class="{'active':7 == active}">
+        <li v-if="loginDetails.userType==1" @click="active = 7" :class="{'active':7 == active}">
             <a href="#" @click.prevent="href('/User')">
                 <i class="pe-7s-users"></i>
                 <p>المستخدمين</p>
             </a>
         </li>
 
-        <li @click="active = 4" :class="{'active':4 == active}">
+        <li  @click="active = 4" :class="{'active':4 == active}">
             <a href="#" @click.prevent="href('/Registration')">
                 <i class="pe-7s-server"></i>
                 <p>تسجيل زبون</p>
             </a>
         </li>
-        <li @click="active = 5" :class="{'active':5 == active}">
+        <li v-if="loginDetails.userType==1 || loginDetails.cc==1" @click="active = 5" :class="{'active':5 == active}">
             <a href="#" @click.prevent="href('/CashIn')">
                 <i class="pe-7s-notebook"></i>
                 <p>التعبئة النقدية (مبدئي)</p>
             </a>
         </li>
-        <li @click="active = 6" :class="{'active':6 == active}">
+        <li v-if="loginDetails.userType==1 || loginDetails.cm==1" @click="active = 6" :class="{'active':6 == active}">
             <a href="#" @click.prevent="href('/CashInChecker')">
                 <i class="pe-7s-notebook"></i>
                 <p>التعبئة النقدية (نهائي)</p>
