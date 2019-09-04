@@ -70,13 +70,13 @@
                 <p>تسجيل زبون</p>
             </a>
         </li>
-        <li v-if="loginDetails.userType==1 || loginDetails.cc==1" @click="active = 5" :class="{'active':5 == active}">
+        <li v-if="loginDetails.userType==1 || loginDetails.cm==1" @click="active = 5" :class="{'active':5 == active}">
             <a href="#" @click.prevent="href('/CashIn')">
                 <i class="pe-7s-notebook"></i>
                 <p>التعبئة النقدية (مبدئي)</p>
             </a>
         </li>
-        <li v-if="loginDetails.userType==1 || loginDetails.cm==1" @click="active = 6" :class="{'active':6 == active}">
+        <li v-if="loginDetails.userType==1 || loginDetails.cc==1" @click="active = 6" :class="{'active':6 == active}">
             <a href="#" @click.prevent="href('/CashInChecker')">
                 <i class="pe-7s-notebook"></i>
                 <p>التعبئة النقدية (نهائي)</p>
