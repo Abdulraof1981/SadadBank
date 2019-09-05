@@ -118,8 +118,9 @@
                                     <el-tag v-if="c.status==0" type="danger">مرفوض</el-tag>
                                 </td>
                                 <td style="text-align: center; vertical-align: middle;">
-                                    <a href="#" @click.prevent="RejectCashIn(c.cashInId)" title="رفض الحركة"><i class="fa fa-remove"></i></a>
-                                    <a href="#" @click.prevent="LastConfirm(c.cashInId)" title="تأكيد النهائي"><i class="fa fa-check"></i></a>
+                                  
+                                    <a v-if="loginDetails.userType!=1" href="#" @click.prevent="RejectCashIn(c.cashInId)" title="رفض الحركة"><i class="fa fa-remove"></i></a>
+                                    <a v-if="loginDetails.userType!=1" href="#" @click.prevent="LastConfirm(c.cashInId)" title="تأكيد النهائي"><i class="fa fa-check"></i></a>
                                     <a href="#" @click.prevent="ShowLogs(c.cashInId)" title="تقرير الحركات"><i class="fa fa-archive"></i></a>
                                 </td>
                             </tr>

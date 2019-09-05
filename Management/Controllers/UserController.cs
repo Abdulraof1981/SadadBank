@@ -464,6 +464,108 @@ namespace Management.Controllers
 
 
 
+        [HttpGet("GetStatistic")]
+        public IActionResult GetStatistic()
+        {
+            try
+            {
+                int RM, RC, CC, MC = 0;
+                var UserType = this.help.GetCurrentUserType(HttpContext);
+                if (UserType == 1) {
+                     RM = db.BanksysBankActions.Where(x => x.ActionType == 1).Count();
+                     RC = db.BanksysBankActions.Where(x => x.ActionType == 2).Count();
+                     CC = db.BanksysBankActions.Where(x => x.ActionType == 4).Count();
+                     MC = db.BanksysBankActions.Where(x => x.ActionType == 3).Count();
+
+                } else if (UserType==2)
+                {
+                    var BranchId = this.help.GetCurrentBranche(HttpContext);
+                    var BankId = db.BanksysBranch.Where(x => x.BranchId == BranchId).SingleOrDefault().BankId;
+                     RM = db.BanksysBankActions.Where(x => x.ActionType == 1 && x.Branch.BankId== BankId).Count();
+                     RC = db.BanksysBankActions.Where(x => x.ActionType == 2 && x.Branch.BankId == BankId).Count();
+                     CC = db.BanksysBankActions.Where(x => x.ActionType == 4 && x.Branch.BankId == BankId).Count();
+                     MC = db.BanksysBankActions.Where(x => x.ActionType == 3 && x.Branch.BankId == BankId).Count();
+                }
+                else
+                {
+                    var BranchId = this.help.GetCurrentBranche(HttpContext);
+                     RM = db.BanksysBankActions.Where(x => x.ActionType == 1 && x.BranchId == BranchId).Count();
+                     RC = db.BanksysBankActions.Where(x => x.ActionType == 2 && x.BranchId == BranchId).Count();
+                     CC = db.BanksysBankActions.Where(x => x.ActionType == 4 && x.BranchId == BranchId).Count();
+                     MC = db.BanksysBankActions.Where(x => x.ActionType == 3 && x.BranchId == BranchId).Count();
+
+                }
+
+                return Ok(new { RM = RM , RC=RC,CC=CC,MC=MC });
+                //    IQueryable<BanksysUsers> UserQuery;
+
+                //    if (userType == 0)
+                //    {
+                //        UserQuery = from p in db.BanksysUsers
+                //                    where p.Status != 9
+                //                    select p;
+                //    }
+                //    else
+                //    {
+
+                //        if (userType == 1)
+                //        {
+                //            UserQuery = from p in db.BanksysUsers
+                //                        where p.UserType == userType && p.Status != 9
+                //                        select p;
+                //        }
+                //        else
+                //        {
+                //            // 2,3
+                //            if (BranchId != 0)
+                //            {
+                //                UserQuery = from p in db.BanksysUsers
+                //                            where p.UserType == userType && p.BranchId == BranchId && p.Status != 9
+                //                            select p;
+                //            }
+                //            else
+                //            {
+                //                UserQuery = from p in db.BanksysUsers
+                //                            where p.UserType == userType && p.Status != 9
+                //                            select p;
+                //            }
+                //        }
+
+                //    }
+
+                //    var UserCount = (from p in UserQuery
+                //                     select p).Count();
+
+                //    var UserList = (from p in UserQuery
+                //                    orderby p.CreatedOn descending
+                //                    select new
+                //                    {
+                //                        p.UserId,
+                //                        LoginName = p.LoginName,
+                //                        Email = p.Email,
+                //                        p.CreatedOn,
+                //                        p.FullName,
+                //                        p.Gender,
+                //                        p.UserType,
+                //                        p.RegisterChecker,
+                //                        p.RegisterMaker,
+                //                        p.CashInChecker,
+                //                        p.CashInMaker,
+                //                        p.Status,
+                //                        UserBranch = p.BanksysUserBranchs.Select(x => new { x.CashInChecker, x.CashInMaker, x.RegisterMaker, x.RegisterChecker, x.Branch.Name, x.UserBranchId }),
+                //                        BankName = p.Branch.Bank.Name,
+                //                        BranchName = p.Branch.Name,
+                //                        p.DateOfBirth,
+                //                    }).Skip((pageNo - 1) * pageSize).Take(pageSize).ToList();
+
+                //    return Ok(new { Users = UserList, count = UserCount });
+                //}]
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
 
 
     }

@@ -172,11 +172,12 @@
                                             </tr>
                                         </table>
 
-                                        <el-button slot="reference" style="border:unset;background:unset"><i class="fa fa-info-circle"></i></el-button>
+                                        <el-button v-if="u.userType!=1" slot="reference" style="border:unset;background:unset"><i class="fa fa-info-circle"></i></el-button>
                                     </el-popover>
 
                                     <a title="تعديل" href="#" @click.prevent="EditUser(u.userId)"><i class="fa fa-edit"></i></a>
                                     <a title="حذف" href="#" @click.prevent="RemoveUser(u.userId)"><i class="fa fa-remove"></i></a>
+
                                     <a title="المستخدم غير مفعل" href="#" @click.prevent="ActiveUser(1,u.userId)"><i class="fa fa-lock" v-if="u.status==0"></i></a>
                                     <a title="المستخدم مفعل" href="#" @click.prevent="ActiveUser(0,u.userId)"><i class="fa fa-unlock" v-if="u.status==1"></i></a>
                                 </td>

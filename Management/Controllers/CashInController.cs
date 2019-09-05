@@ -108,9 +108,7 @@ namespace Management.Controllers
 
                                         }).Single();
 
-                var BranchId = this.help.GetCurrentBranche(HttpContext);
-
-                var BankId = db.BanksysBranch.Where(u => u.BranchId == BranchId).Single().BankId;
+               
 
                 var UserType = this.help.GetCurrentUserType(HttpContext);
                 // admin see every thing
@@ -127,6 +125,9 @@ namespace Management.Controllers
                      }).OrderByDescending(x => x.ActionDate).ToList();
                 } else if (UserType == 2)
                 {
+                    var BranchId = this.help.GetCurrentBranche(HttpContext);
+
+                    var BankId = db.BanksysBranch.Where(u => u.BranchId == BranchId).Single().BankId;
                     CashIn = db.BanksysBankActions.Where(x => x.CashIn.Personal.Id == PersonalInfoList.Id &&  x.CashIn.DepositType == 3 && x.CashIn.Refrence == 3 && x.Branch.BankId == BankId && x.ActionType == 3).Select(t => new { t.CashIn.Valuedigits, t.CashIn.NumInvoiceDep, t.CashInId, t.CashIn.Description, t.Branch, t.Branch.Bank, t.CashIn.Status, t.ActionDate,
                         FName = t.CashIn.Personal.Name,
                         t.CashIn.Personal.FatherName,
@@ -138,7 +139,10 @@ namespace Management.Controllers
                 }
                 else
                 {
-                     CashIn = db.BanksysBankActions.Where(x=> x.CashIn.Personal.Id == PersonalInfoList.Id && x.CashIn.DepositType == 3 && x.CashIn.Refrence == 3 && x.BranchId == BranchId && x.ActionType == 3).Select(t => new { t.CashIn.Valuedigits, t.CashIn.NumInvoiceDep, t.CashInId, t.CashIn.Description, t.Branch, t.Branch.Bank, t.CashIn.Status, t.ActionDate,
+                    var BranchId = this.help.GetCurrentBranche(HttpContext);
+
+                    var BankId = db.BanksysBranch.Where(u => u.BranchId == BranchId).Single().BankId;
+                    CashIn = db.BanksysBankActions.Where(x=> x.CashIn.Personal.Id == PersonalInfoList.Id && x.CashIn.DepositType == 3 && x.CashIn.Refrence == 3 && x.BranchId == BranchId && x.ActionType == 3).Select(t => new { t.CashIn.Valuedigits, t.CashIn.NumInvoiceDep, t.CashInId, t.CashIn.Description, t.Branch, t.Branch.Bank, t.CashIn.Status, t.ActionDate,
                          FName = t.CashIn.Personal.Name,
                          t.CashIn.Personal.FatherName,
                          t.CashIn.Personal.SurName,
@@ -165,9 +169,7 @@ namespace Management.Controllers
         {
             try
             {
-                var BranchId = this.help.GetCurrentBranche(HttpContext);
-
-                var BankId = db.BanksysBranch.Where(u => u.BranchId == BranchId).Single().BankId;
+              
                 IQueryable<BanksysBankActions> BankActionsQuery;
 
                 var UserType = this.help.GetCurrentUserType(HttpContext);
@@ -181,12 +183,18 @@ namespace Management.Controllers
                 }
                 else if (UserType == 2)
                 {
+                    var BranchId = this.help.GetCurrentBranche(HttpContext);
+
+                    var BankId = db.BanksysBranch.Where(u => u.BranchId == BranchId).Single().BankId;
                     BankActionsQuery = from t in db.BanksysBankActions
                                        where t.Branch.BankId == BankId && t.ActionType == 3
                                        select t;
                 }   
                  else
                 {
+                    var BranchId = this.help.GetCurrentBranche(HttpContext);
+
+                    var BankId = db.BanksysBranch.Where(u => u.BranchId == BranchId).Single().BankId;
                     BankActionsQuery = from t in db.BanksysBankActions
                                        where  t.BranchId == BranchId && t.ActionType == 3
                                        select t;
@@ -268,7 +276,7 @@ namespace Management.Controllers
                     Cash.Description = CashInData.description;
                     Cash.NumInvoiceDep = CashInData.NumInvoiceDep;
                     Cash.PersonalId = CashInData.PersonalId;
-
+                    Cash.BankId =(int) db.BanksysBranch.Where(x => x.BranchId == this.help.GetCurrentBranche(HttpContext)).SingleOrDefault().BankId;
                     db.CashIn.Add(Cash);
                     db.SaveChanges();
 
@@ -433,7 +441,6 @@ namespace Management.Controllers
                     db.SaveChanges();
                     trans.Commit();
 
-                    trans.Commit();
                     return Ok("تم تعديل بينات المشترك بنجاح");
                 }
                 catch (Exception e)
