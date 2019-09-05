@@ -64,7 +64,7 @@
             </a>
         </li>
 
-        <li  @click="active = 4" :class="{'active':4 == active}">
+        <li v-if="loginDetails.rm == 1 || loginDetails.rc == 1" @click="active = 4" :class="{'active':4 == active}">
             <a href="#" @click.prevent="href('/Registration')">
                 <i class="pe-7s-server"></i>
                 <p>تسجيل زبون</p>

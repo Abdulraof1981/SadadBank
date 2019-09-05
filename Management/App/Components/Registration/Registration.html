@@ -19,7 +19,6 @@
                             <div class="col-sm-1">
                                 <el-button type="primary" icon="el-icon-search" @click.prevent="GetCustomers(pageNo)"> بحـث </el-button>
                             </div>
-
                             <el-button v-if="(loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rm == 1)" type="primary" @click.prevent="AddCustomers()">إضافة زبون</el-button>
                         </div>
                         <p class="category"></p>
