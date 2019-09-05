@@ -276,7 +276,7 @@ namespace Management.Controllers
                     Cash.Description = CashInData.description;
                     Cash.NumInvoiceDep = CashInData.NumInvoiceDep;
                     Cash.PersonalId = CashInData.PersonalId;
-
+                    Cash.BankId =(int) db.BanksysBranch.Where(x => x.BranchId == this.help.GetCurrentBranche(HttpContext)).SingleOrDefault().BankId;
                     db.CashIn.Add(Cash);
                     db.SaveChanges();
 

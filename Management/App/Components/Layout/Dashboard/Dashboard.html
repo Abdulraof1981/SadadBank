@@ -57,7 +57,7 @@
                 <p> الفروع</p>
             </a>
         </li>
-        <li v-if="loginDetails.userType==1" @click="active = 7" :class="{'active':7 == active}">
+        <li v-if="loginDetails.userType==1 || loginDetails.userType==2" @click="active = 7" :class="{'active':7 == active}">
             <a href="#" @click.prevent="href('/User')">
                 <i class="pe-7s-users"></i>
                 <p>المستخدمين</p>

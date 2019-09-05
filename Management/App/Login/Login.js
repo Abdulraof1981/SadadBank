@@ -3,6 +3,7 @@
     created() {
         this.returnurl = location.pathname;
         this.SetRules();
+        sessionStorage.setItem('currentUser', {});
 
     },
     data() {
@@ -46,11 +47,15 @@
             this.$http.setClaims(this.SelectedBranch)
                 .then(response => {
                     $blockUI.close();
-                    console.log(response);
                     this.Branchs = response.data.branchs;
                     var userInfo = JSON.parse(sessionStorage.getItem('currentUser'));
                     userInfo.branchId = this.SelectedBranch;
+                   // console.log(this.userInfo.userBranch.find(x => x.branchId == this.SelectedBranch));
                     userInfo.branchName = this.userInfo.userBranch.find(x => x.branchId == this.SelectedBranch).name;
+                    userInfo.cc = this.userInfo.userBranch.find(x => x.branchId == this.SelectedBranch).cashInChecker;
+                    userInfo.cm = this.userInfo.userBranch.find(x => x.branchId == this.SelectedBranch).cashInMaker;
+                    userInfo.rc = this.userInfo.userBranch.find(x => x.branchId == this.SelectedBranch).registerChecker;
+                    userInfo.rm = this.userInfo.userBranch.find(x => x.branchId == this.SelectedBranch).registerMaker;
                     sessionStorage.setItem('currentUser', {});
                     sessionStorage.setItem('currentUser', JSON.stringify(userInfo));
                     location.href = "/";
