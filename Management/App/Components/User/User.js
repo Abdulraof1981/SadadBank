@@ -1,4 +1,5 @@
 ﻿import addUser from './AddUser/AddUser.vue';
+import editUser from './EditUser/EditUser.vue';
 import moment from 'moment';
 export default {
     name: 'Users',    
@@ -8,6 +9,7 @@ export default {
     },
     components: {
         'add-User': addUser,
+        'edit-User': editUser
     },
     filters: {
         moment: function (date) {
@@ -32,8 +34,9 @@ export default {
             BankId: '',
             Branchs: [],
             BankAddObj: {},
-          
-          
+            userIdForEdit: -1
+            
+            
         };
     },
     methods: {
@@ -172,8 +175,12 @@ export default {
 
         AddUsers() {
             this.state = 1;
-        }
+        },
 
+        EditUser(userId) {
+            this.userIdForEdit = userId;
+            this.state = 2;
+        }
 
         //RemoveBank(BankId) {
         //    this.$confirm('سيؤدي ذلك إلى حذف المصرف نهائيا. استمر؟', 'تـحذير', {

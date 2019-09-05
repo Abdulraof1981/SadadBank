@@ -21,6 +21,69 @@ namespace Management.Controllers
             help = new Helper();
         }
 
+
+        [HttpGet("GetData")]
+        public IActionResult GetData(int userId)
+        {
+            try
+            {
+                var usrId = this.help.GetCurrentUser(HttpContext);
+                if (usrId <= 0)
+                {
+                    return StatusCode(401, "الرجاء الـتأكد من أنك قمت بتسجيل الدخول");
+                }
+
+                var user = (from u in db.BanksysUsers
+                            where u.UserId == userId && u.Status == 1
+                            select new
+                            {
+                                u.UserId,
+                                u.LoginName,
+                                u.FullName,
+                                u.UserType,
+                                u.Branch,
+                                u.Branch.Bank,
+                                u.Email,
+                                u.Gender,
+                                u.DateOfBirth,
+                                u.RegisterChecker,
+                                u.RegisterMaker,
+                                u.CashInChecker,
+                                u.CashInMaker,
+                                u.Status,
+                                BanksysUserBranchs = (from ub in db.BanksysUserBranchs
+                                                      where ub.UserId == u.UserId && ub.Status == 1
+                                                      select new
+                                                      {
+                                                          ub.Branch,
+                                                          ub.RegisterChecker,
+                                                          ub.RegisterMaker,
+                                                          ub.CashInChecker,
+                                                          ub.CashInMaker,
+                                                          ub.Status
+                                                      }).ToList(),
+                                savedPermissions = (from ub in u.BanksysUserBranchs
+                                                    select new
+                                                    {
+                                                        ub.UserBranchId,
+                                                        ub.Branch,
+                                                        ub.Branch.Bank,
+                                                        ub.RegisterChecker,
+                                                        ub.RegisterMaker,
+                                                        ub.CashInChecker,
+                                                        ub.CashInMaker,
+                                                    }).ToList()
+                            }).SingleOrDefault();
+                return Json(new { user });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+
+
         [HttpGet("Get")]
         public IActionResult Get(int pageNo, int pageSize,short userType, long BranchId)
         {

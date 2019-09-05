@@ -35,6 +35,11 @@ export default {
         return axios.post(`/Api/Admin/User/${CashInId}/UserActions`);
     },
 
+    GetUserData(userId){
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
+        return axios.get(`/Api/Admin/User/GetData?userId=${userId}`);
+    },
+
     // **************************** Bank *****************************
     GetBank(pageNo, pageSize) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');

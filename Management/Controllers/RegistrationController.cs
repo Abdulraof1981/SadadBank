@@ -83,7 +83,7 @@ namespace Management.Controllers
                     if (search != null && !search.Equals("") && !search.Equals("undefined"))
                         regsTrns = regsTrns.Where(t => t.Phone.Contains(search));
                     
-                    return Ok(new { Customers = regsTrns.ToList(), count = regsTrns.Count() });
+                    return Ok(new { Customers = regsTrns.Skip((pageNo - 1) * pageSize).Take(pageSize).ToList(), count = regsTrns.Count() });
                 }
                 else if (bankUser.UserType == 2) // Bank Manager
                 {
@@ -122,7 +122,7 @@ namespace Management.Controllers
                                     });
                     if (search != null && !search.Equals("") && !search.Equals("undefined"))
                         regsTrns = regsTrns.Where(t => t.Phone.Contains(search));
-                    return Ok(new { Customers = regsTrns.ToList(), count = regsTrns.Count() });
+                    return Ok(new { Customers = regsTrns.Skip((pageNo - 1) * pageSize).Take(pageSize).ToList(), count = regsTrns.Count() });
                 }
                 else if (bankUser.UserType == 3) // Bank Empployee
                 {
@@ -159,7 +159,7 @@ namespace Management.Controllers
                                     });
                     if (search != null && !search.Equals("") && !search.Equals("undefined"))
                         regsTrns = regsTrns.Where(t => t.Phone.Contains(search));
-                    return Ok(new { Customers = regsTrns.ToList(), count = regsTrns.Count() });
+                    return Ok(new { Customers = regsTrns.Skip((pageNo - 1) * pageSize).Take(pageSize).ToList(), count = regsTrns.Count() });
                 }
                 return Ok(new { count = 0 });
             }
@@ -230,6 +230,7 @@ namespace Management.Controllers
                 info.CrmFullName = ob.CustomerName;
                 info.Address = ob.Address;
                 info.Reference = 3;
+                info.AppointmentDate = DateTime.Now;
 
                 var cob = (from ci in db.City where ci.CityId == ob.Cityid select new { ci.CityMpayId }).SingleOrDefault();
                 info.CityMpayId = cob.CityMpayId;

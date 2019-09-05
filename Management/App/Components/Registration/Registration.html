@@ -19,8 +19,7 @@
                             <div class="col-sm-1">
                                 <el-button type="primary" icon="el-icon-search" @click.prevent="GetCustomers(pageNo)"> بحـث </el-button>
                             </div>
-
-                            <el-button v-if="(loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" type="primary" @click.prevent="AddCustomers()">إضافة زبون</el-button>
+                            <el-button v-if="(loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rm == 1)" type="primary" @click.prevent="AddCustomers()">إضافة زبون</el-button>
                         </div>
                         <p class="category"></p>
                     </div>
@@ -92,8 +91,8 @@
 
                                         <el-button slot="reference" style="border:unset;background:unset"><i class="fa fa-info-circle"></i></el-button>
                                     </el-popover>
-                                    <a title="رفض" v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rm == 1)" href="#" @click.prevent="RejectCustomer(b.bankActionId)"><i class="fa fa-remove"></i></a>
-                                    <a title="تأكيد نهائي" v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rm == 1)" href="#" @click.prevent="LastConfirm(b.bankActionId)"><i class="fa fa-check"></i></a>
+                                    <a title="رفض" v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" href="#" @click.prevent="RejectCustomer(b.bankActionId)"><i class="fa fa-remove"></i></a>
+                                    <a title="تأكيد نهائي" v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" href="#" @click.prevent="LastConfirm(b.bankActionId)"><i class="fa fa-check"></i></a>
                                 </td>
 
                             </tr>

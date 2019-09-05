@@ -1,5 +1,6 @@
 ﻿<div class="content" dir="rtl">
     <add-User v-if="state==1"></add-User>
+    <edit-User v-if="state==2"></edit-User>
     <!--<edit-Courses v-if="state==2"></edit-Courses>-->
     <div class="container-fluid" v-if="state==0">
         <div class="row">
@@ -10,7 +11,6 @@
                             <i class="fa fa-bars" aria-hidden="true" style="color:white;"></i>
                         </div>
                         <h4 class="card-title"> المســتخدمين</h4>
-
                     </div>
                     <div class="headerCustom">
                         <div class="title">
@@ -49,7 +49,6 @@
                                     <el-button type="primary" v-if="SelecteUserType==1 || BranchId!=''" @click.prevent="AddUsers()">إضافة مستخدم</el-button>
                                 </div>
                             </div>
-
                         </div>
                         <p class="category"></p>
                     </div>
@@ -100,13 +99,12 @@
                                         {{u.bankName}} / {{u.branchName}}
                                     </span>
                                 </td>
-                             
+
                                 <td style="text-align: center; vertical-align: middle;">
                                     <el-tag type="success" v-if="u.registerMaker==1">Active</el-tag>
                                     <el-tag type="danger" v-if="u.registerMaker!=1">Not Active</el-tag>
                                 </td>
                                 <td style="text-align: center; vertical-align: middle;">
-
                                     <el-tag type="success" v-if="u.registerChecker==1">Active</el-tag>
                                     <el-tag type="danger" v-if="u.registerChecker!=1">Not Active</el-tag>
                                 </td>
@@ -119,7 +117,7 @@
                                     <el-tag type="danger" v-if="u.cashInChecker!=1">Not Active</el-tag>
                                 </td>
 
-                                <td style="text-align: center;"><a :href="'http://vxb-mwdlr-p17:5001/Api/Admin/User/' + u.userId + '/image'"><img :src="'http://localhost:4810/Api/Admin/User/' + u.userId + '/image'" style="height: 80px; width:120px" /></a></td>
+                                <td style="text-align: center;"><a :href="'http://vxb-mwdlr-p17:5001/Api/Admin/User/' + u.userId + '/image'"><img :src="'http://vxb-mwdlr-p17:5001/Api/Admin/User/' + u.userId + '/image'" style="height: 80px; width:120px" /></a></td>
 
                                 <td style="text-align: center; vertical-align: middle;">
                                     <div v-if="u.status==1">
@@ -149,14 +147,12 @@
                                                 <th style="text-align: center; vertical-align: middle;background-color:orange!important">تسجيل نهائي</th>
                                                 <th style="text-align: center; vertical-align: middle;background-color:orange!important">شحن مبدئي</th>
                                                 <th style="text-align: center; vertical-align: middle;background-color:orange!important">شحن نهائي</th>
-
                                             </tr>
                                             <tr v-for="u in u.userBranch">
                                                 <td style="text-align: center; vertical-align: middle;">
                                                     {{u.name}}
                                                 </td>
                                                 <td style="text-align: center; vertical-align: middle;">
-
                                                     <el-tag type="success" v-if="u.registerMaker==1">Active</el-tag>
                                                     <el-tag type="danger" v-if="u.registerMaker!=1">Not Active</el-tag>
                                                 </td>
@@ -179,15 +175,16 @@
                                         <el-button slot="reference" style="border:unset;background:unset"><i class="fa fa-info-circle"></i></el-button>
                                     </el-popover>
 
-                                    <a href="#" @click.prevent="RemoveUser(u.userId)"><i class="fa fa-remove"></i></a>
+                                    <a title="تعديل" href="#" @click.prevent="EditUser(u.userId)"><i class="fa fa-edit"></i></a>
+                                    <a title="حذف" href="#" @click.prevent="RemoveUser(u.userId)"><i class="fa fa-remove"></i></a>
                                     <a title="المستخدم غير مفعل" href="#" @click.prevent="ActiveUser(1,u.userId)"><i class="fa fa-lock" v-if="u.status==0"></i></a>
                                     <a title="المستخدم مفعل" href="#" @click.prevent="ActiveUser(0,u.userId)"><i class="fa fa-unlock" v-if="u.status==1"></i></a>
                                 </td>
                             </tr>
                         </table>
                     </div>
-                    
-                    
+
+
                     <div style="text-align: center;padding-bottom:11px;padding-top: 41px;">
                         <el-pagination background
                                        layout="prev, pager, next"
