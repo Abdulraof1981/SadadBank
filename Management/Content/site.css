@@ -10,6 +10,11 @@
 @import "cssvuetify.css";
 @import "vuetify/dist/vuetify.min.css";*/
 
+.LoginName {
+    font-size: 18px;
+    font-weight: bold;
+    color: ghostwhite;
+}
 
 
 input[type="file"] {
