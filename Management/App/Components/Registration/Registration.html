@@ -54,7 +54,7 @@
                             
                                 <tr v-for="b,index in Customers">
                                     <td style="text-align: center; vertical-align: middle;">
-                                        {{index+1}} <el-checkbox @change="check(index)"></el-checkbox>
+                                        {{index+1}} <el-checkbox class="ttt" @change="check(index)"></el-checkbox>
                                     </td>
                                     <td style="text-align: center; vertical-align: middle;">{{b.firstName + " " +  b.fatherName + " " + b.surName}}</td>
                                     <td style="text-align: center; vertical-align: middle;">{{b.birthDate | moment}}</td>

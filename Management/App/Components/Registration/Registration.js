@@ -44,7 +44,9 @@ export default {
             Customers: [],
             state: 0,
             Search: null,
-            selectAll: false
+            selectAll: false,
+            //selectedAll: false
+            ttt:''
         };
     },
     methods: {
@@ -139,16 +141,19 @@ export default {
         },
 
         check(index) {
-            /*if (index === -1) {
-                this.selectAll = !this.selectAll; 
+            if (index === -1) {
+                //this.selectedAll = !this.selectAll; 
                 for (var i = 0; i < this.Customers.length; i++) {
-                    this.Customers[i].checkbox = true;
+                    this.Customers[i].checkbox = !this.selectAll;
                 }
+
+                //this.$el.querySelector('.ttt input[type=checkbox]').click();
+                //console.log(el);
             }
             else
-            {*/
+            {
                 this.Customers[index].checkbox = !this.Customers[index].checkbox;
-            //}
+            }
             console.log(this.Customers);
         }
 

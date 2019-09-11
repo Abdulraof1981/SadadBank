@@ -75,6 +75,10 @@ export default {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
         return axios.get(`/Api/Admin/Branch/GetAllBranchsByBankId/${BankId}`);
     },
+    GetAllBranchsByUserId(userId) {
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
+        return axios.get(`/Api/Admin/Branch/GetAllBranchsByUserId/${userId}`);
+    },
     AddBranch(Branch) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
         return axios.post(`/Api/Admin/Branch/Add`, Branch);

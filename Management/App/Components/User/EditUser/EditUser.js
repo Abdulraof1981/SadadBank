@@ -205,7 +205,7 @@
 
         GetAllBranch() {
             this.$blockUI.Start();
-            this.$http.GetAllBranchsByBankId(this.$parent.userIdForEdit)
+            this.$http.GetAllBranchsByUserId(this.$parent.userIdForEdit)
                 .then(response => {
                     this.$blockUI.Stop();
                     this.Branchs = response.data.branchs

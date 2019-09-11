@@ -129,8 +129,8 @@ namespace Management.Controllers
         }
 
       
-        [HttpGet("GetAllBranchsByBankId/{userId}")]
-        public IActionResult GetAllBranchsByBankId(long userId)
+        [HttpGet("GetAllBranchsByUserId/{userId}")]
+        public IActionResult GetAllBranchsByUserId(long userId)
         {
             try
             {
@@ -151,6 +151,25 @@ namespace Management.Controllers
             }
         }
 
+        [HttpGet("GetAllBranchsByBankId/{BankId}")]
+        public IActionResult GetAllBranchsByBankId(long BankId)
+        {
+            try
+            {
+                var Branchs = db.BanksysBranch.Where(y => y.Status == 1 && y.BankId == BankId).Select(
+                    x => new
+                    {
+                        x.BranchId,
+                        x.Name
+                    }).ToList();
+
+                return Ok(new { Branchs = Branchs });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
 
         [HttpGet("GetAllBranch")]
