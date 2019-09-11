@@ -24,7 +24,9 @@
             }
 
         },
-
+        href(url) {
+            this.$router.push(url);
+        },
         // ********************** Template InterActive ***********
         OpenMenuByToggle() {
             var root = document.getElementsByTagName('html')[0]; // '0' to assign the first (and only `HTML` tag)

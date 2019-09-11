@@ -337,7 +337,88 @@ namespace Management.Controllers
             }
         }
 
+        [HttpPost("{UserId}/Update")]
+        public IActionResult EditUsersProfile([FromBody] BanksysUsers user)
+        {
+            try
+            {
+                var userId = this.help.GetCurrentUser(HttpContext);
+                if (userId <= 0)
+                {
+                    return StatusCode(401, "الرجاء الـتأكد من أنك قمت بتسجيل الدخول");
+                }
 
+                var User = (from p in db.BanksysUsers
+                            where p.UserId == userId
+                              select p).SingleOrDefault();
+
+                User.Email = user.Email;
+                User.FullName = user.FullName;
+                User.Gender = user.Gender;
+                User.DateOfBirth = user.DateOfBirth;
+                //User.Photo = user.Photo;                
+                                
+                db.SaveChanges();
+                return Ok("User Deleted");
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPost("{UserId}/ReSetPassword")]
+        public IActionResult ReSetPassword(string Password )
+        {
+            try
+            {
+                var userId = this.help.GetCurrentUser(HttpContext);
+                if (userId <= 0)
+                {
+                    return StatusCode(401, "الرجاء الـتأكد من أنك قمت بتسجيل الدخول");
+                }
+
+                var User = (from p in db.BanksysUsers
+                            where p.UserId == userId
+                            select p).SingleOrDefault();
+
+                User.Password = Security.ComputeHash(Password, HashAlgorithms.SHA512, null); ;
+
+                db.SaveChanges();
+                return Ok("User Deleted");
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+        [HttpPost("UploadImage")]
+        public IActionResult UploadImage([FromBody] UserImg user)
+        {
+            var userId = this.help.GetCurrentUser(HttpContext);
+
+            if (userId <= 0 && userId != user.UserId)
+            {
+                return StatusCode(401, "الرجاء الـتأكد من أنك قمت بتسجيل الدخول");
+            }
+            var Users = (from p in db.BanksysUsers
+                         where p.UserId == userId
+                         && (p.Status == 1 || p.Status == 2)
+                         select p).SingleOrDefault();
+
+            if (Users == null)
+            {
+                return BadRequest("عفوا هدا المستخدم غير موجود");
+            }
+            //photo = Convert.FromBase64String(photo.)
+            
+            Users.Photo = Convert.FromBase64String(user.Photo.Substring(user.Photo.IndexOf(",") + 1));
+            Users.ModifiedBy = userId;
+            Users.ModifiedOn = DateTime.Now;
+            db.SaveChanges();
+            return Ok("تم تغير الصورة بنـجاح");
+
+        }
         [HttpPost("{CashInId}/UserActions")]
         public IActionResult UserActions(long CashInId)
         {
@@ -505,5 +586,11 @@ namespace Management.Controllers
         }
 
 
+    }
+
+    public class UserImg
+    {
+        public long UserId { get; set; }
+        public string Photo { get; set; }
     }
 }

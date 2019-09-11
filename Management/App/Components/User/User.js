@@ -1,4 +1,5 @@
 ﻿import addUser from './AddUser/AddUser.vue';
+import EditUsersProfile from './EditUsersProfile/EditUsersProfile.vue';
 import moment from 'moment';
 export default {
     name: 'Users',    
@@ -8,6 +9,7 @@ export default {
     },
     components: {
         'add-User': addUser,
+        'Edit-UsersProfile': EditUsersProfile
     },
     filters: {
         moment: function (date) {
