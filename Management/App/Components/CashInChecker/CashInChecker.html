@@ -119,8 +119,8 @@
                                 </td>
                                 <td style="text-align: center; vertical-align: middle;">
                                   
-                                    <a v-if="loginDetails.userType!=1" href="#" @click.prevent="RejectCashIn(c.cashInId)" title="رفض الحركة"><i class="fa fa-remove"></i></a>
-                                    <a v-if="loginDetails.userType!=1" href="#" @click.prevent="LastConfirm(c.cashInId)" title="تأكيد النهائي"><i class="fa fa-check"></i></a>
+                                    <a v-if="loginDetails.userType!=1 && c.status!=0 && c.status!=2" href="#" @click.prevent="RejectCashIn(c.cashInId)" title="رفض الحركة"><i class="fa fa-remove"></i></a>
+                                    <a v-if="loginDetails.userType!=1 && c.status!=0 && c.status!=2" href="#" @click.prevent="LastConfirm(c.cashInId)" title="تأكيد النهائي"><i class="fa fa-check"></i></a>
                                     <a href="#" @click.prevent="ShowLogs(c.cashInId)" title="تقرير الحركات"><i class="fa fa-archive"></i></a>
                                 </td>
                             </tr>
@@ -135,12 +135,8 @@
                                 <th style="text-align: center; vertical-align: middle;background-color: #ff594d;">صلاحية المستخدم</th>
                                 <th style="text-align: center; vertical-align: middle;background-color: #ff594d;">الفرع/المصرف</th>
                                 <th style="text-align: center; vertical-align: middle;background-color: #ff594d;">معلومات عن الحركة</th>
-
-
                                 <th style="text-align: center; vertical-align: middle;background-color: #ff594d;">القيمة</th>
                                 <th style="text-align: center; vertical-align: middle;background-color: #ff594d;">تاريخ العملية</th>
-
-
                             </tr>
                             <tr v-for="L in Logs">
                                 <td style="text-align: center; vertical-align: middle;">{{L.fullName}}</td>

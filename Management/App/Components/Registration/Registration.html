@@ -130,7 +130,7 @@
 
                                             </table>
 
-                                            <el-button slot="reference" style="border:unset;background:unset"><i class="fa fa-info-circle"></i></el-button>
+                                            <el-button slot="reference" style="border:unset;background:unset;padding: unset;"><i class="fa fa-info-circle"></i></el-button>
                                         </el-popover>
                                         <a title="رفض" v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" href="#" @click.prevent="RejectCustomer(b.bankActionId)"><i class="fa fa-remove"></i></a>
                                         <a title="تأكيد نهائي" v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" href="#" @click.prevent="LastConfirm(b.bankActionId)"><i class="fa fa-check"></i></a>

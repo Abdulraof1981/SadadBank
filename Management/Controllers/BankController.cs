@@ -25,6 +25,11 @@ namespace Management.Controllers
         {
             try
             {
+                var userType = this.help.GetCurrentUserType(HttpContext);
+                if (userType!=1)
+                {
+                    return StatusCode(401,"لا تملك الصلاحية لعرض المصارف");
+                }
                 IQueryable<BanksysBank> BankQuery;
                 BankQuery = from p in db.BanksysBank
                             where p.Status == 1 
@@ -77,6 +82,12 @@ namespace Management.Controllers
         {
             try
             {
+                var userType = this.help.GetCurrentUserType(HttpContext);
+                if (userType != 1)
+                {
+                    return StatusCode(401, "لا تملك الصلاحية لإضافة المصرف");
+                }
+
                 if (Bank == null)
                 {
                     return BadRequest("حذث خطأ في ارسال البيانات الرجاء إعادة الادخال");
@@ -109,6 +120,11 @@ namespace Management.Controllers
         {
             try
             {
+                var userType = this.help.GetCurrentUserType(HttpContext);
+                if (userType != 1)
+                {
+                    return StatusCode(401, "لا تملك الصلاحية لمسح المصارف");
+                }
                 var userId = this.help.GetCurrentUser(HttpContext);
                 if (userId <= 0)
                 {

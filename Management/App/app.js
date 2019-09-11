@@ -11,7 +11,8 @@ import Bank from './Components/Bank/Bank.vue';
 import Branch from './Components/Branch/Branch.vue';
 import User from './Components/User/User.vue';
 import CashIn from './Components/CashIn/CashIn.vue';
-
+import EditUsersProfile from './Components/User/EditUsersProfile/EditUsersProfile.vue';
+//import ReSetPassword from './Components/User/ReSetPassword/ReSetPassword.vue';
 import Registration from './Components/Registration/Registration.vue';
 import CashInChecker from './Components/CashInChecker/CashInChecker.vue';
 
@@ -49,7 +50,9 @@ const router = new VueRouter({
         { path: '/User', component: User }, 
         { path: '/CashIn', component: CashIn },
         { path: '/Registration', component: Registration },
-        { path: '/CashInChecker', component: CashInChecker }
+        { path: '/CashInChecker', component: CashInChecker },
+        { path: '/EditUsersProfile', component: EditUsersProfile }
+        //{ path: '/ReSetPassword', component: ReSetPassword }
         ]
 
 });

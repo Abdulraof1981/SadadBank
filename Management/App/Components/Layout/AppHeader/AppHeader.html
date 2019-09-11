@@ -58,26 +58,22 @@
                     <a href="">
                         <p>Account</p>
                     </a>
-                </li>
+                </li>-->
                 <li class="dropdown" id="DropDown">
                     <a @click="OpenDropDown()" href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <p>
-                            Dropdown
-
                             <b class="caret" @click="OpenDropDown()"></b>
+                              ضبط المستخدمين    
+                            <i class="fa fa-users "></i>
                         </p>
-
+                       
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#">Separated link</a></li>
+                        <li><a href="#" @click.prevent="href('/EditUsersProfile')">تعديل بياناتي</a></li>
+                        <li><a href="#" @click.prevent="href('/ReSetPassword')">تغيير كلمة المرور</a></li>
+            
                     </ul>
-                </li>-->
+                </li>
                 <li>
                     <a href="/Security/Login">
                         <p style="font-weight:bold;font-size: 22px;">خــروج</p>

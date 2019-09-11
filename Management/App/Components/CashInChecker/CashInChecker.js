@@ -69,7 +69,7 @@ export default {
                             message: '<strong>' + err.response.data + '</strong>'
                         });
                         console.error(err);
-                        this.pages = 0;
+                       
                     });
             });
 
@@ -109,7 +109,7 @@ export default {
                             message: '<strong>' + err.response.data + '</strong>'
                         });
                         console.error(err);
-                        this.pages = 0;
+                        
                     });
             });
         },

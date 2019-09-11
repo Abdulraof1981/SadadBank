@@ -1,0 +1,149 @@
+﻿<div class="content" dir="rtl">
+    <div class="container-fluid" dir="rtl">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card" style="height: 5%!important;">
+                    <div class="card-header card-header-primary card-header-icon">
+                        <div class="card-icon">
+                            <i class="fa fa-bars" aria-hidden="true" style="color:white;"></i>
+                        </div>
+                        <h4 class="card-title"> الملف الشخصي</h4>
+
+                    </div>
+
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-11">
+                                <span class="title">
+                                    <span> بيانات  المستخدمين -</span>
+                                    <span v-if="ruleForm.userType==1">مدير النظام</span>
+                                    <span v-if="ruleForm.userType==2">مدير المصرف</span>
+                                    <span v-if="ruleForm.userType==3">موظف المصرف</span>
+                                </span>
+                            </div>
+                            <div class="col-lg-1">
+                                <!-- <el-button type="danger" @click="$parent.state=0" style="margin-left: 6px;"><i class="fa fa-arrow-left" style="color:white"></i></el-button>-->
+                            </div>
+                        </div>
+                        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <el-form-item class="form-group" prop="LoginName">
+                                        <label class="control-label">اسم الدخول</label>
+                                        <el-input placeholder="اسم الدخول" v-model="ruleForm.LoginName" disabled style="width:110%"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="col-lg-6">
+                                    <el-form-item class="form-group" prop="FullName">
+                                        <label class="control-label">الاسم التلاثي</label>
+                                        <el-input placeholder="الاسم التلاثي" v-model="ruleForm.FullName" style="width:110%"></el-input>
+                                    </el-form-item>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <el-form-item class="form-group" prop="Email">
+                                        <label class="control-label">البريد الالكتروني</label>
+                                        <el-input placeholder="البريد الالكتروني" v-model="ruleForm.Email" style="width:110%"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="col-lg-6">
+                                    <el-form-item class="form-group" prop="DateOfBirth">
+                                        <!--<label class="control-label">تاريخ الميلاد</label>-->
+                                        <!--<el-input placeholder="تاريخ الميلا" v-model="ruleForm.DateOfBirth" style="width:110%"></el-input>-->
+                                        <span class="demonstration">تاريخ الميلاد</span>
+                                        <el-date-picker v-model="ruleForm.DateOfBirth"
+                                                        type="date"
+                                                        style="width:110%"
+                                                        placeholder="اختار تاريخ الميلاد">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </div>
+
+                                <!--<div class="col-lg-4">
+                            <el-form-item class="form-group" prop="Gender">
+                                <label class="control-label">الجنس</label>
+                                <div>
+                                    <el-radio v-model="ruleForm.Gender" label="1" border>ذكر</el-radio>
+                                    <el-radio v-model="ruleForm.Gender" label="2" border>انثي</el-radio>
+                                </div>
+                            </el-form-item>
+                        </div>-->
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 pr-1">
+                                    <div class="position-relative form-group">
+                                        <label class="">الجنس</label>
+                                        <div class="form-group">
+                                            <el-select style="width: 100%;" filterable placeholder="الجنس" v-model="ruleForm.Gender">
+                                                <el-option style="border-radius: 0.25rem 0.25rem 0 0;" v-for="item in [{id:1,Gender:'ذكـر'},{id:2,Gender:'انـثي'}]"
+                                                           :key="item.id"
+                                                           :label="item.Gender"
+                                                           :value="item.id">
+                                                </el-option>
+                                            </el-select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <el-button type="danger" @click="resetForm('ruleForm')">إلـغاء</el-button>
+                                </div>
+                                <div class="col-lg-6" dir="ltr">
+
+                                    <el-button type="primary" @click="submitForm('ruleForm')">حفـظ</el-button>
+                                </div>
+
+                            </div>
+
+                        </el-form>
+
+
+                    </div>
+
+                </div>
+            </div>
+
+
+
+            <div class="col-md-6">
+                <div class="card-user card">
+                    <div class="image">
+                        <img src="/img/up-user-details-background.jpg" alt="...">
+                    </div>
+                    <div class="card-body">
+                        <div class="author">
+                            <a href="#">
+
+                                <img class="avatar border-gray" @change="FileChanged($event)" :src="'http://localhost:4810/Api/Admin/User/' + loginDetails.userId + '/image'" />
+                                <h5 class="title"> {{loginDetails.fullName}}</h5>
+
+                            </a> <p class="description">{{loginDetails.loginName}}</p>
+                        </div>
+                     </div>
+                    <hr>
+                    <div class="button-container">
+
+                        <div class="form-group UploadButton">
+                            <label for="file-upload" class="custom-file-upload">
+                                <i class="fa fa-cloud-upload"></i> تـغير الصورة
+                            </label>
+                            <input accept="image/jpg" @change="FileChanged($event)" id="file-upload" type="file" />
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+  
+            
+
+</div>
+
