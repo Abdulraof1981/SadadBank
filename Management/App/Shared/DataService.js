@@ -121,9 +121,9 @@ export default {
 
 
     //********************* Registration Service *****************************
-    GetCustomers(pageNo, pageSize, Search, Status) {
+    GetCustomers(pageNo, pageSize, Search, Status, TransDate) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
-        return axios.get(`/Api/Admin/Registration/Get?pageno=${pageNo}&pagesize=${pageSize}&search=${Search}&status=${Status}`);
+        return axios.get(`/Api/Admin/Registration/Get?pageno=${pageNo}&pagesize=${pageSize}&search=${Search}&status=${Status}&transDate=${TransDate}`);
     },
     RejectCustomer(BankActionId) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');

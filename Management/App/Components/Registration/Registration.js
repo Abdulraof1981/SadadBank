@@ -1,7 +1,7 @@
 ﻿import newRegister from './Register/NewRegister.vue';
 import moment from 'moment';
 export default {
-    name: 'Registrations',    
+    name: 'Registrations',
     created() {
         this.GetCustomers(this.pageNo);
         var loginDetails = sessionStorage.getItem('currentUser');
@@ -23,7 +23,7 @@ export default {
             if (date === null) {
                 return "فارغ";
             }
-           // return moment(date).format('MMMM Do YYYY, h:mm:ss a');
+            // return moment(date).format('MMMM Do YYYY, h:mm:ss a');
             return moment(date).format('MMMM Do YYYY');
         },
         moment2: function (date) {
@@ -40,13 +40,13 @@ export default {
             loginDetails: {},
             pageNo: 1,
             pageSize: 10,
-            pages: 0,  
+            pages: 0,
             Customers: [],
             state: 0,
             Search: null,
             selectAll: false,
-            //selectedAll: false
-            ttt:''
+            pageNumbers: 10,
+            transDate : null
         };
     },
     methods: {
@@ -58,35 +58,119 @@ export default {
             }).then(() => {
                 this.$blockUI.Start();
                 this.$http.LastConfirm(BankActionId)
-                .then(response => {
-                    this.$blockUI.Stop();
-                    this.GetCustomers(this.pageNo);
-                    if (response.data.code == 0) {
-                        this.$message({
-                            type: 'info',
-                            dangerouslyUseHTMLString: true,
-                            message: '<strong>' + response.data.message + '</strong>'
-                        });
-                    } else if (response.data.code == 1) {
-                        this.$message({
-                            type: 'info',
-                            dangerouslyUseHTMLString: true,
-                            message: '<strong> Warning: ' + response.data.message + '</strong>'
-                        });
-                    } else {
+                    .then(response => {
+                        this.$blockUI.Stop();
+                        this.GetCustomers(this.pageNo);
+                        if (response.data.code == 0) {
+                            this.$message({
+                                type: 'info',
+                                dangerouslyUseHTMLString: true,
+                                message: '<strong>' + response.data.message + '</strong>'
+                            });
+                        } else if (response.data.code == 1) {
+                            this.$message({
+                                type: 'info',
+                                dangerouslyUseHTMLString: true,
+                                message: '<strong> Warning: ' + response.data.message + '</strong>'
+                            });
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                dangerouslyUseHTMLString: true,
+                                message: '<strong>' + response.data.message + '</strong>'
+                            });
+                        }
+                    }).catch((err) => {
+                        this.$blockUI.Stop();
+                        console.error(err);
+                        this.pages = 0;
+                    });
+            });
+        },
+
+        LastConfirmAll() {
+            this.$blockUI.Start();
+            this.Customers.forEach(function (element) {
+                if (element.checkbox) {
+                    if (element.status != 2) {
                         this.$message({
                             type: 'error',
                             dangerouslyUseHTMLString: true,
-                            message: '<strong>' + response.data.message + '</strong>'
+                            message: '<strong>' + 'يجب تحديد الحركات التي تحتاج إلى تأكيد نهائي فقط، الرجاء إعادة المحاولة!' + '</strong>'
+                        });
+                        this.$blockUI.Stop();
+                    }
+                    else
+                    {
+                        this.$http.LastConfirm(element.BankActionId)
+                        .then(response => {
+                            //this.$blockUI.Stop();
+                            /*this.GetCustomers(this.pageNo);
+                            if (response.data.code == 0) {
+                                this.$message({
+                                    type: 'info',
+                                    dangerouslyUseHTMLString: true,
+                                    message: '<strong>' + response.data.message + '</strong>'
+                                });
+                            } else if (response.data.code == 1) {
+                                this.$message({
+                                    type: 'info',
+                                    dangerouslyUseHTMLString: true,
+                                    message: '<strong> Warning: ' + response.data.message + '</strong>'
+                                });
+                            } else {
+                                this.$message({
+                                    type: 'error',
+                                    dangerouslyUseHTMLString: true,
+                                    message: '<strong>' + response.data.message + '</strong>'
+                                });
+                            }*/
+                        }).catch((err) => {
+                            /*this.$blockUI.Stop();
+                            console.error(err);
+                            this.pages = 0;*/
                         });
                     }
-                }).catch((err) => {
-                    this.$blockUI.Stop();
-                    console.error(err);
-                    this.pages = 0;
-                });
+                }
+            });
+
+            this.$confirm('هل انت متأكد من التأكيد النهائي لجميع الحركات المحددة؟', 'تـحذير', {
+                confirmButtonText: 'نـعم',
+                cancelButtonText: 'لا',
+                type: 'warning'
+            }).then(() => {
+                this.$blockUI.Start();
+                this.$http.LastConfirm(BankActionId)
+                    .then(response => {
+                        this.$blockUI.Stop();
+                        this.GetCustomers(this.pageNo);
+                        if (response.data.code == 0) {
+                            this.$message({
+                                type: 'info',
+                                dangerouslyUseHTMLString: true,
+                                message: '<strong>' + response.data.message + '</strong>'
+                            });
+                        } else if (response.data.code == 1) {
+                            this.$message({
+                                type: 'info',
+                                dangerouslyUseHTMLString: true,
+                                message: '<strong> Warning: ' + response.data.message + '</strong>'
+                            });
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                dangerouslyUseHTMLString: true,
+                                message: '<strong>' + response.data.message + '</strong>'
+                            });
+                        }
+                    }).catch((err) => {
+                        this.$blockUI.Stop();
+                        console.error(err);
+                        this.pages = 0;
+                    });
             });
         },
+
 
         RejectCustomer(BankActionId) {
             this.$confirm('هل تريد رفض هذه الحركة؟', 'تـحذير', {
@@ -96,25 +180,43 @@ export default {
             }).then(() => {
                 this.$blockUI.Start();
                 this.$http.RejectCustomer(BankActionId)
-                .then(response => {
-                    this.$blockUI.Stop();
-                    this.GetCustomers(this.pageNo);
-                    this.$message({
-                        type: 'info',
-                        dangerouslyUseHTMLString: true,
-                        message: '<strong>' + 'تم رفض الحركة بنجاح' + '</strong>'
+                    .then(response => {
+                        this.$blockUI.Stop();
+                        this.GetCustomers(this.pageNo);
+                        this.$message({
+                            type: 'info',
+                            dangerouslyUseHTMLString: true,
+                            message: '<strong>' + 'تم رفض الحركة بنجاح' + '</strong>'
+                        });
+                    })
+                    .catch((err) => {
+                        this.$blockUI.Stop();
+                        console.error(err);
+                        this.pages = 0;
                     });
-                })
-                .catch((err) => {
-                    this.$blockUI.Stop();
-                    console.error(err);
-                    this.pages = 0;
-                });
             });
         },
         AddCustomers() {
             this.state = 1;
         },
+
+        formatDate(date) {
+            if (date == null)
+                return null;
+
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2)
+                month = '0' + month;
+            if (day.length < 2)
+                day = '0' + day;
+
+            return [month ,day , year].join('/');
+        },
+
         GetCustomers(pageNo) {
             this.pageNo = pageNo;
             if (this.pageNo === undefined) {
@@ -124,40 +226,44 @@ export default {
                 this.Search = "";
             }
             this.$blockUI.Start();
-            this.$http.GetCustomers(this.pageNo, this.pageSize, this.Search, this.Status)
+            this.$http.GetCustomers(this.pageNo, this.pageSize, this.Search, this.Status, this.formatDate(this.transDate))
                 .then(response => {
-                this.$blockUI.Stop();
-                this.Customers = response.data.customers;
-                this.Customers.forEach(function (element) {
-                    element.checkbox = false;
+                    this.$blockUI.Stop();
+                    this.Customers = response.data.customers;
+                    this.Customers.forEach(function (element) {
+                        element.checkbox = false;
+                    });
+                    this.pages = response.data.count;
+                })
+                .catch((err) => {
+                    this.$blockUI.Stop();
+                    console.error(err);
+                    this.pages = 0;
                 });
-                this.pages = response.data.count;
-            })
-            .catch((err) => {
-                this.$blockUI.Stop();
-                console.error(err);
-                this.pages = 0;
-            }); 
         },
 
         check(index) {
             if (index === -1) {
-                //this.selectedAll = !this.selectAll; 
-                for (var i = 0; i < this.Customers.length; i++) {
+                var el = document.querySelectorAll('.checkboxBtn input[type=checkbox]');
+                //el[5].checked = true;
+                //el[5].click();
+                console.log(el);
+                //console.log(el[5].checked);
+                /*for (var i = 0; i < this.Customers.length; i++) {
                     this.Customers[i].checkbox = !this.selectAll;
-                }
-
-                //this.$el.querySelector('.ttt input[type=checkbox]').click();
-                //console.log(el);
+                    el[i].checked = !this.selectAll;
+                }*/
             }
-            else
-            {
+            else {
                 this.Customers[index].checkbox = !this.Customers[index].checkbox;
             }
             console.log(this.Customers);
+        },
+
+        changePageNumbers(pageNumbers) {
+            this.pageSize = pageNumbers;
+            this.GetCustomers(this.pageNo);
         }
-
-
-       
-    }    
+    }
 }
+    ;

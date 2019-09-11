@@ -13,24 +13,51 @@
                     
                     <div class="headerCustom">
                         <div class="title">
-                            <div class="col-sm-4">
-                                <el-input placeholder="رقم الهاتف" v-model="Search"></el-input>
+                            <div class="row">
+                                <div class="col-sm-4"  style="text-align: right;">
+                                    <el-input placeholder="رقم الهاتف" v-model="Search"></el-input>
+                                </div>
+                                <div class="col-sm-1"  style="text-align: right;">
+                                    <el-button type="primary" icon="el-icon-search" @click.prevent="GetCustomers(pageNo)"> بحـث </el-button>
+                                </div>
+                                <div class="col-sm-2"  style="text-align: right;">
+                                    <el-select style="width: 200px;" v-model="Status" @change="GetCustomers(pageNo)" filterable placeholder="الحالة">
+                                        <el-option v-for="item in [{id:-1,userType:'الكل'},{id:1,userType:'تأكيد مبدئي'},{id:2,userType:'تأكيد نهائي'},{id:3,userType:'مرفوض'}]"
+                                                   :key="item.id"
+                                                   :label="item.userType"
+                                                   :value="item.id">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                                <div class="col-sm-3" style="text-align: right;">
+                                    <el-date-picker v-model="transDate"
+                                                    type="date"
+                                                    style="width:200px"
+                                                    placeholder="أدخل تاريخ الحركة">
+                                    </el-date-picker>
+                                </div>
+                                <div class="col-sm-2" style="text-align: left;">
+                                    <el-button v-if="(loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rm == 1)" type="primary" @click.prevent="AddCustomers()">إضافة زبون</el-button>
+                                </div>
                             </div>
-                            <div class="col-sm-1">
-                                <el-button type="primary" icon="el-icon-search" @click.prevent="GetCustomers(pageNo)"> بحـث </el-button>
-                            </div>
-                            <el-button v-if="(loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rm == 1)" type="primary" @click.prevent="AddCustomers()">إضافة زبون</el-button>
-                            <div class="col-sm-2">
-                                <el-select style="width: 200px;" v-model="Status" @change="GetCustomers(pageNo)" filterable placeholder="الحالة">
-                                    <el-option v-for="item in [{id:-1,userType:'الكل'},{id:1,userType:'تأكيد مبدئي'},{id:2,userType:'تأكيد نهائي'},{id:3,userType:'مرفوض'}]"
-                                               :key="item.id"
-                                               :label="item.userType"
-                                               :value="item.id">
-                                    </el-option>
-                                </el-select>
+                            <div class="row">
+                                <div class="col-sm-1" >
+                                    <el-select style="margin:15px;width: 140px;" v-model="pageNumbers" @change="changePageNumbers(pageNumbers)" placeholder="عرض كـ">
+                                        <el-option v-for="item in [{id:10,number:'عرض 10 صفوف'},{id:25,number:'عرض 25 صف'},{id:50,number:'عرض 50 صف'},{id:100,number:'عرض 100 صف'}]"
+                                                   :key="item.id"
+                                                   :label="item.number"
+                                                   :value="item.id">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                                <div class="col-sm-1"  style="margin-right:15px;">
+                                    <el-button v-if="(loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" style="margin:15px;" type="primary" icon="el-icon-check" @click.prevent="LastConfirmAll()"> تأكيد نهائي </el-button>
+                                </div>
+                                <div class="col-sm-1" style="margin-right:15px;">
+                                    <el-button v-if="(loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" style="margin:15px;" type="danger" icon="el-icon-check" @click.prevent="RejectCustomerAll()"> رفض </el-button>
+                                </div>
                             </div>
                         </div>
-                        <p class="category"></p>
                     </div>
                     <div style="padding-left:22px">
                         <!--view companet-->
@@ -40,7 +67,7 @@
                             </el-alert>
                         </div>
 
-                        <table id="customers" v-if="Customers!=0">
+                        <table id="customers" v-if="Customers!=0" style="margin-top:15px;">
                             <tr>
                                 <th style="text-align: center; vertical-align: middle;"># <el-checkbox v-model="selectAll" @change="check(-1)"></el-checkbox></th>
                                 <th style="text-align: center; vertical-align: middle;">الاسم</th>
@@ -54,7 +81,7 @@
                             
                                 <tr v-for="b,index in Customers">
                                     <td style="text-align: center; vertical-align: middle;">
-                                        {{index+1}} <el-checkbox class="ttt" @change="check(index)"></el-checkbox>
+                                        {{index+1}} <el-checkbox class="checkboxBtn" @change="check(index)"></el-checkbox>
                                     </td>
                                     <td style="text-align: center; vertical-align: middle;">{{b.firstName + " " +  b.fatherName + " " + b.surName}}</td>
                                     <td style="text-align: center; vertical-align: middle;">{{b.birthDate | moment}}</td>
@@ -108,9 +135,7 @@
                                         <a title="رفض" v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" href="#" @click.prevent="RejectCustomer(b.bankActionId)"><i class="fa fa-remove"></i></a>
                                         <a title="تأكيد نهائي" v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" href="#" @click.prevent="LastConfirm(b.bankActionId)"><i class="fa fa-check"></i></a>
                                     </td>
-
                                 </tr>
-                           
                         </table>
                     </div>
                     <div style="text-align: center;padding-bottom:11px;padding-top:20px;">
@@ -121,6 +146,9 @@
                                        :total="pages"
                                        @current-change="GetCustomers($event)">
                         </el-pagination>
+                        <div style="font-size: 18px; background-color: #dcd6d633; border: solid #dcd6d633; margin: 16px; text-align: right; padding: 6px;">
+                            رقم الصفحة: {{pageNo}} | العدد الإجمالي: {{pages + " زبون "}}
+                        </div>
                     </div>
                 </div>
             </div>

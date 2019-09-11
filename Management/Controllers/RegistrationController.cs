@@ -36,7 +36,7 @@ namespace Management.Controllers
         }
 
         [HttpGet("Get")]
-        public IActionResult Get(int pageNo, int pageSize, string search, int status)
+        public IActionResult Get(int pageNo, int pageSize, string search, int status, string transDate)
         {
             try
             {
@@ -45,6 +45,10 @@ namespace Management.Controllers
                 {
                     return StatusCode(401, "الرجاء الـتأكد من أنك قمت بتسجيل الدخول");
                 }
+
+                DateTime? TransDate = null;
+                if ( !string.IsNullOrEmpty(transDate) && DateTime.TryParse(transDate, out DateTime temp))
+                    TransDate = DateTime.Parse(transDate);
 
                 var bankUser = (from rec in db.BanksysUsers where rec.UserId == userId
                                 select  rec).SingleOrDefault();
@@ -72,6 +76,7 @@ namespace Management.Controllers
                                                           BranchName = a.Branch.Name,
                                                           BankName = a.Branch.Bank.Name,
                                                           ActionDate = a.ActionDate.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
+                                                          ActionDateTime = a.ActionDate,
                                                           a.ActionType,
                                                           a.UserType,
                                                           a.Description,
@@ -91,6 +96,9 @@ namespace Management.Controllers
                         type = 0;
                     if (type != -1)
                         regsTrns = regsTrns.Where(t => t.Status == type);
+
+                    if (TransDate != null)
+                        regsTrns = regsTrns.Where(t => t.AllActions.Where(v => v.ActionDateTime.Date == TransDate.Value.Date).Count() > 0);
 
                     if (search != null && !search.Equals("") && !search.Equals("undefined"))
                         regsTrns = regsTrns.Where(t => t.Phone.Contains(search));
@@ -117,7 +125,7 @@ namespace Management.Controllers
                                         rec.PersonalInfo.Nid,
                                         rec.PersonalInfo.Phone,
                                         LastModifiedOn = rec.ActionDate.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
-                                        
+                                        rec.ActionDate,
                                         AllActions = (from a in db.BanksysBankActions
                                                       where a.PersonalInfoId == rec.PersonalInfo.Id && (a.ActionType == 0 || a.ActionType == 1 || a.ActionType == 2)
                                                       select new
@@ -126,6 +134,7 @@ namespace Management.Controllers
                                                           BranchName = a.Branch.Name,
                                                           BankName = a.Branch.Bank.Name,
                                                           ActionDate = a.ActionDate.ToString("dd'/'MM'/'yyyy hh:mm:ss"),
+                                                          ActionDateTime = a.ActionDate,
                                                           a.ActionType,
                                                           a.UserType,
                                                           a.Description,
@@ -145,9 +154,12 @@ namespace Management.Controllers
                     if (type != -1)
                         regsTrns = regsTrns.Where(t => t.Status == type);
 
+                    if (TransDate != null )
+                        regsTrns = regsTrns.Where(t => t.AllActions.Where(v => v.ActionDateTime.Date == TransDate.Value.Date).Count() > 0);
+
                     if (search != null && !search.Equals("") && !search.Equals("undefined"))
                          regsTrns = regsTrns.Where(t => t.Phone.Contains(search));
-
+                    
                     int count = regsTrns.Count();
                     regsTrns = regsTrns.Skip((pageNo - 1) * pageSize).Take(pageSize);
 
@@ -177,6 +189,7 @@ namespace Management.Controllers
                                                           BranchName = a.Branch.Name,
                                                           BankName = a.Branch.Bank.Name,
                                                           ActionDate = a.ActionDate.ToString("dd'/'MM'/'yyyy hh:mm:ss"),
+                                                          ActionDateTime = a.ActionDate,
                                                           a.ActionType,
                                                           a.UserType,
                                                           a.Description,
@@ -195,6 +208,9 @@ namespace Management.Controllers
                         type = 0;
                     if (type != -1)
                         regsTrns = regsTrns.Where(t => t.Status == type);
+
+                    if (TransDate != null)
+                        regsTrns = regsTrns.Where(t => t.AllActions.Where(v => v.ActionDateTime.Date == TransDate.Value.Date).Count() > 0);
 
                     if (search != null && !search.Equals("") && !search.Equals("undefined"))
                         regsTrns = regsTrns.Where(t => t.Phone.Contains(search));
