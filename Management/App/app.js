@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueI18n from 'vue-i18n'
 import VueRouter from 'vue-router';
 import ElementUI from 'element-ui';
-import Vuetify from 'vuetify'
+import Vuetify from 'vuetify';
 import locale from 'element-ui/lib/locale/lang/en'
 import BlockUIService from './Shared/BlockUIService.js';
 import Layout from './Components/Layout/Layout.vue';
@@ -12,7 +12,7 @@ import Branch from './Components/Branch/Branch.vue';
 import User from './Components/User/User.vue';
 import CashIn from './Components/CashIn/CashIn.vue';
 import EditUsersProfile from './Components/User/EditUsersProfile/EditUsersProfile.vue';
-//import ReSetPassword from './Components/User/ReSetPassword/ReSetPassword.vue';
+import ReSetPassword from './Components/User/ReSetPassword/ReSetPassword.vue';
 import Registration from './Components/Registration/Registration.vue';
 import CashInChecker from './Components/CashInChecker/CashInChecker.vue';
 
@@ -51,8 +51,9 @@ const router = new VueRouter({
         { path: '/CashIn', component: CashIn },
         { path: '/Registration', component: Registration },
         { path: '/CashInChecker', component: CashInChecker },
-        { path: '/EditUsersProfile', component: EditUsersProfile }
-        //{ path: '/ReSetPassword', component: ReSetPassword }
+        { path: '/EditUsersProfile', component: EditUsersProfile },
+        { path: '/ReSetPassword', component: ReSetPassword }
+      
         ]
 
 });
