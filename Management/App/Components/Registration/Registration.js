@@ -36,6 +36,7 @@ export default {
     },
     data() {
         return {
+            Status: '',
             loginDetails: {},
             pageNo: 1,
             pageSize: 10,
@@ -43,10 +44,10 @@ export default {
             Customers: [],
             state: 0,
             Search: null,
+            selectAll: false
         };
     },
     methods: {
-
         LastConfirm(BankActionId) {
             this.$confirm('هل انت متأكد من التأكيد النهائي لهذه الحركة؟', 'تـحذير', {
                 confirmButtonText: 'نـعم',
@@ -121,18 +122,35 @@ export default {
                 this.Search = "";
             }
             this.$blockUI.Start();
-            this.$http.GetCustomers(this.pageNo, this.pageSize, this.Search)
+            this.$http.GetCustomers(this.pageNo, this.pageSize, this.Search, this.Status)
                 .then(response => {
                 this.$blockUI.Stop();
                 this.Customers = response.data.customers;
+                this.Customers.forEach(function (element) {
+                    element.checkbox = false;
+                });
                 this.pages = response.data.count;
             })
             .catch((err) => {
                 this.$blockUI.Stop();
                 console.error(err);
                 this.pages = 0;
-            });
+            }); 
         },
+
+        check(index) {
+            /*if (index === -1) {
+                this.selectAll = !this.selectAll; 
+                for (var i = 0; i < this.Customers.length; i++) {
+                    this.Customers[i].checkbox = true;
+                }
+            }
+            else
+            {*/
+                this.Customers[index].checkbox = !this.Customers[index].checkbox;
+            //}
+            console.log(this.Customers);
+        }
 
 
        

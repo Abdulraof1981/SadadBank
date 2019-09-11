@@ -129,14 +129,16 @@ namespace Management.Controllers
         }
 
       
-        [HttpGet("GetAllBranchsByBankId/{BankId}")]
-        public IActionResult GetAllBranchsByBankId(long BankId)
+        [HttpGet("GetAllBranchsByBankId/{userId}")]
+        public IActionResult GetAllBranchsByBankId(long userId)
         {
             try
             {
-                var Branchs = db.BanksysBranch.Where(y => y.Status == 1 && y.BankId == BankId).Select(
-                    x => new
-                    {
+                var BankId = (from u in db.BanksysUsers where u.UserId == userId select 
+                              u.Branch.BankId
+                              ).SingleOrDefault();
+                var Branchs = db.BanksysBranch.Where(y => y.Status == 1 && y.BankId == BankId).Select (
+                    x => new {
                         x.BranchId,
                         x.Name
                     }).ToList();

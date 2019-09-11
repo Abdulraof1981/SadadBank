@@ -24,7 +24,7 @@
                             <div class="col-lg-4">
                                 <el-form-item class="form-group" prop="LoginName">
                                     <label class="control-label">اسم الدخول</label>
-                                    <el-input placeholder="اسم الدخول" v-model="ruleForm.LoginName" style="width:110%"></el-input>
+                                    <el-input style="width:110%; color:black;" :disabled="true" placeholder="اسم الدخول" v-model="ruleForm.LoginName"></el-input>
                                 </el-form-item>
                             </div>
                             <div class="col-lg-4">
@@ -36,7 +36,7 @@
                             <div class="col-lg-4">
                                 <el-form-item class="form-group" prop="Email">
                                     <label class="control-label">البريد الالكتروني</label>
-                                    <el-input placeholder="البريد الالكتروني" v-model="ruleForm.Email" style="width:110%"></el-input>
+                                    <el-input style="width:110%; color:black;" :disabled="true" placeholder="البريد الالكتروني" v-model="ruleForm.Email" ></el-input>
                                 </el-form-item>
                             </div>
                         </div>
@@ -142,6 +142,7 @@
                                                     <th style="text-align: center; vertical-align: middle;">تسجيل زبون - نهائي</th>
                                                     <th style="text-align: center; vertical-align: middle;">تعبئه نقديه - مبدئي</th>
                                                     <th style="text-align: center; vertical-align: middle;">تعبئه نقديه - نهائي</th>
+                                                    <th style="text-align: center; vertical-align: middle;">عمليات</th>
                                                 </tr>
                                                 <tr v-for="u in TablePermissions">
                                                     <td style="text-align: center; vertical-align: middle;">
@@ -168,26 +169,28 @@
                                                         <el-tag type="success" v-if="u.ExtraPer.includes(4)">Active</el-tag>
                                                         <el-tag type="danger" v-if="!u.ExtraPer.includes(4)">Not Active</el-tag>
                                                     </td>
+                                                    <td style="text-align: center; vertical-align: middle;">
+                                                        <a title="حذف" href="#" @click.prevent="RemovePermission(u.BranchId)"><i class="fa fa-remove"></i></a>
+                                                    </td>
                                                 </tr>
                                             </table>
                                             <el-col :span="5" style="margin-top: 4%;margin-bottom: 4%;" v-if="SelecteUserType!=1 && IsHaveExtraPermisssions">
-                                                <el-button @click="resetForm('ruleForm')">إلـغاء</el-button>
+                                                <!--<el-button @click="resetForm('ruleForm')">إلـغاء</el-button>-->
                                                 <el-button type="primary" @click="submitForm('ruleForm')">حفـظ</el-button>
                                             </el-col>
                                         </div>
                                     </el-collapse-item>
                                 </el-collapse>
-
                             </div>
 
                         </div>
                         <el-col :span="5" style="margin-top: 4%;margin-bottom: 4%;" v-if="SelecteUserType==1 || !IsHaveExtraPermisssions">
-                            <el-button @click="resetForm('ruleForm')">إلـغاء</el-button>
+                            <!--<el-button @click="resetForm('ruleForm')">إلـغاء</el-button>-->
                             <el-button type="primary" @click="submitForm('ruleForm')">حفـظ</el-button>
                         </el-col>
-                    </el-form>
+                        </el-form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>

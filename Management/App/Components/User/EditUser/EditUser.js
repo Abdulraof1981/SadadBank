@@ -1,6 +1,7 @@
 ﻿export default {
     name: 'EditUsers',    
     created() {
+        this.GetAllBranch();
         this.GetUserData();
     },
     data() {
@@ -70,8 +71,7 @@
             this.$http.GetUserData(this.$parent.userIdForEdit)
                 .then(response => {
                     this.$blockUI.Stop();
-
-                    this.BankId = response.data.user.branch.bankId;
+                    
                     this.SelecteUserType = response.data.user.userType;
                     
                     this.ruleForm.LoginName = response.data.user.loginName;
@@ -96,30 +96,26 @@
                         this.ruleForm.Permissions.push(4);
                     }
                     
-                    for (var element in response.data.user.savedPermissions) {
-                        var ExtrPer = [];
+                    for (var i = 0; i < response.data.user.savedPermissions.length; i++) { 
+                        var element = response.data.user.savedPermissions[i];
+                    
+                        this.BranchId = element.branchId;
+                        
                         if (element.registerMaker == 1) {
-                            ExtrPer.push(1);
+                            this.ExtraPermissions.push(1);
                         }
                         if (element.registerChecker == 1) {
-                            ExtrPer.push(2);
+                            this.ExtraPermissions.push(2);
                         }
                         if (element.cashInMaker == 1) {
-                            ExtrPer.push(3);
+                            this.ExtraPermissions.push(3);
                         }
                         if (element.cashInChecker == 1) {
-                            ExtrPer.push(4);
+                            this.ExtraPermissions.push(4);
                         }
 
-                        console.log(element.branch);
-
-                        this.TablePermissions.push({ PermissionId: this.SelecteUserType, BankName: element.branch.bank.name, BranchName: element.branch.name, ExtraPer: ExtrPer });
-
-                        
-
-                        this.SavedPermissions.push({ BranchId: element.branch.name, ExtrPer: ExtrPer } );
-                    } 
-                    this.GetAllBranch();
+                        this.AddExtraPermissions();
+                    }
                 })
                 .catch((err) => {
                     this.$blockUI.Stop();
@@ -128,13 +124,11 @@
         },
 
         ShowSaveButton() {
-            //console.log(this.IsHaveExtraPermisssions);
             if (this.IsHaveExtraPermisssions) {
                 this.IsHaveExtraPermisssions = false;
             } else {
                 this.IsHaveExtraPermisssions = true;
             }
-            //console.log(this.IsHaveExtraPermisssions);
         },
 
         GetUserPermission(id, ExtraPermission) {
@@ -151,12 +145,7 @@
         FilterMorePerm() {
             this.ExtraPermissions = [];
         },
-
-        //ShowSaveButton() {
-            
-        //},
-
-
+        
         AddExtraPermissions() {
             if (!this.BranchId) {
                 this.$message({
@@ -164,7 +153,6 @@
                     dangerouslyUseHTMLString: true,
                     message: '<strong>' + ' خطأ : الرجاء اختيار اسم الفرع ' + '</strong>'
                 });
-
                 return;
             }
 
@@ -195,9 +183,11 @@
             var obj = {
                 PermissionId: this.SelecteUserType,
                 BankName: this.bankAddObj.name,
+                BranchId: this.Branchs.find(x => x.branchId === this.BranchId).branchId,
                 BranchName: this.Branchs.find(x => x.branchId === this.BranchId).name,
                 ExtraPer: this.ExtraPermissions
             };
+            
             var obj2 = {
                 //PermissionId: this.$parent.SelecteUserType,
               
@@ -215,10 +205,10 @@
 
         GetAllBranch() {
             this.$blockUI.Start();
-            this.$http.GetAllBranchsByBankId(this.BankId)
+            this.$http.GetAllBranchsByBankId(this.$parent.userIdForEdit)
                 .then(response => {
                     this.$blockUI.Stop();
-                    this.Branchs = response.data.branchs;
+                    this.Branchs = response.data.branchs
                 })
                 .catch((err) => {
                     this.$blockUI.Stop();
@@ -226,16 +216,26 @@
                     this.pages = 0;
                 });
         },
-
-
+        
         Back() {
             this.$parent.state = 0;
         },
 
+        RemovePermission(branchId) {
+            this.$confirm('هل انت متأكد من حذف هذه الصلاحية؟', 'تـحذير', {
+                confirmButtonText: 'نـعم',
+                cancelButtonText: 'لا',
+                type: 'warning'
+            }).then(() => {
+                this.TablePermissions = this.TablePermissions.filter(x => x.BranchId !== branchId);
+                this.SavedPermissions = this.SavedPermissions.filter(x => x.BranchId !== branchId);
+            });
+        },
+
         submitForm(formName) {
-            console.log(this.ruleForm);
-            console.log(this.SavedPermissions);
-            console.log(this.TablePermissions);
+           
+            //console.log(this.SavedPermissions);
+            //console.log(this.TablePermissions);
             /*if (this.ConfirmPassword != this.ruleForm.Password) {
                 this.$message({
                     type: 'error',
@@ -244,16 +244,17 @@
                 });
                 return;
             }*/
-
-
-            this.ruleForm.userType = this.$parent.SelecteUserType;
-            this.ruleForm.BranchId = this.$parent.BranchId;
+            
+            this.ruleForm.userType = this.SelecteUserType;
+            this.ruleForm.BranchId = this.BranchId;
             this.ruleForm.SavedPermissions = this.SavedPermissions;
             
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     this.$blockUI.Start();
-                    this.$http.AddUser(this.ruleForm)
+                    //console.log(this.ruleForm);
+
+                    this.$http.EditUser(this.ruleForm)
                         .then(response => {
                             this.$blockUI.Stop();
                             this.$parent.state = 0;
@@ -291,11 +292,11 @@
             });
         },
 
-        resetForm(formName) {
+        /*resetForm(formName) {
             this.TablePermissions = [];
             this.SavedPermissions = [];
             this.$refs[formName].resetFields();
-        }
+        }*/
 
 
 

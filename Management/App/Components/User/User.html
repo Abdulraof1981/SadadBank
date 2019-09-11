@@ -128,14 +128,13 @@
                                     </div>
                                 </td>
 
-                                <td style="text-align: center; vertical-align: middle;width: 9%;
-}">
+                                <td style="text-align: center; vertical-align: middle;width: 9%;">
                                     <el-popover placement="right"
                                                 width="600"
                                                 trigger="click">
 
                                         <div style="margin: 35px;font-size: 35px;" v-if="u.userBranch==0">
-                                            <el-alert title="عفــوا! لاتوجد صلاحيات اخري"
+                                            <el-alert title="عفــوا! لاتوجد صلاحيات اخرى"
                                                       type="info">
                                             </el-alert>
                                         </div>
@@ -175,10 +174,10 @@
                                         <el-button v-if="u.userType!=1" slot="reference" style="border:unset;background:unset"><i class="fa fa-info-circle"></i></el-button>
                                     </el-popover>
 
-                                    <a title="تعديل" href="#" @click.prevent="EditUser(u.userId)"><i class="fa fa-edit"></i></a>
+                                    <a v-if="u.userType!=1" title="تعديل" href="#" @click.prevent="EditUser(u.userId)"><i class="fa fa-edit"></i></a>
                                     <a title="حذف" href="#" @click.prevent="RemoveUser(u.userId)"><i class="fa fa-remove"></i></a>
 
-                                    <a title="المستخدم غير مفعل" href="#" @click.prevent="ActiveUser(1,u.userId)"><i class="fa fa-lock" v-if="u.status==0"></i></a>
+                                    <a title="المستخدم غير مفعل" href="#" @click.prevent="ActiveUser(1,u.userId)"><i class="fa fa-lock" v-if="u.status==2 || u.status==0"></i></a>
                                     <a title="المستخدم مفعل" href="#" @click.prevent="ActiveUser(0,u.userId)"><i class="fa fa-unlock" v-if="u.status==1"></i></a>
                                 </td>
                             </tr>

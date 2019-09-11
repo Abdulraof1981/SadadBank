@@ -44,6 +44,11 @@ export default {
         return axios.get(`/Api/Admin/User/GetData?userId=${userId}`);
     },
 
+    EditUser(User) {
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
+        return axios.post('/Api/Admin/User/EditUser', User);
+    },
+    
     // **************************** Bank *****************************
     GetBank(pageNo, pageSize) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
@@ -112,9 +117,9 @@ export default {
 
 
     //********************* Registration Service *****************************
-    GetCustomers(pageNo, pageSize, Search) {
+    GetCustomers(pageNo, pageSize, Search, Status) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
-        return axios.get(`/Api/Admin/Registration/Get?pageno=${pageNo}&pagesize=${pageSize}&search=${Search}`);
+        return axios.get(`/Api/Admin/Registration/Get?pageno=${pageNo}&pagesize=${pageSize}&search=${Search}&status=${Status}`);
     },
     RejectCustomer(BankActionId) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');

@@ -36,7 +36,7 @@ namespace Management.Controllers
         }
 
         [HttpGet("Get")]
-        public IActionResult Get(int pageNo, int pageSize, string search)
+        public IActionResult Get(int pageNo, int pageSize, string search, int status)
         {
             try
             {
@@ -62,33 +62,48 @@ namespace Management.Controllers
                                         rec.PersonalInfo.BirthDate,
                                         rec.PersonalInfo.Nid,
                                         rec.PersonalInfo.Phone,
-                                        LastModifiedOn = rec.PersonalInfo.LastModifiedOn.Value.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
+                                        LastModifiedOn = rec.ActionDate.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
 
-                                        AllActions = (from a in db.BanksysBankActions where a.PersonalInfoId == rec.PersonalInfo.Id && (a.ActionType == 0 || a.ActionType == 1 || a.ActionType == 2)
-                                                select new
-                                                {
-                                                    UserFullName = a.User.FullName,
-                                                    BranchName = a.Branch.Name,
-                                                    BankName = a.Branch.Bank.Name,
-                                                    ActionDate = a.ActionDate.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
-                                                    a.ActionType,
-                                                    a.UserType,
-                                                    a.Description,
-                                                }).ToList(),
+                                        AllActions = (from a in db.BanksysBankActions
+                                                      where a.PersonalInfoId == rec.PersonalInfo.Id && (a.ActionType == 0 || a.ActionType == 1 || a.ActionType == 2)
+                                                      select new
+                                                      {
+                                                          UserFullName = a.User.FullName,
+                                                          BranchName = a.Branch.Name,
+                                                          BankName = a.Branch.Bank.Name,
+                                                          ActionDate = a.ActionDate.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
+                                                          a.ActionType,
+                                                          a.UserType,
+                                                          a.Description,
+                                                      }).ToList(),
 
                                         rec.PersonalInfo.Status,
                                         rec.Description,
                                         rec.BankActionId
                                     });
+
+                    int type = -1;
+                    if (status == 1)
+                        type = 2;
+                    else if (status == 2)
+                        type = 3;
+                    else if (status == 3)
+                        type = 0;
+                    if (type != -1)
+                        regsTrns = regsTrns.Where(t => t.Status == type);
+
                     if (search != null && !search.Equals("") && !search.Equals("undefined"))
                         regsTrns = regsTrns.Where(t => t.Phone.Contains(search));
-                    
-                    return Ok(new { Customers = regsTrns.Skip((pageNo - 1) * pageSize).Take(pageSize).ToList(), count = regsTrns.Count() });
+
+                    int count = regsTrns.Count();
+                    regsTrns = regsTrns.Skip((pageNo - 1) * pageSize).Take(pageSize);
+
+                    return Ok(new { Customers = regsTrns.ToList(), count });
                 }
                 else if (bankUser.UserType == 2) // Bank Manager
                 {
                     long BankId = (from b in db.BanksysBranch where b.BranchId == bankUser.BranchId select b.BankId).SingleOrDefault().Value;
-                    
+
                     var regsTrns = (from rec in db.BanksysBankActions
                                     where rec.ActionType == 1 && rec.PersonalInfo.Reference == 3 && rec.User.Branch.BankId == BankId
                                     orderby rec.PersonalInfo.LastModifiedOn descending
@@ -101,8 +116,8 @@ namespace Management.Controllers
                                         rec.PersonalInfo.BirthDate,
                                         rec.PersonalInfo.Nid,
                                         rec.PersonalInfo.Phone,
-                                        LastModifiedOn = rec.PersonalInfo.LastModifiedOn.Value.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
-
+                                        LastModifiedOn = rec.ActionDate.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
+                                        
                                         AllActions = (from a in db.BanksysBankActions
                                                       where a.PersonalInfoId == rec.PersonalInfo.Id && (a.ActionType == 0 || a.ActionType == 1 || a.ActionType == 2)
                                                       select new
@@ -115,14 +130,28 @@ namespace Management.Controllers
                                                           a.UserType,
                                                           a.Description,
                                                       }).ToList(),
-
                                         rec.PersonalInfo.Status,
                                         rec.Description,
                                         rec.BankActionId
                                     });
+
+                    int type = -1;
+                    if (status == 1)
+                        type = 2;
+                    else if (status == 2)
+                        type = 3;
+                    else if (status == 3)
+                        type = 0;
+                    if (type != -1)
+                        regsTrns = regsTrns.Where(t => t.Status == type);
+
                     if (search != null && !search.Equals("") && !search.Equals("undefined"))
-                        regsTrns = regsTrns.Where(t => t.Phone.Contains(search));
-                    return Ok(new { Customers = regsTrns.Skip((pageNo - 1) * pageSize).Take(pageSize).ToList(), count = regsTrns.Count() });
+                         regsTrns = regsTrns.Where(t => t.Phone.Contains(search));
+
+                    int count = regsTrns.Count();
+                    regsTrns = regsTrns.Skip((pageNo - 1) * pageSize).Take(pageSize);
+
+                    return Ok(new { Customers = regsTrns.ToList(), count });
                 }
                 else if (bankUser.UserType == 3) // Bank Empployee
                 {
@@ -138,7 +167,7 @@ namespace Management.Controllers
                                         rec.PersonalInfo.BirthDate,
                                         rec.PersonalInfo.Nid,
                                         rec.PersonalInfo.Phone,
-                                        LastModifiedOn = rec.PersonalInfo.LastModifiedOn.Value.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
+                                        LastModifiedOn = rec.ActionDate.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
 
                                         AllActions = (from a in db.BanksysBankActions
                                                       where a.PersonalInfoId == rec.PersonalInfo.Id && (a.ActionType == 0 || a.ActionType == 1 || a.ActionType == 2)
@@ -157,9 +186,23 @@ namespace Management.Controllers
                                         rec.Description,
                                         rec.BankActionId
                                     });
+                    int type = -1;
+                    if (status == 1)
+                        type = 2;
+                    else if (status == 2)
+                        type = 3;
+                    else if (status == 3)
+                        type = 0;
+                    if (type != -1)
+                        regsTrns = regsTrns.Where(t => t.Status == type);
+
                     if (search != null && !search.Equals("") && !search.Equals("undefined"))
                         regsTrns = regsTrns.Where(t => t.Phone.Contains(search));
-                    return Ok(new { Customers = regsTrns.Skip((pageNo - 1) * pageSize).Take(pageSize).ToList(), count = regsTrns.Count() });
+
+                    int count = regsTrns.Count();
+                    regsTrns = regsTrns.Skip((pageNo - 1) * pageSize).Take(pageSize);
+
+                    return Ok(new { Customers = regsTrns.ToList(), count });
                 }
                 return Ok(new { count = 0 });
             }
