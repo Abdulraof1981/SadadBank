@@ -118,7 +118,7 @@
                                 </td>
 
                                 <td style="text-align: center;"><a :href="'http://localhost:4810/Api/Admin/User/' + u.userId + '/image'"><img :src="'http://localhost:4810/Api/Admin/User/' + u.userId + '/image'" style="height: 80px; width:120px" /></a></td>
-
+                              
                                 <td style="text-align: center; vertical-align: middle;">
                                     <div v-if="u.status==1">
                                         <el-tag type="success">Active</el-tag>
@@ -177,7 +177,7 @@
 
                                     <a title="تعديل" href="#" @click.prevent="EditUser(u.userId)"><i class="fa fa-edit"></i></a>
                                     <a title="حذف" href="#" @click.prevent="RemoveUser(u.userId)"><i class="fa fa-remove"></i></a>
-
+                                  
                                     <a title="المستخدم غير مفعل" href="#" @click.prevent="ActiveUser(1,u.userId)"><i class="fa fa-lock" v-if="u.status==0"></i></a>
                                     <a title="المستخدم مفعل" href="#" @click.prevent="ActiveUser(0,u.userId)"><i class="fa fa-unlock" v-if="u.status==1"></i></a>
                                 </td>
