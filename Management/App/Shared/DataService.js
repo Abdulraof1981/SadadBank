@@ -160,9 +160,14 @@ export default {
     UploadImage(user) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
         return axios.post('/Api/Admin/User/UploadImage', user);
+    },
+
+    EditUserProfile(user) {
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
+        return axios.post('/Api/Admin/User/EditUserProfile', user);
+    },
+        ReSetPassword(OldPassword,NewPassword) {
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
+            return axios.post('/Api/Admin/User/ReSetPassword', OldPassword, NewPassword);
     }
-
-
-
-
 }

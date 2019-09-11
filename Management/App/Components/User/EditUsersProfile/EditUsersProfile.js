@@ -1,14 +1,14 @@
 ﻿export default {
     name: 'EditUsersProfile',    
     created() {
-        this.GetAllBranch();
+    
        
         var loginDetails = sessionStorage.getItem('currentUser');
         if (loginDetails != null) {
            
             this.loginDetails = JSON.parse(loginDetails);
             this.ruleForm.FullName = this.loginDetails.fullName;
-            this.ruleForm.Phone = this.loginDetails.phone;
+            //this.ruleForm.Phone = this.loginDetails.phone;
             this.ruleForm.LoginName = this.loginDetails.loginName;
             this.ruleForm.Email = this.loginDetails.email;
             this.ruleForm.Gender = this.loginDetails.gender;
@@ -30,14 +30,8 @@
                 FullName: '',
                 Email: '',
                 DateOfBirth: '',
-                Gender: '',
-                Password: '',
-                userType: '',
-                BranchId: '',
-                Permissions: [],
-                SavedPermissions: '',
-          photo: []
-               
+                Gender: ''
+                                                  
             },
             photo: [],
             rules: {
@@ -67,50 +61,18 @@
     },
     methods: {
 
- 
-
-
-
-   
-
-        //ShowSaveButton() {
-            
-        //},
-
-
- 
-
-
-        GetAllBranch() {
-            this.$http.GetAllBranchsByBankId(this.$parent.BankId)
-                .then(response => {
-                    this.$blockUI.Stop();
-                    this.Branchs = response.data.branchs;
-                })
-                .catch((err) => {
-                    this.$blockUI.Stop();
-                    console.error(err);
-                    this.pages = 0;
-                });
-        },
-
 
         Back() {
             this.$parent.state = 0;
         },
 
         submitForm(formName) {
-   
-
-
-            this.ruleForm.userType = this.$parent.SelecteUserType;
-            this.ruleForm.BranchId = this.$parent.BranchId;
-           
+            
             console.log(this.ruleForm);
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     this.$blockUI.Start();
-                    this.$http.AddUser(this.ruleForm)
+                    this.$http.EditUserProfile(this.ruleForm)
                         .then(response => {
                             this.$blockUI.Stop();
                             this.$parent.state = 0;
