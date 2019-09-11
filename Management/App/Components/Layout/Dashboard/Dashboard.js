@@ -70,9 +70,24 @@
             } else if (root.getAttribute('class') == 'dropdown') {
                 root.setAttribute('class', 'dropdown open');
             }
-        }
+        },
         //****************************************************************
+          openProfile() {
+            var root = document.getElementById("collapseExample");
+            var prof = document.getElementById("profile");
+            if (root.getAttribute('class') == 'collapse show') {
+                prof.setAttribute('aria-expanded', false);
+                root.setAttribute('class', 'collapse');
 
+            } else {
+                root.setAttribute('class', 'collapse show');
+                prof.setAttribute('aria-expanded', true);
+
+            }
+
+
+
+        },
       
     }    
 }

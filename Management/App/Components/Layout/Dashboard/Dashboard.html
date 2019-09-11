@@ -14,7 +14,7 @@
             <a @click="openProfile()" id="profile" class="collapsed"
                data-toggle="collapse" style="cursor: pointer;" aria-expanded="false">
                 <!--href="#collapseExample"-->
-                <span style="font-size: 18px;font-weight: bold;color: linen;">  <b class="caret"></b> {{loginDetails.fullName.slice(0,20)}} </span>
+                <span class="LoginName">{{loginDetails.fullName.slice(0,20)}} <i class="fa fa-caret-down" style="color:white"></i> </span>
             </a>
             <div class="collapse" id="collapseExample" style="">
                 <ul class="nav">

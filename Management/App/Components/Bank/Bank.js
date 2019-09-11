@@ -3,7 +3,19 @@ import moment from 'moment';
 export default {
     name: 'Banks',    
     created() {
+        var loginDetails = sessionStorage.getItem('currentUser');
+        this.loginDetails = JSON.parse(loginDetails);
+        if (loginDetails != null) {
+            this.loginDetails = JSON.parse(loginDetails);
+            if (this.loginDetails.userType != 1) {
+                window.location.href = '/Security/Login';
+            }
+        } else {
+            window.location.href = '/Security/Login';
+        }
+
         this.GetBank(this.pageNo);
+
     },
     components: {
         'add-Bank': addBank,
@@ -19,6 +31,7 @@ export default {
     },
     data() {
         return {
+            loginDetails: {},
             pageNo: 1,
             pageSize: 10,
             pages: 0,  
