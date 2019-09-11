@@ -171,7 +171,7 @@
                                             </tr>
                                         </table>
 
-                                        <el-button v-if="u.userType!=1" slot="reference" style="border:unset;background:unset"><i class="fa fa-info-circle"></i></el-button>
+                                        <el-button v-if="u.userType!=1" slot="reference" style="border:unset;background:unset;padding: unset;"><i class="fa fa-info-circle"></i></el-button>
                                     </el-popover>
 
                                     <a v-if="u.userType!=1" title="تعديل" href="#" @click.prevent="EditUser(u.userId)"><i class="fa fa-edit"></i></a>
