@@ -117,8 +117,8 @@
                                     <el-tag type="danger" v-if="u.cashInChecker!=1">Not Active</el-tag>
                                 </td>
 
-                                <td style="text-align: center;"><a :href="'http://vxb-mwdlr-p17:5001/Api/Admin/User/' + u.userId + '/image'"><img :src="'http://vxb-mwdlr-p17:5001/Api/Admin/User/' + u.userId + '/image'" style="height: 80px; width:120px" /></a></td>
-
+                                <td style="text-align: center;"><a :href="'http://localhost:4810/Api/Admin/User/' + u.userId + '/image'"><img :src="'http://localhost:4810/Api/Admin/User/' + u.userId + '/image'" style="height: 80px; width:120px" /></a></td>
+                              
                                 <td style="text-align: center; vertical-align: middle;">
                                     <div v-if="u.status==1">
                                         <el-tag type="success">Active</el-tag>
