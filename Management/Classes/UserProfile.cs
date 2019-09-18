@@ -19,4 +19,10 @@ namespace Management.Classes
         public long UserId { get; set; }
         public string Photo { get; set; }
     }
+
+    public class ChangePass
+    {
+        public string NewPassword { get; set; }
+        public string OldPassword { get; set; }
+    }
 }

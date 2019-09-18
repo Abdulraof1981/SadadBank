@@ -122,7 +122,13 @@
                                 <img class="avatar border-gray" @change="FileChanged($event)" :src="'http://localhost:4810/Api/Admin/User/' + loginDetails.userId + '/image'" />
                                 <h5 class="title"> {{loginDetails.fullName}}</h5>
 
-                            </a> <p class="description">{{loginDetails.loginName}}</p>
+                            </a> 
+                            <br />
+                            <p class="description">اسم الدخول : {{loginDetails.loginName}}</p>
+                            <!--<p class="description">اسم الفرع : {{loginDetails.userBranch[0].name}}</p>-->
+                            <p class="description" v-if="loginDetails.userType==1">صفة المستخدم : مدير النظام</p>
+                            <p class="description" v-if="loginDetails.userType==2">صفة المستخدم : مدير المصرف</p>
+                            <p class="description" v-if="loginDetails.userType==3">صفة المستخدم : موظف المصرف</p>
                         </div>
                      </div>
                     <hr>

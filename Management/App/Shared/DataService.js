@@ -168,14 +168,17 @@ export default {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
         return axios.post('/Api/Admin/User/EditUserProfile', user);
     },
-        ReSetPassword(OldPassword,NewPassword) {
+    ChangePassword(OldPassword, NewPassword) {
+        console.log(OldPassword);
+        console.log(NewPassword);
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
-            return axios.post('/Api/Admin/User/ReSetPassword', OldPassword, NewPassword);
+        return axios.post(`/Api/Admin/User/ChangePassword`, { OldPassword: OldPassword, NewPassword: NewPassword});
     },
-    ExportExcel(StartDate, EndDate) {
+ ExportExcel(StartDate, EndDate) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
         return axios.get(`/Api/Admin/CashIn/GetCashInCSV/${StartDate}/${EndDate}`);
     }
+
 
 
 
