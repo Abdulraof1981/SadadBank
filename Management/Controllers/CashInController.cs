@@ -595,12 +595,12 @@ namespace Management.Controllers
                 }
                 string sWebRootFolder = _hostingEnvironment.WebRootPath;
                 string sFileName = @"CashInExport.xlsx";
-                string URL = string.Format("{0}://{1}/Excel/{2}", Request.Scheme, Request.Host, sFileName);
-                FileInfo file = new FileInfo(Path.Combine(sWebRootFolder+"\\Excel\\", sFileName));
+                string URL = string.Format("{0}://{1}/{2}", Request.Scheme, Request.Host, sFileName);
+                FileInfo file = new FileInfo(Path.Combine(sWebRootFolder, sFileName));
                 if (file.Exists)
                 {
                     file.Delete();
-                    file = new FileInfo(Path.Combine(sWebRootFolder + "\\Excel\\", sFileName));
+                    file = new FileInfo(Path.Combine(sWebRootFolder, sFileName));
                 }
              
                 IQueryable<BanksysBankActions> BankActionsQuery;
