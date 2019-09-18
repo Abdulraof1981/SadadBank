@@ -55,6 +55,26 @@ export default {
             }
         },
 
+        ExportExcel() {
+            this.$blockUI.Start();
+            this.$http.ExportExcel(this.StartDate,this.EndDate)
+                .then(response => {
+                    this.$blockUI.Stop();
+                    window.location.href = response.data;
+                    //this.refreshOrGet();     
+                })
+                .catch((err) => {
+                    this.$blockUI.Stop();
+                    this.$message({
+                        type: 'info',
+                        dangerouslyUseHTMLString: true,
+                        message: '<strong>' + err.response.data + '</strong>'
+                    });
+                    console.error(err);
+
+                });
+        },
+
         LastConfirm(CashInId) {
             //LastConfirm
             this.$confirm('سيؤدي ذلك إلى التأكيد النهائي للعملية. استمر؟', 'تـحذير', {

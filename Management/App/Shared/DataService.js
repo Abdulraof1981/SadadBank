@@ -171,5 +171,13 @@ export default {
         ReSetPassword(OldPassword,NewPassword) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
             return axios.post('/Api/Admin/User/ReSetPassword', OldPassword, NewPassword);
+    },
+    ExportExcel(StartDate, EndDate) {
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
+        return axios.get(`/Api/Admin/CashIn/GetCashInCSV/${StartDate}/${EndDate}`);
     }
+
+
+
+
 }

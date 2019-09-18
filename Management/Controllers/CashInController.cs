@@ -17,6 +17,11 @@ using System.Text;
 using Newtonsoft.Json.Linq;
 using System.Xml.Linq;
 using Management.Classes;
+using Microsoft.AspNetCore.Hosting;
+using OfficeOpenXml;
+using System.IO;
+using OfficeOpenXml.Style;
+using System.Drawing;
 
 namespace Management.Controllers
 {
@@ -29,12 +34,14 @@ namespace Management.Controllers
         private Models.MpayCashIn _Mpays;
         private Models.settings _Settings;
         private HttpClient client = new HttpClient();
-        public CashInController(wallet2Context context, IOptions<Models.MpayCashIn> MpaysCashIn, IOptions<Models.settings> settings)
+        private readonly IHostingEnvironment _hostingEnvironment;
+        public CashInController(wallet2Context context, IOptions<Models.MpayCashIn> MpaysCashIn, IOptions<Models.settings> settings, IHostingEnvironment hostingEnvironment)
         {
             _Mpays = MpaysCashIn.Value;
             _Settings = settings.Value;
             this.db = context;
             help = new Helper();
+            _hostingEnvironment = hostingEnvironment;
         }
 
 
@@ -586,14 +593,23 @@ namespace Management.Controllers
                 {
                     return StatusCode(401, "الرجاء الـتأكد من أنك قمت بتسجيل الدخول");
                 }
-
+                string sWebRootFolder = _hostingEnvironment.WebRootPath;
+                string sFileName = @"CashInExport.xlsx";
+                string URL = string.Format("{0}://{1}/Excel/{2}", Request.Scheme, Request.Host, sFileName);
+                FileInfo file = new FileInfo(Path.Combine(sWebRootFolder+"\\Excel\\", sFileName));
+                if (file.Exists)
+                {
+                    file.Delete();
+                    file = new FileInfo(Path.Combine(sWebRootFolder + "\\Excel\\", sFileName));
+                }
+             
                 IQueryable<BanksysBankActions> BankActionsQuery;
                 var UserType = this.help.GetCurrentUserType(HttpContext);
                 // admin see every thing
 
 
                 // if date null 
-                if (StartDate == DateTime.MinValue || EndDate == DateTime.MinValue)
+                if (StartDate == null || EndDate == null)
                 {
                     if (UserType == 1)
                     {
@@ -620,7 +636,8 @@ namespace Management.Controllers
                                            select t;
                     }
 
-                } else
+                }
+                else
                 {
                     // if date not null 
                     if (UserType == 1)
@@ -664,9 +681,9 @@ namespace Management.Controllers
                                       t.CashInId,
                                       t.CashIn.Description,
                                       t.Branch,
-                                      BranchName=t.Branch.Name,
+                                      BranchName = t.Branch.Name,
                                       t.Branch.Bank,
-                                      BankName=t.Branch.Bank.Name,
+                                      BankName = t.Branch.Bank.Name,
                                       t.CashIn.Status,
                                       t.ActionDate,
                                       FName = t.CashIn.Personal.Name,
@@ -681,6 +698,180 @@ namespace Management.Controllers
                 {
                     return StatusCode(404, "لا توجد بيانات لهذا التاريخ");
                 }
+
+
+                using (ExcelPackage package = new ExcelPackage(file))
+                {
+                    // add a new worksheet to the empty workbook
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Employee");
+                    //First add the headers
+                    worksheet.Cells[1, 1].Value = "القيمة";
+                    worksheet.Cells[1, 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, 1].Style.Font.Bold = true;
+                    worksheet.Cells[1, 1].Style.Font.Size = 15;
+                    worksheet.Cells[1, 1].AutoFitColumns();
+                    worksheet.Cells[1, 1].Style.Fill.BackgroundColor.SetColor(Color.Orange);
+
+                    worksheet.Cells[1, 2].Value = "رقم الايصال";
+                    worksheet.Cells[1, 2].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, 2].Style.Font.Bold = true;
+                    worksheet.Cells[1, 2].Style.Font.Size = 15;
+                    worksheet.Cells[1, 2].AutoFitColumns();
+                    worksheet.Cells[1, 2].Style.Fill.BackgroundColor.SetColor(Color.Orange);
+
+
+                    worksheet.Cells[1, 3].Value = "الهاتف";
+                    worksheet.Cells[1, 3].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, 3].Style.Font.Bold = true;
+                    worksheet.Cells[1, 3].Style.Font.Size = 15;
+                    worksheet.Cells[1, 3].AutoFitColumns();
+                    worksheet.Cells[1, 3].Style.Fill.BackgroundColor.SetColor(Color.Orange);
+
+
+                    worksheet.Cells[1, 4].Value = "الاسم";
+                    worksheet.Cells[1, 4].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, 4].Style.Font.Bold = true;
+                    worksheet.Cells[1, 4].Style.Font.Size = 15;
+                    worksheet.Cells[1, 4].AutoFitColumns();
+                    worksheet.Cells[1, 4].Style.Fill.BackgroundColor.SetColor(Color.Orange);
+
+
+                    worksheet.Cells[1, 5].Value = "الرقم الوطني";
+                    worksheet.Cells[1, 5].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, 5].Style.Font.Bold = true;
+                    worksheet.Cells[1, 5].Style.Font.Size = 15;
+                    worksheet.Cells[1, 5].AutoFitColumns();
+                    worksheet.Cells[1, 5].Style.Fill.BackgroundColor.SetColor(Color.Orange);
+
+
+
+                    worksheet.Cells[1, 6].Value = "اسم المصرف";
+                    worksheet.Cells[1, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, 6].Style.Fill.BackgroundColor.SetColor(Color.Orange);
+                    worksheet.Cells[1, 6].Style.Font.Bold = true;
+                    worksheet.Cells[1, 6].Style.Font.Size = 15;
+                    worksheet.Cells[1, 6].AutoFitColumns();
+
+                    worksheet.Cells[1, 7].Value = "اسم الفرع";
+                    worksheet.Cells[1, 7].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, 7].Style.Fill.BackgroundColor.SetColor(Color.Orange);
+                    worksheet.Cells[1, 7].Style.Font.Bold = true;
+                    worksheet.Cells[1, 7].Style.Font.Size = 15;
+                    worksheet.Cells[1, 7].AutoFitColumns();
+
+
+                    worksheet.Cells[1, 8].Value = "معلومات اخري";
+                    worksheet.Cells[1, 8].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, 8].Style.Fill.BackgroundColor.SetColor(Color.Orange);
+                    worksheet.Cells[1, 8].Style.Font.Bold = true;
+                    worksheet.Cells[1, 8].Style.Font.Size = 15;
+                    worksheet.Cells[1, 8].AutoFitColumns();
+
+                    worksheet.Cells[1, 9].Value = "تاريخ العملية";
+                    worksheet.Cells[1, 9].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, 9].Style.Fill.BackgroundColor.SetColor(Color.Orange);
+                    worksheet.Cells[1, 9].Style.Font.Bold = true;
+                    worksheet.Cells[1, 9].Style.Font.Size = 15;
+                    worksheet.Cells[1, 9].AutoFitColumns();
+
+
+                    worksheet.Cells[1, 10].Value = "الحالة";
+                    worksheet.Cells[1, 10].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, 10].Style.Fill.BackgroundColor.SetColor(Color.Orange);
+                    worksheet.Cells[1, 10].Style.Font.Bold = true;
+                    worksheet.Cells[1, 10].Style.Font.Size = 15;
+                    worksheet.Cells[1, 10].AutoFitColumns();
+
+                    int i = 2;
+                    foreach (var x in CashInList)
+                    {
+                        worksheet.Cells["A"+i].Value = x.Valuedigits;
+                        worksheet.Cells["A" + i].Style.Font.Size = 12;
+                        worksheet.Cells["A" + i].AutoFitColumns();
+                        worksheet.Cells["A" + i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells["A" + i].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+
+                        worksheet.Cells["B" + i].Value = x.NumInvoiceDep;
+                        worksheet.Cells["B" + i].Style.Font.Size = 12;
+                        worksheet.Cells["B" + i].AutoFitColumns();
+                        worksheet.Cells["B" + i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells["B" + i].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+
+
+                        worksheet.Cells["C" + i].Value = x.Phone;
+                        worksheet.Cells["C" + i].Style.Font.Size = 12;
+                        worksheet.Cells["C" + i].AutoFitColumns();
+                        worksheet.Cells["C" + i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells["C" + i].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+
+                        worksheet.Cells["D" + i].Value = x.FName +" "+x.FatherName+" "+x.SurName;
+                        worksheet.Cells["D" + i].Style.Font.Size = 12;
+                        worksheet.Cells["D" + i].AutoFitColumns();
+                        worksheet.Cells["D" + i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells["D" + i].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+
+                        worksheet.Cells["E" + i].Value = x.Nid;
+                        worksheet.Cells["E" + i].Style.Font.Size = 12;
+                        worksheet.Cells["E" + i].AutoFitColumns();
+                        worksheet.Cells["E" + i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells["E" + i].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+
+                        worksheet.Cells["F" + i].Value = x.BankName;
+                        worksheet.Cells["F" + i].Style.Font.Size = 12;
+                        worksheet.Cells["F" + i].AutoFitColumns();
+                        worksheet.Cells["F" + i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells["F" + i].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+
+                        worksheet.Cells["G" + i].Value = x.BranchName;
+                        worksheet.Cells["G" + i].Style.Font.Size = 12;
+                        worksheet.Cells["G" + i].AutoFitColumns();
+                        worksheet.Cells["G" + i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells["G" + i].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+
+                        worksheet.Cells["H" + i].Value = x.Description;
+                        worksheet.Cells["H" + i].Style.Font.Size = 12;
+                        worksheet.Cells["H" + i].AutoFitColumns();
+                        worksheet.Cells["H" + i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells["H" + i].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+
+                        worksheet.Cells["I" + i].Value = x.ActionDate.Date.ToString();
+                        worksheet.Cells["I" + i].Style.Font.Size = 12;
+                        worksheet.Cells["I" + i].AutoFitColumns();
+                        worksheet.Cells["I" + i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells["I" + i].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+
+                        worksheet.Cells["J" + i].Value = (x.Status==1?"تأكيد مبدئي": (x.Status == 2 ? "تأكيد نهائي" : "مرفوض"));
+                        worksheet.Cells["J" + i].Style.Font.Size = 12;
+                        worksheet.Cells["J" + i].AutoFitColumns();
+                        worksheet.Cells["J" + i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells["J" + i].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+
+                        i++;
+                    }
+                        //Add values
+                        
+                    //worksheet.Cells["B2"].Value = "Jon";
+                    //worksheet.Cells["C2"].Value = "M";
+                    //worksheet.Cells["D2"].Value = 5000;
+
+                    //worksheet.Cells["A3"].Value = 1001;
+                    //worksheet.Cells["B3"].Value = "Graham";
+                    //worksheet.Cells["C3"].Value = "M";
+                    //worksheet.Cells["D3"].Value = 10000;
+
+                    //worksheet.Cells["A4"].Value = 1002;
+                    //worksheet.Cells["B4"].Value = "Jenny";
+                    //worksheet.Cells["C4"].Value = "F";
+                    //worksheet.Cells["D4"].Value = 5000;
+
+                    package.Save(); //Save the workbook.
+                }
+                return Ok(URL);
+
+
+
+
+
 
                 var myExport = new Jitbit.Utils.CsvExport();
                 myExport.AddRow();
@@ -712,7 +903,7 @@ namespace Management.Controllers
                     myExport["FatherName"] = x.FatherName;
                     myExport["GrandName"] = x.GrandName;
                     myExport["SurName"] = x.SurName;
-                    myExport["Status"] = (x.Status==1? "تأكيد مبدئي" :(x.Status == 2 ? "تأكيد نهائي" : "مرفوض" ));
+                    myExport["Status"] = (x.Status == 1 ? "تأكيد مبدئي" : (x.Status == 2 ? "تأكيد نهائي" : "مرفوض"));
                 }
 
                 byte[] bytes;
