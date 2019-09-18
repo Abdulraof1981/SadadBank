@@ -1,7 +1,7 @@
 ﻿export default {
     name: 'EditUsersProfile',    
     created() {
-    
+        //this.GetAllBranch();
        
         var loginDetails = sessionStorage.getItem('currentUser');
         if (loginDetails != null) {
@@ -21,6 +21,7 @@
         } else {
             window.location.href = '/Security/Login';
         }
+        console.log(this.loginDetails);
     },
     data() {
         return {
@@ -34,8 +35,9 @@
                                                   
             },
             photo: [],
+            Branchs: [],
             rules: {
-
+            
 
        
                 FullName: [
@@ -110,7 +112,7 @@
             });
         },
         FileChanged(e) {
-            debugger;
+           
             var files = e.target.files;
 
             if (files.length <= 0) {
@@ -167,7 +169,19 @@
                 });
         }
 
-
+        //GetAllBranch() {
+        //    debugger;
+        //    this.$http.GetAllBranchsByBankId(this.$parent.BankId)
+        //        .then(response => {
+        //            this.$blockUI.Stop();
+        //            this.Branchs = response.data.branchs;
+        //        })
+        //        .catch((err) => {
+        //            this.$blockUI.Stop();
+        //            console.error(err);
+        //            this.pages = 0;
+        //        });
+        //}
 
     }    
 }

@@ -642,8 +642,8 @@ namespace Management.Controllers
             }
         }
 
-        [HttpPost("ReSetPassword")]
-        public IActionResult ReSetPassword(string OldPassword ,string NewPassword)
+        [HttpPost("ChangePassword")]
+        public IActionResult ChangePassword([FromBody] ChangePass Passwords)
         {
             try
             {
@@ -656,11 +656,16 @@ namespace Management.Controllers
                 var User = (from p in db.BanksysUsers
                             where p.UserId == userId
                             select p).SingleOrDefault();
-                if (User.Password != Security.ComputeHash(OldPassword, HashAlgorithms.SHA512, null))
+                //if (User.Password != Security.ComputeHash(Passwords.OldPassword, HashAlgorithms.SHA512, null))
+                //{
+                //    return StatusCode(402, "خطأ في كلمة المرور القديمة");
+                //}
+                if (!Security.VerifyHash(Passwords.OldPassword, User.Password, HashAlgorithms.SHA512))
                 {
-                    return StatusCode(402, "خطأ في كلمة المرور القديمة");
+             
+                    StatusCode(402, "خطأ في كلمة المرور القديمة"); 
                 }
-                User.Password = Security.ComputeHash(NewPassword, HashAlgorithms.SHA512, null); ;
+                User.Password = Security.ComputeHash(Passwords.NewPassword, HashAlgorithms.SHA512, null); ;
 
                 db.SaveChanges();
                 return Ok("تم تغيير كلمة المرور بنجاح");
