@@ -3,126 +3,168 @@
     <div class="container-fluid" v-if="state==0">
         <div class="row">
             <div class="col-md-12">
-                <div class="card" style="height:5%!important">
+                <div class="card" style="height: 185px;">
                     <div class="card-header card-header-primary card-header-icon">
                         <div class="card-icon">
                             <i class="fa fa-bars" aria-hidden="true" style="color:white;"></i>
                         </div>
                         <h4 class="card-title">الزبائن</h4>
                     </div>
-                    
+
                     <div class="headerCustom">
                         <div class="title">
-                            <div class="col-sm-4">
-                                <el-input placeholder="رقم الهاتف" v-model="Search"></el-input>
+                            <div class="row">
+                                <div class="col-sm-4" style="text-align: right;">
+                                    <el-input placeholder="رقم الهاتف" v-model="Search"></el-input>
+                                </div>
+                                <div class="col-sm-1" style="text-align: right;">
+                                    <el-button type="primary" icon="el-icon-search" @click.prevent="GetCustomers(pageNo)"> بحـث </el-button>
+                                </div>
+                                <div class="col-sm-2" style="text-align: right;">
+                                    <el-select style="width: 200px;" v-model="Status" @change="GetCustomers(pageNo)" filterable placeholder="الحالة">
+                                        <el-option v-for="item in [{id:-1,userType:'الكل'},{id:1,userType:'تأكيد مبدئي'},{id:2,userType:'تأكيد نهائي'},{id:3,userType:'مرفوض'}]"
+                                                   :key="item.id"
+                                                   :label="item.userType"
+                                                   :value="item.id">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                                <div class="col-sm-3" style="text-align: right;">
+                                    <el-date-picker dir="rtl" style="text-align: right;" v-model="transDate"
+                                                    type="datetimerange"
+                                                    start-placeholder="بداية التاريخ"
+                                                    end-placeholder="نهاية التاريخ"
+                                                    :default-time="['12:00:00']"
+                                                    @change="GetCustomers(pageNo)">
+                                    </el-date-picker>
+                                </div>
+                                <div class="col-sm-2" style="text-align: left;">
+                                    <el-button v-if="(loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rm == 1)" type="primary" @click.prevent="AddCustomers()">إضافة زبون</el-button>
+                                </div>
                             </div>
+                        </div>
+                        <div class="row">
                             <div class="col-sm-1">
-                                <el-button type="primary" icon="el-icon-search" @click.prevent="GetCustomers(pageNo)"> بحـث </el-button>
-                            </div>
-                            <el-button v-if="(loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rm == 1)" type="primary" @click.prevent="AddCustomers()">إضافة زبون</el-button>
-                            <div class="col-sm-2">
-                                <el-select style="width: 200px;" v-model="Status" @change="GetCustomers(pageNo)" filterable placeholder="الحالة">
-                                    <el-option v-for="item in [{id:-1,userType:'الكل'},{id:1,userType:'تأكيد مبدئي'},{id:2,userType:'تأكيد نهائي'},{id:3,userType:'مرفوض'}]"
+                                <el-select style="margin:15px;width: 140px;" v-model="pageNumbers" @change="changePageNumbers(pageNumbers)" placeholder="عرض كـ">
+                                    <el-option v-for="item in [{id:10,number:'عرض 10 صفوف'},{id:25,number:'عرض 25 صف'},{id:50,number:'عرض 50 صف'},{id:100,number:'عرض 100 صف'}]"
                                                :key="item.id"
-                                               :label="item.userType"
+                                               :label="item.number"
                                                :value="item.id">
                                     </el-option>
                                 </el-select>
                             </div>
+                            <div class="col-sm-1" style="margin-right: 27px">
+                                <el-button v-if="(loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" style="margin:15px;" type="primary" icon="el-icon-check" @click.prevent="LastConfirmAll()"> تأكيد نهائي </el-button>
+                            </div>
+                            <!--<div class="col-sm-1" style="margin-right:27px;">
+                                <el-button v-if="(loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" style="margin:15px;" type="danger" icon="el-icon-check" @click.prevent="RejectCustomerAll()"> رفض </el-button>
+                            </div>-->
                         </div>
-                        <p class="category"></p>
-                    </div>
-                    <div style="padding-left:22px">
-                        <!--view companet-->
-                        <div style="margin: 35px;font-size: 35px;" v-if="Customers==0">
-                            <el-alert title="عفــوا! لا توجد اي بيانات زبائن لعرضها"
-                                      type="info">
-                            </el-alert>
-                        </div>
-
-                        <table id="customers" v-if="Customers!=0">
-                            <tr>
-                                <th style="text-align: center; vertical-align: middle;"># <el-checkbox v-model="selectAll" @change="check(-1)"></el-checkbox></th>
-                                <th style="text-align: center; vertical-align: middle;">الاسم</th>
-                                <th style="text-align: center; vertical-align: middle;">تاريخ الميلاد</th>
-                                <th style="text-align: center; vertical-align: middle;">الرقم الوطني</th>
-                                <th style="text-align: center; vertical-align: middle;">الهاتف</th>
-                                <th style="text-align: center; vertical-align: middle;">التاريخ</th>
-                                <th style="text-align: center; vertical-align: middle;">الحالة</th>
-                                <th style="text-align: center; vertical-align: middle;">العمليات</th>
-                            </tr>
-                            
-                                <tr v-for="b,index in Customers">
-                                    <td style="text-align: center; vertical-align: middle;">
-                                        {{index+1}} <el-checkbox class="ttt" @change="check(index)"></el-checkbox>
-                                    </td>
-                                    <td style="text-align: center; vertical-align: middle;">{{b.firstName + " " +  b.fatherName + " " + b.surName}}</td>
-                                    <td style="text-align: center; vertical-align: middle;">{{b.birthDate | moment}}</td>
-                                    <td style="text-align: center; vertical-align: middle;">{{b.nid}}</td>
-                                    <td style="text-align: center; vertical-align: middle;">{{b.phone}}</td>
-                                    <td style="text-align: center; vertical-align: middle;">{{b.lastModifiedOn}}</td>
-
-                                    <td style="text-align: center; vertical-align: middle;">
-                                        <el-tag type="danger" v-if="b.status == 0">مرفوض</el-tag>
-                                        <el-tag v-if="b.status == 2">تأكيد مبدئي</el-tag>
-                                        <el-tag type="success" v-if="b.status == 3">تأكيد نهائي</el-tag>
-                                        <el-tag type="danger" v-if="b.status == 5">خطأ mPay</el-tag>
-                                    </td>
-
-                                    <td style="text-align: center; vertical-align: middle; ">
-                                        <el-popover placement="right"
-                                                    trigger="click">
-
-                                            <table id="customers" v-if="b.allActions!=0" dir="rtl">
-                                                <tr>
-                                                    <th style="text-align: center; vertical-align: middle; background-color: rgb(255, 89, 77);"> تاريخ الحركة</th>
-                                                    <th style="text-align: center; vertical-align: middle; background-color: rgb(255, 89, 77);"> معلومات عن الحركة</th>
-                                                    <th style="text-align: center; vertical-align: middle; background-color: rgb(255, 89, 77);">اسم الموظف </th>
-                                                    <th style="text-align: center; vertical-align: middle; background-color: rgb(255, 89, 77);">المصرف</th>
-                                                    <th style="text-align: center; vertical-align: middle; background-color: rgb(255, 89, 77);">الصفة</th>
-                                                </tr>
-                                                <tr v-for="u in b.allActions">
-                                                    <td style="text-align: center; vertical-align: middle;">
-                                                        {{u.actionDate}}
-                                                    </td>
-                                                    <td style="text-align: center; vertical-align: middle;">
-                                                        {{u.description}}
-                                                    </td>
-                                                    <td style="text-align: center; vertical-align: middle;">
-                                                        {{u.userFullName}}
-                                                    </td>
-                                                    <td style="text-align: center; vertical-align: middle;">
-                                                        {{u.bankName + " / " + u.branchName}}
-                                                    </td>
-                                                    <td style="text-align: center; vertical-align: middle;">
-                                                        <el-tag v-if="u.userType == 3">موظف</el-tag>
-                                                        <el-tag type="success" v-if="u.userType == 2">مدير مصرف</el-tag>
-                                                        <el-tag type="danger" v-if="u.userType == 1">مدير النظام</el-tag>
-                                                    </td>
-                                                </tr>
-
-                                            </table>
-
-                                            <el-button slot="reference" style="border:unset;background:unset;padding: unset;"><i class="fa fa-info-circle"></i></el-button>
-                                        </el-popover>
-                                        <a title="رفض" v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" href="#" @click.prevent="RejectCustomer(b.bankActionId)"><i class="fa fa-remove"></i></a>
-                                        <a title="تأكيد نهائي" v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" href="#" @click.prevent="LastConfirm(b.bankActionId)"><i class="fa fa-check"></i></a>
-                                    </td>
-
-                                </tr>
-                           
-                        </table>
-                    </div>
-                    <div style="text-align: center;padding-bottom:11px;padding-top:20px;">
-                        <el-pagination background
-                                       layout="prev, pager, next"
-                                       :current-page="pageNo"
-                                       :page-size="pageSize"
-                                       :total="pages"
-                                       @current-change="GetCustomers($event)">
-                        </el-pagination>
                     </div>
                 </div>
+                <div style="padding-left:22px">
+                    <!--view companet-->
+                    <div style="margin: 35px;font-size: 35px;" v-if="Customers==0">
+                        <el-alert title="عفــوا! لا توجد اي بيانات زبائن لعرضها"
+                                  type="info">
+                        </el-alert>
+                    </div>
+
+                    <table id="customers" v-if="Customers!=0" style="margin-top:15px;">
+                        <tr>
+                            <th style="text-align: center; vertical-align: middle;">#</th>
+                            <th style="text-align: center; vertical-align: middle;">الاسم</th>
+                            <th style="text-align: center; vertical-align: middle;">تاريخ الميلاد</th>
+                            <th style="text-align: center; vertical-align: middle;">الرقم الوطني</th>
+                            <th style="text-align: center; vertical-align: middle;">الهاتف</th>
+                            <th style="text-align: center; vertical-align: middle;">التاريخ</th>
+                            <th style="text-align: center; vertical-align: middle;">الحالة</th>
+                            <th style="text-align: center; vertical-align: middle;">العمليات</th>
+                        </tr>
+
+                        <tr v-for="b,index in Customers">
+                            <td style="text-align: center; vertical-align: middle;">
+                                {{index+1}} <el-checkbox class="checkboxBtn" @change="check(index)"></el-checkbox>
+                            </td>
+                            <td style="text-align: center; vertical-align: middle;">{{b.firstName + " " +  b.fatherName + " " + b.surName}}</td>
+                            <td style="text-align: center; vertical-align: middle;">{{b.birthDate | moment}}</td>
+                            <td style="text-align: center; vertical-align: middle;">{{b.nid}}</td>
+                            <td style="text-align: center; vertical-align: middle;">{{b.phone}}</td>
+                            <td style="text-align: center; vertical-align: middle;">{{b.lastModifiedOn}}</td>
+
+                            <td style="text-align: center; vertical-align: middle;">
+                                <el-tag type="danger" v-if="b.status == 0">مرفوض</el-tag>
+                                <el-tag v-if="b.status == 2">تأكيد مبدئي</el-tag>
+                                <el-tag type="success" v-if="b.status == 3">تأكيد نهائي</el-tag>
+                                <el-tag type="danger" v-if="b.status == 5">خطأ mPay</el-tag>
+                            </td>
+
+                            <td style="text-align: center; vertical-align: middle; ">
+                                <el-popover placement="right"
+                                            trigger="click">
+
+                                    <table id="customers" v-if="b.allActions!=0" dir="rtl">
+                                        <tr>
+                                            <th style="text-align: center; vertical-align: middle; background-color: rgb(255, 89, 77);"> تاريخ الحركة</th>
+                                            <th style="text-align: center; vertical-align: middle; background-color: rgb(255, 89, 77);"> معلومات عن الحركة</th>
+                                            <th style="text-align: center; vertical-align: middle; background-color: rgb(255, 89, 77);">اسم الموظف </th>
+                                            <th style="text-align: center; vertical-align: middle; background-color: rgb(255, 89, 77);">المصرف</th>
+                                            <th style="text-align: center; vertical-align: middle; background-color: rgb(255, 89, 77);">الصفة</th>
+                                        </tr>
+                                        <tr v-for="u in b.allActions">
+                                            <td style="text-align: center; vertical-align: middle;">
+                                                {{u.actionDate}}
+                                            </td>
+                                            <td style="text-align: center; vertical-align: middle; max-width: 260px;">
+                                                {{u.description}}
+                                            </td>
+                                            <td style="text-align: center; vertical-align: middle;">
+                                                {{u.userFullName}}
+                                            </td>
+                                            <td style="text-align: center; vertical-align: middle;">
+                                                {{u.bankName + " / " + u.branchName}}
+                                            </td>
+                                            <td style="text-align: center; vertical-align: middle;">
+                                                <el-tag v-if="u.userType == 3">موظف</el-tag>
+                                                <el-tag type="success" v-if="u.userType == 2">مدير مصرف</el-tag>
+                                                <el-tag type="danger" v-if="u.userType == 1">مدير النظام</el-tag>
+                                            </td>
+                                        </tr>
+
+                                    </table>
+
+                                    <el-button slot="reference" style="border:unset;background:unset;padding: unset;"><i class="fa fa-info-circle"></i></el-button>
+                                </el-popover>
+                                <a title="رفض" v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" href="#" @click.prevent="cahngeBankActionIdToReject(b.bankActionId)"><i class="fa fa-remove"></i></a>
+                                <a title="تأكيد نهائي" v-if="(b.status == 2) && (loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" href="#" @click.prevent="LastConfirm(b.bankActionId)"><i class="fa fa-check"></i></a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="text-align: center;padding-bottom:11px;padding-top:20px;">
+                    <el-pagination background
+                                   layout="prev, pager, next"
+                                   :current-page="pageNo"
+                                   :page-size="pageSize"
+                                   :total="pages"
+                                   @current-change="GetCustomers($event)">
+                    </el-pagination>
+                    <div style="font-size: 18px; background-color: #dcd6d633; border: solid #dcd6d633; margin: 16px; text-align: right; padding: 6px;">
+                        رقم الصفحة: {{pageNo}} | العدد الإجمالي: {{pages + " زبون "}}
+                    </div>
+                </div>
+
+                <el-dialog title="سبب الرفض" :visible="dialogVisible" :before-close="beforeClose" :modalAppendToBody="false">
+                    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" class="demo-ruleForm">
+                        <el-form-item class="form-group" prop="desc">
+                            <el-input placeholder="الرجاء إدخال سبب الرفض" v-model="ruleForm.desc" auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button @click="dialogVisible = false">إلغاء</el-button>
+                        <el-button type="primary" @click="RejectCustomer()">حفظ</el-button>
+                    </div>
+                </el-dialog>
             </div>
         </div>
     </div>

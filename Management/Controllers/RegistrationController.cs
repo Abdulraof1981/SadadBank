@@ -36,7 +36,7 @@ namespace Management.Controllers
         }
 
         [HttpGet("Get")]
-        public IActionResult Get(int pageNo, int pageSize, string search, int status)
+        public IActionResult Get(int pageNo, int pageSize, string search, int status, string startDate, string endDate)
         {
             try
             {
@@ -44,6 +44,13 @@ namespace Management.Controllers
                 if (userId <= 0)
                 {
                     return StatusCode(401, "الرجاء الـتأكد من أنك قمت بتسجيل الدخول");
+                }
+
+                DateTime? StartDate = null, EndDate = null;
+                if (!string.IsNullOrEmpty(startDate) && DateTime.TryParse(startDate, out DateTime temp1) && !string.IsNullOrEmpty(endDate) && DateTime.TryParse(endDate, out DateTime temp2))
+                {
+                    StartDate = DateTime.Parse(startDate);
+                    EndDate = DateTime.Parse(endDate);
                 }
 
                 var bankUser = (from rec in db.BanksysUsers where rec.UserId == userId
@@ -72,6 +79,7 @@ namespace Management.Controllers
                                                           BranchName = a.Branch.Name,
                                                           BankName = a.Branch.Bank.Name,
                                                           ActionDate = a.ActionDate.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
+                                                          ActionDateTime = a.ActionDate,
                                                           a.ActionType,
                                                           a.UserType,
                                                           a.Description,
@@ -91,6 +99,9 @@ namespace Management.Controllers
                         type = 0;
                     if (type != -1)
                         regsTrns = regsTrns.Where(t => t.Status == type);
+
+                    if (StartDate != null && EndDate != null)
+                        regsTrns = regsTrns.Where(t => t.AllActions.Where(v => v.ActionDateTime.Date >= StartDate.Value.Date && v.ActionDateTime.Date <= EndDate.Value.Date).Count() > 0);
 
                     if (search != null && !search.Equals("") && !search.Equals("undefined"))
                         regsTrns = regsTrns.Where(t => t.Phone.Contains(search));
@@ -117,7 +128,7 @@ namespace Management.Controllers
                                         rec.PersonalInfo.Nid,
                                         rec.PersonalInfo.Phone,
                                         LastModifiedOn = rec.ActionDate.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
-                                        
+                                        rec.ActionDate,
                                         AllActions = (from a in db.BanksysBankActions
                                                       where a.PersonalInfoId == rec.PersonalInfo.Id && (a.ActionType == 0 || a.ActionType == 1 || a.ActionType == 2)
                                                       select new
@@ -126,6 +137,7 @@ namespace Management.Controllers
                                                           BranchName = a.Branch.Name,
                                                           BankName = a.Branch.Bank.Name,
                                                           ActionDate = a.ActionDate.ToString("dd'/'MM'/'yyyy hh:mm:ss"),
+                                                          ActionDateTime = a.ActionDate,
                                                           a.ActionType,
                                                           a.UserType,
                                                           a.Description,
@@ -145,9 +157,12 @@ namespace Management.Controllers
                     if (type != -1)
                         regsTrns = regsTrns.Where(t => t.Status == type);
 
+                    if (StartDate != null && EndDate != null)
+                        regsTrns = regsTrns.Where(t => t.AllActions.Where(v => v.ActionDateTime.Date >= StartDate.Value.Date && v.ActionDateTime.Date <= EndDate.Value.Date).Count() > 0);
+
                     if (search != null && !search.Equals("") && !search.Equals("undefined"))
                          regsTrns = regsTrns.Where(t => t.Phone.Contains(search));
-
+                    
                     int count = regsTrns.Count();
                     regsTrns = regsTrns.Skip((pageNo - 1) * pageSize).Take(pageSize);
 
@@ -177,6 +192,7 @@ namespace Management.Controllers
                                                           BranchName = a.Branch.Name,
                                                           BankName = a.Branch.Bank.Name,
                                                           ActionDate = a.ActionDate.ToString("dd'/'MM'/'yyyy hh:mm:ss"),
+                                                          ActionDateTime = a.ActionDate,
                                                           a.ActionType,
                                                           a.UserType,
                                                           a.Description,
@@ -195,6 +211,9 @@ namespace Management.Controllers
                         type = 0;
                     if (type != -1)
                         regsTrns = regsTrns.Where(t => t.Status == type);
+
+                    if (StartDate != null && EndDate != null)
+                        regsTrns = regsTrns.Where(t => t.AllActions.Where(v => v.ActionDateTime.Date >= StartDate.Value.Date && v.ActionDateTime.Date <= EndDate.Value.Date).Count() > 0);
 
                     if (search != null && !search.Equals("") && !search.Equals("undefined"))
                         regsTrns = regsTrns.Where(t => t.Phone.Contains(search));
@@ -229,8 +248,7 @@ namespace Management.Controllers
             public string PassportNumber { get; set; }
             public DateTime PassportExportDate { get; set; }
         }
-
-
+        
         [HttpPost("Add")]
         public IActionResult Add([FromBody] FormOb ob)
         {
@@ -247,19 +265,28 @@ namespace Management.Controllers
                     return StatusCode(401, "الرجاء الـتأكد من أنك قمت بتسجيل الدخول");
                 }
 
-                var persons = (from p in db.PersonalInfo where p.Phone.Contains(ob.Phone) || p.Nid == ob.Nid select new { p }).ToList();
-                if( persons != null)
+                var per = (from p in db.PersonalInfo where p.Phone.Contains(ob.Phone) && p.Nid == ob.Nid select p ).ToList();
+                if(per != null && per.Count == 1 && per[0].Status == 0) // rejected
                 {
-                    foreach (var ps in persons)
+                    db.BanksysBankActions.RemoveRange((from ba in db.BanksysBankActions where ba.PersonalInfoId == per[0].Id select ba).ToList());
+                    db.PersonalInfo.Remove(per[0]);
+                }
+                else
+                {
+                    var persons = (from p in db.PersonalInfo where p.Phone.Contains(ob.Phone) || p.Nid == ob.Nid select new { p }).ToList();
+                    if (persons != null)
                     {
-                        if (ps.p.Nid.Equals(ob.Nid))
-                            return StatusCode(400, "الرقم الوطني مستخدم من قبل");
+                        foreach (var ps in persons)
+                        {
+                            if (ps.p.Nid.Equals(ob.Nid))
+                                return StatusCode(400, "الرقم الوطني مستخدم من قبل");
 
-                        if (ps.p.Phone.Contains(ob.Phone))
-                            return StatusCode(400, "رقم الهاتف مستخدم من قبل");
+                            if (ps.p.Phone.Contains(ob.Phone))
+                                return StatusCode(400, "رقم الهاتف مستخدم من قبل");
+                        }
                     }
                 }
-                
+
                 PersonalInfo info = new PersonalInfo();
                 info.Name = ob.Name;
                 info.FatherName = ob.FatherName;
@@ -301,7 +328,9 @@ namespace Management.Controllers
                 action.Description = "تسجيل زبون - تأكيد مبدئي";
                 action.ActionDate = DateTime.Now;
                 db.BanksysBankActions.Add(action);
+
                 db.SaveChanges();
+
                 return Ok("لقد قمت بتسـجيل بيانات بنــجاح");
             }
             catch (Exception e)
@@ -442,7 +471,7 @@ namespace Management.Controllers
         }
         
         [HttpPost("{BankActionId}/Reject")]
-        public IActionResult Reject(long BankActionId)
+        public IActionResult Reject(long BankActionId, string desc)
         {
             try
             {
@@ -477,7 +506,7 @@ namespace Management.Controllers
                 action.BranchId = this.help.GetCurrentBranche(HttpContext);
                 action.UserType = this.help.GetCurrentUserType(HttpContext);
                 action.CashInId = null;
-                action.Description = "رفض عملية تسجيل زبون";
+                action.Description = "رفض التسجيل: " + Environment.NewLine + desc;
                 action.ActionDate = DateTime.Now;
                 db.BanksysBankActions.Add(action);
                 
@@ -494,6 +523,29 @@ namespace Management.Controllers
             }
         }
 
+        [HttpPost("LastConfirmAll")]
+        public IActionResult LastConfirmAll(string BankActionIds)
+        {
+            try
+            {
+                var userId = this.help.GetCurrentUser(HttpContext);
+                if (userId <= 0)
+                {
+                    return StatusCode(401, "الرجاء الـتأكد من أنك قمت بتسجيل الدخول");
+                }
+
+                string[] bAIds = BankActionIds.Split(',');
+                foreach(string baId in bAIds)
+                {
+                    LastConfirm(long.Parse(baId));
+                }
+                return Json(new { code = 0, message = "تم معالجة " + bAIds.Length + " حركة تسجيل" });
+            }
+            catch (Exception e)
+            {
+                return Json(new { code = -1, message = "حدث خطا الرجاء المحاولة مرة أخرى" });
+            }
+        }
         
         [HttpPost("{BankActionId}/LastConfirm")]
         public IActionResult LastConfirm(long BankActionId)
@@ -545,29 +597,23 @@ namespace Management.Controllers
                     return Json(new { code = 0 , message = "تم التسجيل بنجاح" });
                 }
                 else
-                { // Error in mPay response:
-                    /*
-                    bankAction.PersonalInfo.LastModifiedOn = DateTime.Now;
-                    bankAction.PersonalInfo.LastModifiedBy = (int)userId;
-
-                    bankAction.p.ActionType = 5;
-                    bankAction.p.Description = result.responseString;
-                    db.SaveChanges();
-                    
-                    bankAction.PersonalInfo.Status = 5;
-                    bankAction.PersonalInfo.LastModifiedOn = DateTime.Now;
-                    bankAction.PersonalInfo.LastModifiedBy = (int)userId;
-
+                {
                     BanksysBankActions action = new BanksysBankActions();
-                    action.ActionType = 5;
+                    action.ActionType = 0;
                     action.PersonalInfoId = bankAction.PersonalInfo.Id;
                     action.UserId = userId;
-                    action.BranchId = null;
+                    action.BranchId = this.help.GetCurrentBranche(HttpContext);
+                    action.UserType = this.help.GetCurrentUserType(HttpContext);
+                    action.CashInId = null;
+                    action.Description = "رفض التسجيل: " + Environment.NewLine + result.responseString;
+                    action.ActionDate = DateTime.Now;
                     db.BanksysBankActions.Add(action);
 
+                    bankAction.PersonalInfo.LastModifiedBy = int.Parse(userId.ToString());
+                    bankAction.PersonalInfo.LastModifiedOn = DateTime.Now;
+                    bankAction.PersonalInfo.Status = 0;
                     db.SaveChanges();
-                    */
-
+                    
                     return Json(new { code = 1, message = result.responseString });
                 }
             }
@@ -582,10 +628,8 @@ namespace Management.Controllers
             public int responseCode { get; set; }
             public string responseString { get; set; }
             public int refernceWallet { get; set; }
-
         }
-
-
+        
         private responseMpay CreatWalletAsync(string phone, string name, string midname, string sirname, string nid, string usernameFirst, long userId, int cityid, DateTime datebirth, int gender, string msgId)
         {
             var Mpay = _Mpays;

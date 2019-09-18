@@ -115,23 +115,25 @@ export default {
         return axios.post(`/Api/Admin/CashIn/${CashInId}/Confirm`);
     },
 
-   
+    
 
-
-
-
+    
     //********************* Registration Service *****************************
-    GetCustomers(pageNo, pageSize, Search, Status) {
+    GetCustomers(pageNo, pageSize, Search, Status, startDate, endDate) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
-        return axios.get(`/Api/Admin/Registration/Get?pageno=${pageNo}&pagesize=${pageSize}&search=${Search}&status=${Status}`);
+        return axios.get(`/Api/Admin/Registration/Get?pageno=${pageNo}&pagesize=${pageSize}&search=${Search}&status=${Status}&startDate=${startDate}&endDate=${endDate}`);
     },
-    RejectCustomer(BankActionId) {
+    RejectCustomer(BankActionId, desc) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
-        return axios.post(`/Api/Admin/Registration/${BankActionId}/Reject`);
+        return axios.post(`/Api/Admin/Registration/${BankActionId}/Reject?desc=${desc}`);
     },
     LastConfirm(BankActionId) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
         return axios.post(`/Api/Admin/Registration/${BankActionId}/LastConfirm`);
+    },
+    LastConfirmAll(BankActionIds) {
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
+        return axios.post(`/Api/Admin/Registration/LastConfirmAll?BankActionIds=${BankActionIds}`);
     },
     getNidInfo(nid) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');

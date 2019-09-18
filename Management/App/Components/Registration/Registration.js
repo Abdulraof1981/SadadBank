@@ -1,7 +1,7 @@
 ﻿import newRegister from './Register/NewRegister.vue';
 import moment from 'moment';
 export default {
-    name: 'Registrations',    
+    name: 'Registrations',
     created() {
         this.GetCustomers(this.pageNo);
         var loginDetails = sessionStorage.getItem('currentUser');
@@ -23,7 +23,7 @@ export default {
             if (date === null) {
                 return "فارغ";
             }
-           // return moment(date).format('MMMM Do YYYY, h:mm:ss a');
+            // return moment(date).format('MMMM Do YYYY, h:mm:ss a');
             return moment(date).format('MMMM Do YYYY');
         },
         moment2: function (date) {
@@ -40,16 +40,37 @@ export default {
             loginDetails: {},
             pageNo: 1,
             pageSize: 10,
-            pages: 0,  
+            pages: 0,
             Customers: [],
             state: 0,
             Search: null,
-            selectAll: false,
-            //selectedAll: false
-            ttt:''
+            pageNumbers: 10,
+            transDate: null,
+            selectAllArray: [],
+            
+            dialogVisible: false,
+            ruleForm: {
+                desc: '',
+            },
+            rules: {
+                desc: [
+                    { required: true, message: 'الرجاء ادخال سبب الرفض', trigger: 'blur' },
+                ],
+            },
+            bankActionIdToReject: ''
         };
     },
     methods: {
+        cahngeBankActionIdToReject(BankActionId) {
+            this.bankActionIdToReject = BankActionId;
+            this.ruleForm.desc = '';
+            this.dialogVisible = true;
+        },
+        
+        beforeClose() {
+            this.dialogVisible = false;
+        },
+
         LastConfirm(BankActionId) {
             this.$confirm('هل انت متأكد من التأكيد النهائي لهذه الحركة؟', 'تـحذير', {
                 confirmButtonText: 'نـعم',
@@ -58,64 +79,150 @@ export default {
             }).then(() => {
                 this.$blockUI.Start();
                 this.$http.LastConfirm(BankActionId)
-                .then(response => {
-                    this.$blockUI.Stop();
-                    this.GetCustomers(this.pageNo);
-                    if (response.data.code == 0) {
-                        this.$message({
-                            type: 'info',
-                            dangerouslyUseHTMLString: true,
-                            message: '<strong>' + response.data.message + '</strong>'
-                        });
-                    } else if (response.data.code == 1) {
-                        this.$message({
-                            type: 'info',
-                            dangerouslyUseHTMLString: true,
-                            message: '<strong> Warning: ' + response.data.message + '</strong>'
-                        });
-                    } else {
-                        this.$message({
-                            type: 'error',
-                            dangerouslyUseHTMLString: true,
-                            message: '<strong>' + response.data.message + '</strong>'
-                        });
-                    }
-                }).catch((err) => {
-                    this.$blockUI.Stop();
-                    console.error(err);
-                    this.pages = 0;
-                });
+                    .then(response => {
+                        this.$blockUI.Stop();
+                        this.GetCustomers(this.pageNo);
+                        if (response.data.code == 0) {
+                            this.$message({
+                                type: 'info',
+                                dangerouslyUseHTMLString: true,
+                                message: '<strong>' + response.data.message + '</strong>'
+                            });
+                        } else if (response.data.code == 1) {
+                            this.$message({
+                                type: 'info',
+                                dangerouslyUseHTMLString: true,
+                                message: '<strong> Warning: ' + response.data.message + '</strong>'
+                            });
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                dangerouslyUseHTMLString: true,
+                                message: '<strong>' + response.data.message + '</strong>'
+                            });
+                        }
+                    }).catch((err) => {
+                        this.$blockUI.Stop();
+                        console.error(err);
+                        this.pages = 0;
+                    });
             });
         },
 
-        RejectCustomer(BankActionId) {
-            this.$confirm('هل تريد رفض هذه الحركة؟', 'تـحذير', {
+        LastConfirmAll() {
+            if (this.selectAllArray.length == 0) {
+                this.$message({
+                    type: 'error',
+                    dangerouslyUseHTMLString: true,
+                    message: '<strong>' + 'يجب تحديد الزبائن المراد إجراء تأكيد نهائي لهم أولاً' + '</strong>'
+                });
+                return;
+            }
+
+            for ( var i=0 ; i<this.Customers.length ; i++ ){
+                if (this.Customers[i].checkbox) {
+                    if (this.Customers[i].status != 2 ) {
+                        this.$message({
+                            type: 'error',
+                            dangerouslyUseHTMLString: true,
+                            message: '<strong>' + 'يجب تحديد الزبائن الذين يحتاجون إلى تأكيد نهائي فقط، الرجاء إعادة المحاولة!' + '</strong>'
+                        });
+                        return;
+                    }
+                }
+            }
+            
+            this.$confirm('هل انت متأكد من التأكيد النهائي لجميع الحركات المحددة؟', 'تـحذير', {
                 confirmButtonText: 'نـعم',
                 cancelButtonText: 'لا',
                 type: 'warning'
             }).then(() => {
                 this.$blockUI.Start();
-                this.$http.RejectCustomer(BankActionId)
-                .then(response => {
-                    this.$blockUI.Stop();
-                    this.GetCustomers(this.pageNo);
-                    this.$message({
-                        type: 'info',
-                        dangerouslyUseHTMLString: true,
-                        message: '<strong>' + 'تم رفض الحركة بنجاح' + '</strong>'
+                this.$http.LastConfirmAll(this.selectAllArray)
+                    .then(response => {
+                        this.$blockUI.Stop();
+                        this.GetCustomers(this.pageNo);
+                        if (response.data.code == 0) {
+                            this.$message({
+                                type: 'info',
+                                dangerouslyUseHTMLString: true,
+                                message: '<strong>' + response.data.message + '</strong>'
+                            });
+                        } else if (response.data.code == 1) {
+                            this.$message({
+                                type: 'info',
+                                dangerouslyUseHTMLString: true,
+                                message: '<strong> Warning: ' + response.data.message + '</strong>'
+                            });
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                dangerouslyUseHTMLString: true,
+                                message: '<strong>' + response.data.message + '</strong>'
+                            });
+                        }
+                    }).catch((err) => {
+                        this.$blockUI.Stop();
+                        console.error(err);
+                        this.pages = 0;
                     });
-                })
-                .catch((err) => {
-                    this.$blockUI.Stop();
-                    console.error(err);
-                    this.pages = 0;
-                });
+            });
+        },
+        
+        RejectCustomer() {
+            this.$refs['ruleForm'].validate((valid) => {
+                if (valid) {
+
+                    this.$blockUI.Start();
+                    this.$http.RejectCustomer(this.bankActionIdToReject, this.ruleForm.desc)
+                        .then(response => {
+                            this.$blockUI.Stop();
+                            this.GetCustomers(this.pageNo);
+                            this.$message({
+                                type: 'info',
+                                dangerouslyUseHTMLString: true,
+                                message: '<strong>' + 'تم رفض الحركة بنجاح' + '</strong>'
+                            });
+                            this.dialogVisible = false;
+                        })
+                        .catch((err) => {
+                            this.$blockUI.Stop();
+                            console.error(err);
+                            this.pages = 0;
+                            this.dialogVisible = false;
+                        });
+                
+                } else {
+                    console.log('error submit!!');
+                    return false;
+                }
             });
         },
         AddCustomers() {
             this.state = 1;
         },
+
+        formatDate(date, i) {
+            if (date == null)
+                return null;
+
+            var d = new Date(date[i]),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2)
+                month = '0' + month;
+            if (day.length < 2)
+                day = '0' + day;
+
+            return [month ,day , year].join('/');
+        },
+
         GetCustomers(pageNo) {
+            this.selectAllArray = [];
+            this.Customers = [];
+
             this.pageNo = pageNo;
             if (this.pageNo === undefined) {
                 this.pageNo = 1;
@@ -124,40 +231,44 @@ export default {
                 this.Search = "";
             }
             this.$blockUI.Start();
-            this.$http.GetCustomers(this.pageNo, this.pageSize, this.Search, this.Status)
+            this.$http.GetCustomers(this.pageNo, this.pageSize, this.Search, this.Status, this.formatDate(this.transDate, 0), this.formatDate(this.transDate, 1))
                 .then(response => {
-                this.$blockUI.Stop();
-                this.Customers = response.data.customers;
-                this.Customers.forEach(function (element) {
-                    element.checkbox = false;
+                    this.$blockUI.Stop();
+                    this.Customers = response.data.customers;
+                    this.Customers.forEach(function (element) {
+                        element.checkbox = false;
+                    });
+                    this.pages = response.data.count;
+                })
+                .catch((err) => {
+                    this.$blockUI.Stop();
+                    console.error(err);
+                    this.pages = 0;
                 });
-                this.pages = response.data.count;
-            })
-            .catch((err) => {
-                this.$blockUI.Stop();
-                console.error(err);
-                this.pages = 0;
-            }); 
         },
 
         check(index) {
-            if (index === -1) {
-                //this.selectedAll = !this.selectAll; 
-                for (var i = 0; i < this.Customers.length; i++) {
-                    this.Customers[i].checkbox = !this.selectAll;
-                }
-
-                //this.$el.querySelector('.ttt input[type=checkbox]').click();
-                //console.log(el);
-            }
+            this.Customers[index].checkbox = !this.Customers[index].checkbox;
+            if ( this.Customers[index].checkbox )
+                this.selectAllArray.push(this.Customers[index].bankActionId);
             else
-            {
-                this.Customers[index].checkbox = !this.Customers[index].checkbox;
-            }
-            console.log(this.Customers);
+                this.selectAllArray = this.selectAllArray.filter(item => item !== this.Customers[index].bankActionId);
+        },
+
+        changePageNumbers(pageNumbers) {
+            this.pageSize = pageNumbers;
+            this.GetCustomers(this.pageNo);
         }
 
-
-       
-    }    
+        , resetFields() {
+            this.Status= '';
+            this.pageNo= 1;
+            this.pages = 0;
+            this.pageNumbers = 10;
+            this.Search= null;
+            this.transDate= null;
+            this.selectAllArray = [];
+            this.changePageNumbers(this.pageNumbers);
+        }
+    }
 }
