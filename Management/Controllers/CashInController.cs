@@ -104,12 +104,8 @@ namespace Management.Controllers
                                             p.Nid,
                                             p.Id,
                                             p.DepositType
-
-
                                         }).Single();
-
-               
-
+         
                 var UserType = this.help.GetCurrentUserType(HttpContext);
                 // admin see every thing
                 dynamic CashIn = null;
@@ -168,10 +164,8 @@ namespace Management.Controllers
         public IActionResult Get(int pageNo, int pageSize)
         {
             try
-            {
-              
+            {   
                 IQueryable<BanksysBankActions> BankActionsQuery;
-
                 var UserType = this.help.GetCurrentUserType(HttpContext);
                 // admin see every thing
 
@@ -581,6 +575,157 @@ namespace Management.Controllers
         }
 
 
+
+        [HttpGet("GetCashInCSV/{StartDate}/{EndDate}")]
+        public IActionResult GetCashInCSV(DateTime? StartDate, DateTime? EndDate)
+        {
+            try
+            {
+                var userId = this.help.GetCurrentUser(HttpContext);
+                if (userId <= 0)
+                {
+                    return StatusCode(401, "الرجاء الـتأكد من أنك قمت بتسجيل الدخول");
+                }
+
+                IQueryable<BanksysBankActions> BankActionsQuery;
+                var UserType = this.help.GetCurrentUserType(HttpContext);
+                // admin see every thing
+
+
+                // if date null 
+                if (StartDate == DateTime.MinValue || EndDate == DateTime.MinValue)
+                {
+                    if (UserType == 1)
+                    {
+                        BankActionsQuery = from t in db.BanksysBankActions
+                                           where t.ActionType == 3
+                                           select t;
+                    }
+                    else if (UserType == 2)
+                    {
+                        var BranchId = this.help.GetCurrentBranche(HttpContext);
+
+                        var BankId = db.BanksysBranch.Where(u => u.BranchId == BranchId).Single().BankId;
+                        BankActionsQuery = from t in db.BanksysBankActions
+                                           where t.Branch.BankId == BankId && t.ActionType == 3
+                                           select t;
+                    }
+                    else
+                    {
+                        var BranchId = this.help.GetCurrentBranche(HttpContext);
+
+                        var BankId = db.BanksysBranch.Where(u => u.BranchId == BranchId).Single().BankId;
+                        BankActionsQuery = from t in db.BanksysBankActions
+                                           where t.BranchId == BranchId && t.ActionType == 3
+                                           select t;
+                    }
+
+                } else
+                {
+                    // if date not null 
+                    if (UserType == 1)
+                    {
+                        BankActionsQuery = from t in db.BanksysBankActions
+                                           where t.ActionType == 3 && t.ActionDate >= StartDate && t.ActionDate <= EndDate
+                                           select t;
+                    }
+                    else if (UserType == 2)
+                    {
+                        var BranchId = this.help.GetCurrentBranche(HttpContext);
+
+                        var BankId = db.BanksysBranch.Where(u => u.BranchId == BranchId).Single().BankId;
+                        BankActionsQuery = from t in db.BanksysBankActions
+                                           where t.Branch.BankId == BankId && t.ActionType == 3 && t.ActionDate >= StartDate && t.ActionDate <= EndDate
+                                           select t;
+                    }
+                    else
+                    {
+                        var BranchId = this.help.GetCurrentBranche(HttpContext);
+
+                        var BankId = db.BanksysBranch.Where(u => u.BranchId == BranchId).Single().BankId;
+                        BankActionsQuery = from t in db.BanksysBankActions
+                                           where t.BranchId == BranchId && t.ActionType == 3 && t.ActionDate >= StartDate && t.ActionDate <= EndDate
+                                           select t;
+                    }
+                }
+
+
+
+
+                var CashInCount = (from t in BankActionsQuery
+                                   select t).Count();
+
+                var CashInList = (from t in BankActionsQuery
+                                  orderby t.ActionDate descending
+                                  select new
+                                  {
+                                      t.CashIn.Valuedigits,
+                                      t.CashIn.NumInvoiceDep,
+                                      t.CashInId,
+                                      t.CashIn.Description,
+                                      t.Branch,
+                                      BranchName=t.Branch.Name,
+                                      t.Branch.Bank,
+                                      BankName=t.Branch.Bank.Name,
+                                      t.CashIn.Status,
+                                      t.ActionDate,
+                                      FName = t.CashIn.Personal.Name,
+                                      t.CashIn.Personal.FatherName,
+                                      t.CashIn.Personal.SurName,
+                                      t.CashIn.Personal.GrandName,
+                                      t.CashIn.Personal.Nid,
+                                      t.CashIn.Personal.Phone
+                                  }).ToList();
+
+                if (CashInList.Count <= 0)
+                {
+                    return StatusCode(404, "لا توجد بيانات لهذا التاريخ");
+                }
+
+                var myExport = new Jitbit.Utils.CsvExport();
+                myExport.AddRow();
+                myExport["Valuedigits"] = "القيمة";
+                myExport["NumInvoiceDep"] = "رقم الايصال";
+                myExport["Description"] = "معلومات اخري";
+                myExport["BankName"] = "اسم المصرف";
+                myExport["BranchName"] = "اسم الفرع";
+                myExport["ActionDate"] = "تاريخ العملية";
+                myExport["Nid"] = "Nid";
+                myExport["Phone"] = "الهاتف";
+                myExport["FName"] = "الاسم";
+                myExport["FatherName"] = "اسم الأب";
+                myExport["GrandName"] = "اسم الجد";
+                myExport["SurName"] = "اللقب";
+                myExport["Status"] = "الحالة";
+                foreach (var x in CashInList)
+                {
+                    myExport.AddRow();
+                    myExport["Valuedigits"] = x.Valuedigits;
+                    myExport["NumInvoiceDep"] = x.NumInvoiceDep;
+                    myExport["Description"] = x.Description;
+                    myExport["BankName"] = x.BankName;
+                    myExport["BranchName"] = x.BranchName;
+                    myExport["ActionDate"] = x.ActionDate;
+                    myExport["Nid"] = x.Nid;
+                    myExport["Phone"] = x.Phone;
+                    myExport["FName"] = x.FName;
+                    myExport["FatherName"] = x.FatherName;
+                    myExport["GrandName"] = x.GrandName;
+                    myExport["SurName"] = x.SurName;
+                    myExport["Status"] = (x.Status==1? "تأكيد مبدئي" :(x.Status == 2 ? "تأكيد نهائي" : "مرفوض" ));
+                }
+
+                byte[] bytes;
+                bytes = myExport.ExportToBytes();
+                var result = new FileContentResult(bytes, "application/octet-stream");
+                result.FileDownloadName = "CashIn.csv";
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
 
     }
