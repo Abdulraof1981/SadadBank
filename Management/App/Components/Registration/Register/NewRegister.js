@@ -76,6 +76,7 @@
     },
     methods: {
         Back() {
+            this.$parent.resetFields();
             this.$parent.state = 0;
         },
         
@@ -133,7 +134,6 @@
             this.$http.GetAllCities()
             .then(response => {
                 this.AllCities = response.data.cities;
-                console.log(this.AllCities[10].cityName);
             }).catch((err) => {
                 console.error(err);
             });
@@ -237,6 +237,7 @@
                                 dangerouslyUseHTMLString: true,
                                 message: '<strong>' + response.data+'</strong>'
                             });
+                            this.$parent.resetFields();
                             this.$parent.GetCustomers(1);
                         }).catch((error) => {
                             this.$blockUI.Stop();
