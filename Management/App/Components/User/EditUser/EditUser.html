@@ -43,8 +43,6 @@
                         <div class="row">
                             <div class="col-lg-4">
                                 <el-form-item class="form-group" prop="DateOfBirth">
-                                    <!--<label class="control-label">تاريخ الميلاد</label>-->
-                                    <!--<el-input placeholder="تاريخ الميلا" v-model="ruleForm.DateOfBirth" style="width:110%"></el-input>-->
                                     <span class="demonstration">تاريخ الميلاد</span>
                                     <el-date-picker v-model="ruleForm.DateOfBirth"
                                                     type="date"
@@ -62,21 +60,23 @@
                                     </div>
                                 </el-form-item>
                             </div>
-                            <!--<div class="col-lg-4">
-                                <el-form-item class="form-group" prop="Password">
-                                    <label class="control-label">الرقم السري</label>
-                                    <el-input type="password" placeholder="الرقم السري" v-model="ruleForm.Password" style="width:110%"></el-input>
+                            <div class="col-lg-4">
+                                <el-form-item class="form-group">
+                                    <label class="control-label btn-block">الصفة</label>
+                                    <el-select v-model="ruleForm.UserType" style="width:110%" placeholder="اختر الصفة">
+                                                              <!-- {id:1,userType:'مدير النظام'} -->
+                                        <el-option v-for="item in [{id:2,userType:'مدير المصرف'},{id:3,userType:'موظف المصرف'}]"
+                                                   :key="item.id"
+                                                   :label="item.userType"
+                                                   :value="item.id">
+                                        </el-option>
+                                    </el-select>
                                 </el-form-item>
-                            </div>-->
+                            </div>
+
                         </div>
 
                         <div class="row">
-                            <!--<div class="col-lg-4">
-                                <el-form-item class="form-group" prop="ConfirmPassword">
-                                    <label class="control-label">تأكيد الرقم السري</label>
-                                    <el-input type="password" placeholder="تأكيد الرقم السري" v-model="ConfirmPassword" style="width:110%"></el-input>
-                                </el-form-item>
-                            </div>-->
                             <div class="col-lg-8">
                                 <div>
                                     <el-form-item class="form-group" prop="Permissions">
@@ -102,7 +102,7 @@
                                         </template>
                                         <div class="row">
                                             <div class="col-lg-2">
-                                                <!--@change="FilterUserType()"-->
+
                                                 <el-select style="width: 200px;" v-model="BranchId" @change="FilterMorePerm()" filterable placeholder="الصلاحيات">
                                                     <el-option v-for="item in Branchs"
                                                                :key="item.branchId"
@@ -113,12 +113,9 @@
                                             </div>
                                             <div class="col-lg-8">
                                                 <div>
-                                                    <!--<el-form-item class="form-group" prop="Permissions">-->
-                                                    <!--<label class="control-label">صلاحيات المستخدم التابع : مصرف الجمهورية - فرع بن عاشور</label>-->
                                                     <el-checkbox-group v-model="ExtraPermissions">
                                                         <el-checkbox-button v-for="x in PermisssionObj" :label="x.id" :key="x.id">{{x.name}}</el-checkbox-button>
                                                     </el-checkbox-group>
-                                                    <!--</el-form-item>-->
                                                 </div>
                                             </div>
                                             <div class="col-lg-2">
@@ -126,7 +123,6 @@
                                             </div>
                                         </div>
                                         <div style="padding-left:22px">
-                                            <!--view companet-->
                                             <div style="margin: 35px;font-size: 35px;" v-if="TablePermissions==0">
                                                 <el-alert title="عفــوا! لاتوجد صلاحيات اخري"
                                                           type="info">
