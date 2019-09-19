@@ -45,7 +45,7 @@
                                 <div class="col-lg-6">
                                     <el-form-item class="form-group" prop="Email">
                                         <label class="control-label">البريد الالكتروني</label>
-                                        <el-input placeholder="البريد الالكتروني" v-model="ruleForm.Email" style="width:110%"></el-input>
+                                        <el-input placeholder="البريد الالكتروني" v-model="ruleForm.Email"  disabled style="width:110%"></el-input>
                                     </el-form-item>
                                 </div>
                                 <div class="col-lg-6">
@@ -91,7 +91,7 @@
                             <hr />
                             <div class="row">
                                 <div class="col-lg-6">
-                                    <el-button type="danger" @click="resetForm('ruleForm')">إلـغاء</el-button>
+                                    <!--<el-button type="danger" @click="resetForm('ruleForm')">إلـغاء</el-button>-->
                                 </div>
                                 <div class="col-lg-6" dir="ltr">
 
@@ -122,7 +122,13 @@
                                 <img class="avatar border-gray" @change="FileChanged($event)" :src="'http://localhost:4810/Api/Admin/User/' + loginDetails.userId + '/image'" />
                                 <h5 class="title"> {{loginDetails.fullName}}</h5>
 
-                            </a> <p class="description">{{loginDetails.loginName}}</p>
+                            </a> 
+                            <br />
+                            <p class="description">اسم الدخول : {{loginDetails.loginName}}</p>
+                            <!--<p class="description">اسم الفرع : {{loginDetails.userBranch[0].name}}</p>-->
+                            <p class="description" v-if="loginDetails.userType==1">صفة المستخدم : مدير النظام</p>
+                            <p class="description" v-if="loginDetails.userType==2">صفة المستخدم : مدير المصرف</p>
+                            <p class="description" v-if="loginDetails.userType==3">صفة المستخدم : موظف المصرف</p>
                         </div>
                      </div>
                     <hr>

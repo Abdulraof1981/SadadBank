@@ -38,12 +38,43 @@ export default {
             CitizenInfo: '',
             CashIn: '',
             Logs: [],
-            dialogTableVisible: false
+            dialogTableVisible: false,
+            DateFilter: '',
 
-          
+            DataRenge: [],
+            StartDate: null,
+            EndDate: null
         };
     },
     methods: {
+        ChangeDate() {
+            if (this.DataRenge[0] != null) {
+                this.StartDate = moment(this.DataRenge[0]).format('YYYY-MM-DD');
+                this.EndDate = moment(this.DataRenge[1]).format('YYYY-MM-DD');
+                //this.GetDeath();
+            }
+        },
+
+        ExportExcel() {
+            this.$blockUI.Start();
+            this.$http.ExportExcel(this.StartDate,this.EndDate)
+                .then(response => {
+                    this.$blockUI.Stop();
+                    window.location.href = response.data;
+                    //this.refreshOrGet();     
+                })
+                .catch((err) => {
+                    this.$blockUI.Stop();
+                    this.$message({
+                        type: 'info',
+                        dangerouslyUseHTMLString: true,
+                        message: '<strong>' + err.response.data + '</strong>'
+                    });
+                    console.error(err);
+
+                });
+        },
+
         LastConfirm(CashInId) {
             //LastConfirm
             this.$confirm('سيؤدي ذلك إلى التأكيد النهائي للعملية. استمر؟', 'تـحذير', {
@@ -72,11 +103,11 @@ export default {
                        
                     });
             });
-
         },
 
 
         Refresh() {
+            this.DateFilter = '';
             this.CitizenInfo = '';
             this.SerachText = '';
             this.SearchSelect = '';

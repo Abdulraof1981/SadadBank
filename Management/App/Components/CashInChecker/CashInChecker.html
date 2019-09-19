@@ -25,15 +25,29 @@
                                         </el-option>
                                     </el-select>
                                 </div>
-                                <div class="col-lg-4">
+                                <div class="col-lg-2">
                                     <el-input placeholder="الرجاء ادخال البيانات" v-model="SearchText" v-if="SearchSelect!=''"></el-input>
                                 </div>
                                 <div class="col-lg-2">
                                     <el-button type="primary" icon="el-icon-search" @click.pervent="Search()" v-if="SearchSelect!=''">بحث</el-button>
                                     <el-button type="success" icon="el-icon-refresh" @click.pervent="Refresh()" v-if="SearchSelect!=''"></el-button>
                                 </div>
-                                <div class="col-lg-4">
+                                <div class="col-lg-6">
                                     <!--<el-button type="primary" @click.prevent="AddCashIn()" v-if="CitizenInfo!=''">تعبئة المحفظه</el-button>-->
+                                    <div class="block">
+                                        <!--<span class="demonstration">Default</span>-->
+                                        <el-date-picker v-model="DataRenge"
+                                                        type="daterange"
+                                                        @change="ChangeDate()"
+                                                        range-separator="To"
+                                                        start-placeholder="Start date"
+                                                        end-placeholder="End date">
+                                        </el-date-picker>
+                                        <span style="margin-right: 8px;">
+                                            <a href="#" @click.prevent="ExportExcel()" class="btn btn-info btn-fill pull-right">CSV</a>
+                                            <!--'http://localhost:4810/Api/Admin/CashIn/GetCashInCSV/'+StartDate+'/'+EndDate+'/'-->
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                             <br />
@@ -53,6 +67,7 @@
                     <el-tag style="font-size: 21px;">الرقم الوطني :  {{CitizenInfo.nid}}</el-tag>
                 </div>-->
                                 <div class="col-lg-4">
+                                   
                                 </div>
 
                             </div>

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Common;
 using Management.Models;
 using Microsoft.AspNetCore.Mvc;
-
+using Management.Classes;
 namespace Management.Controllers
 {
     [Produces("application/json")]
@@ -586,15 +586,42 @@ namespace Management.Controllers
             }
         }
 
-        [HttpPost("{UserId}/Update")]
+        [HttpPost("EditUserProfile")]
         public IActionResult EditUsersProfile([FromBody] BanksysUsers user)
         {
             try
             {
                 var userId = this.help.GetCurrentUser(HttpContext);
-                if (userId <= 0)
+                if (userId <= 0 && userId != user.UserId)
                 {
                     return StatusCode(401, "الرجاء الـتأكد من أنك قمت بتسجيل الدخول");
+                }
+                if (string.IsNullOrWhiteSpace(user.FullName))
+                {
+                   
+                    return BadRequest("الرجاء إدخال الاسم الرباعي");
+                }
+
+                if (!Validation.IsValidEmail(user.Email))
+                {
+                    
+                    return BadRequest("الرجاء ادخال الايميل بالطريقة الصحيحة");
+                }
+
+                if (user.Gender != 1 && user.Gender != 2)
+                {
+                  
+                    return BadRequest("الرجاء ادخال الجنس (ذكر - انثي)");
+                }
+                if (string.IsNullOrWhiteSpace(user.DateOfBirth.ToString()))
+                {
+                   
+                    return BadRequest("الرجاء دخال تاريخ الميلاد المستخدم");
+                }
+                if ((DateTime.Now.Year - user.DateOfBirth.Year) < 18)
+                {
+                   
+                    return BadRequest("يجب ان يكون عمر المستخدم اكبر من 18");
                 }
 
                 var User = (from p in db.BanksysUsers
@@ -605,10 +632,9 @@ namespace Management.Controllers
                 User.FullName = user.FullName;
                 User.Gender = user.Gender;
                 User.DateOfBirth = user.DateOfBirth;
-                //User.Photo = user.Photo;                
-                                
+                //User.Photo = user.Photo;                                                
                 db.SaveChanges();
-                return Ok("User Deleted");
+                return Ok("تم تعديل ملفك الشخصي بنجاح");
             }
             catch (Exception e)
             {
@@ -616,8 +642,8 @@ namespace Management.Controllers
             }
         }
 
-        [HttpPost("{UserId}/ReSetPassword")]
-        public IActionResult ReSetPassword(string Password )
+        [HttpPost("ChangePassword")]
+        public IActionResult ChangePassword([FromBody] ChangePass Passwords)
         {
             try
             {
@@ -630,11 +656,19 @@ namespace Management.Controllers
                 var User = (from p in db.BanksysUsers
                             where p.UserId == userId
                             select p).SingleOrDefault();
-
-                User.Password = Security.ComputeHash(Password, HashAlgorithms.SHA512, null); ;
+                //if (User.Password != Security.ComputeHash(Passwords.OldPassword, HashAlgorithms.SHA512, null))
+                //{
+                //    return StatusCode(402, "خطأ في كلمة المرور القديمة");
+                //}
+                if (!Security.VerifyHash(Passwords.OldPassword, User.Password, HashAlgorithms.SHA512))
+                {
+             
+                    StatusCode(402, "خطأ في كلمة المرور القديمة"); 
+                }
+                User.Password = Security.ComputeHash(Passwords.NewPassword, HashAlgorithms.SHA512, null); ;
 
                 db.SaveChanges();
-                return Ok("User Deleted");
+                return Ok("تم تغيير كلمة المرور بنجاح");
             }
             catch (Exception e)
             {
@@ -837,9 +871,5 @@ namespace Management.Controllers
 
     }
 
-    public class UserImg
-    {
-        public long UserId { get; set; }
-        public string Photo { get; set; }
-    }
+
 }
