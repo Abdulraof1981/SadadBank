@@ -82,6 +82,7 @@ export default {
                 cancelButtonText: 'لا',
                 type: 'warning'
             }).then(() => {
+                this.$blockUI.Start();
                 this.$http.LastConfirmCashIn(CashInId)
                     .then(response => {
                         this.$blockUI.Stop();
@@ -94,6 +95,7 @@ export default {
                     })
                     .catch((err) => {
                         this.$blockUI.Stop();
+                        this.refreshOrGet();
                         this.$message({
                             type: 'info',
                             dangerouslyUseHTMLString: true,

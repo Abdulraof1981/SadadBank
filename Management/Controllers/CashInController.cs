@@ -277,7 +277,7 @@ namespace Management.Controllers
                     Cash.Description = CashInData.description;
                     Cash.NumInvoiceDep = CashInData.NumInvoiceDep;
                     Cash.PersonalId = CashInData.PersonalId;
-                    Cash.BankId =(int) db.BanksysBranch.Where(x => x.BranchId == this.help.GetCurrentBranche(HttpContext)).SingleOrDefault().BankId;
+                    //Cash.BankId =(int) db.BanksysBranch.Where(x => x.BranchId == this.help.GetCurrentBranche(HttpContext)).SingleOrDefault().BankId;
                     db.CashIn.Add(Cash);
                     db.SaveChanges();
 
@@ -310,29 +310,35 @@ namespace Management.Controllers
         {
             using (var trans = db.Database.BeginTransaction())
             {
+                var userId = this.help.GetCurrentUser(HttpContext);
+
+                if (userId <= 0)
+                {
+                    trans.Rollback();
+                    return StatusCode(401, "الرجاء الـتأكد من أنك قمت بتسجيل الدخول");
+                }
                 try
                 {
-                    var userId = this.help.GetCurrentUser(HttpContext);
-
-                    if (userId <= 0)
-                    {
-                        trans.Rollback();
-                        return StatusCode(401, "الرجاء الـتأكد من أنك قمت بتسجيل الدخول");
-                    }
-
-                    //var UserInfo = db.BanksysUsers.Where(x => x.UserId == userId).SingleOrDefault();
-
+                    
 
                     var UserInfov1 = from x in db.BanksysBankActions
                                      where  x.CashInId == (int)CashInId
                                      select x;
-                
+
+                    if (UserInfov1.Count() <= 0)
+                    {
+                        trans.Rollback();
+                        return StatusCode(401, "لاتوجد بيانات للعملية النقدية");
+                    }
+
+                    if (UserInfov1.Where(x => x.CashIn.Status == 2).Count()>0){
+                        trans.Rollback();
+                        return StatusCode(401, "خطأ لقد قمت  بتعبئة مرتين لهذاالرقم");
+                    }
+                 
 
 
-
-              
-
-                var UserInfo = (from t in UserInfov1
+                    var UserInfo = (from t in UserInfov1
                                 orderby t.ActionDate descending
                                   select new
                                   {
@@ -355,24 +361,14 @@ namespace Management.Controllers
                                       t.CashIn
                                   }).SingleOrDefault();
 
-
-
-
-                // check if he confirmed before 
-                //var cashIn = db.BanksysBankActions.Where(b => b.CashInId == CashInId && b.CashIn.RefrenceNumber == null)
-                //      .Single();
-                    if (UserInfo == null)
-                    {
-                        return StatusCode(402, "خطأ لقد قمت  بتعبئة مرتين لهذاالرقم");
-                    }
-
-                    if (UserInfo.PerId < 0)
+                    int personId =(int)UserInfo.CashIn.PersonalId;
+                    if (personId < 0)
                     {
                         return StatusCode(403, "خطأ لايمكن الايداع الرجاء الاتصال بالمشغل");
                     }
-                    int personalId = (int)UserInfo.PerId;
+
                     var PersonalInfo = (from p in db.PersonalInfo
-                                        where p.Id == personalId
+                                        where p.Id == personId
                                         select p).SingleOrDefault();
 
                     if (PersonalInfo == null)
@@ -408,6 +404,35 @@ namespace Management.Controllers
                     var result = CashInWalletAsync("00218" + MSISDN, (double)UserInfo.CashIn.Valuedigits, ShopeId, UserInfo.FullName);
                     if (result.responseString != "Success")
                     {
+                        var CashInUpdatev1 = (from p in db.CashIn
+                                            where p.CashInId == CashInId
+                                            && (p.Status == 1)
+                                            select p).SingleOrDefault();
+
+                        if (CashInUpdatev1 == null)
+                        {
+                            trans.Rollback();
+                            return BadRequest("خطأ بيانات التعبئة غير موجودة");
+                        }
+
+
+                        CashInUpdatev1.Status = 0;
+                        CashInUpdatev1.LastModifiedOn = DateTime.Now;
+                        CashInUpdatev1.LastModifiedBy = (int)userId;
+                        db.SaveChanges();
+
+                        BanksysBankActions BAv1 = new BanksysBankActions();
+                        BAv1.ActionType = 4;
+                        BAv1.Description = "رفض عملية نقدية - تم الرفض من النظام السبب : "+ result.responseString;
+                        BAv1.UserId = userId;
+                        BAv1.CashInId = CashInId;
+                        BAv1.BranchId = this.help.GetCurrentBranche(HttpContext);
+                        BAv1.UserType = this.help.GetCurrentUserType(HttpContext);
+                        BAv1.ActionDate = DateTime.Now;
+                        db.BanksysBankActions.Add(BAv1);
+                        db.SaveChanges();
+                        trans.Commit();
+
                         return StatusCode(405, result.responseString);
                     }
 
@@ -446,6 +471,33 @@ namespace Management.Controllers
                 }
                 catch (Exception e)
                 {
+                    var CashInUpdatev1 = (from p in db.CashIn
+                                          where p.CashInId == CashInId
+                                          && (p.Status == 1)
+                                          select p).SingleOrDefault();
+
+                    if (CashInUpdatev1 == null)
+                    {
+                        trans.Rollback();
+                        return BadRequest("خطأ بيانات التعبئة غير موجودة");
+                    }
+
+                    CashInUpdatev1.Status = 0;
+                    CashInUpdatev1.LastModifiedOn = DateTime.Now;
+                    CashInUpdatev1.LastModifiedBy = (int)userId;
+                    db.SaveChanges();
+
+                    BanksysBankActions BAv1 = new BanksysBankActions();
+                    BAv1.ActionType = 4;
+                    BAv1.Description = "رفض عملية نقدية - تم الرفض من النظام السبب : " + e.InnerException;
+                    BAv1.UserId = userId;
+                    BAv1.CashInId = CashInId;
+                    BAv1.BranchId = this.help.GetCurrentBranche(HttpContext);
+                    BAv1.UserType = this.help.GetCurrentUserType(HttpContext);
+                    BAv1.ActionDate = DateTime.Now;
+                    db.BanksysBankActions.Add(BAv1);
+                    db.SaveChanges();
+                    trans.Commit();
                     trans.Rollback();
                     return StatusCode(500, e.Message);
                 }
@@ -639,6 +691,10 @@ namespace Management.Controllers
                 }
                 else
                 {
+                    if(StartDate == EndDate)
+                    {
+                        EndDate= EndDate.Value.AddDays(1);
+                    }
                     // if date not null 
                     if (UserType == 1)
                     {
