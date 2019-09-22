@@ -56,9 +56,9 @@
                             <div class="col-sm-1" style="margin-right: 27px">
                                 <el-button v-if="(loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" style="margin:15px;" type="primary" icon="el-icon-check" @click.prevent="LastConfirmAll()"> تأكيد نهائي </el-button>
                             </div>
-                            <!--<div class="col-sm-1" style="margin-right:27px;">
-                                <el-button v-if="(loginDetails.userType == 2 || loginDetails.userType == 3) && (loginDetails.rc == 1)" style="margin:15px;" type="danger" icon="el-icon-check" @click.prevent="RejectCustomerAll()"> رفض </el-button>
-                            </div>-->
+                            <div class="col-sm-1" style="margin-right:27px;">
+                                <el-button class="btn btn-info btn-fill" v-if="(loginDetails.userType == 1 || loginDetails.userType == 2)" type="info"  style="margin:15px;" icon="el-icon-save" @click.prevent="ExportExcel()"> حفظ كـ Excel </el-button>
+                            </div>
                         </div>
                     </div>
                 </div>

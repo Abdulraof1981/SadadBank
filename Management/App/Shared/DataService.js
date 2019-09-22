@@ -155,7 +155,11 @@ export default {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
         return axios.post(`/Api/Admin/Registration/Add`, ob);
     },
-
+    GetRegistrationCSV(Search, Status, startDate, endDate) {
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + document.querySelector('meta[name="api-token"]').getAttribute('content');
+        return axios.get(`/Api/Admin/Registration/GetRegistrationCSV?search=${Search}&status=${Status}&startDate=${startDate}&endDate=${endDate}`);
+    },
+    
     // ********************************** CashIn **************************************
 
         // ********************************** Edit Users Profile **************************************
