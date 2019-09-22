@@ -462,7 +462,7 @@ namespace Management.Controllers
                     
                     //cLoginName.LoginName = user.LoginName;
                     cLoginName.FullName = user.FullName;
-                    //cLoginName.UserType = user.UserType;
+                    cLoginName.UserType = user.UserType;
                     //cLoginName.Email = user.Email;
                     cLoginName.DateOfBirth = user.DateOfBirth;
                     cLoginName.Gender = (short)user.Gender;

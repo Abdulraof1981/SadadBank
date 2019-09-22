@@ -19,7 +19,7 @@
                 DateOfBirth: '',
                 Gender: '',
                 //Password: '',
-                userType: '',
+                UserType: '',
                 BranchId: '',
                 Permissions: [],
                 SavedPermissions:''
@@ -73,7 +73,8 @@
                     this.$blockUI.Stop();
                     
                     this.SelecteUserType = response.data.user.userType;
-                    
+                    this.ruleForm.UserType = response.data.user.userType;
+
                     this.ruleForm.LoginName = response.data.user.loginName;
                     this.ruleForm.FullName = response.data.user.fullName;
                     this.ruleForm.Email = response.data.user.email;
@@ -234,25 +235,12 @@
 
         submitForm(formName) {
            
-            //console.log(this.SavedPermissions);
-            //console.log(this.TablePermissions);
-            /*if (this.ConfirmPassword != this.ruleForm.Password) {
-                this.$message({
-                    type: 'error',
-                    dangerouslyUseHTMLString: true,
-                    message: '<strong>' + 'الرجاء التأكد من تطابق الرقم السري' + '</strong>'
-                });
-                return;
-            }*/
-            
-            this.ruleForm.userType = this.SelecteUserType;
             this.ruleForm.BranchId = this.BranchId;
             this.ruleForm.SavedPermissions = this.SavedPermissions;
             
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     this.$blockUI.Start();
-                    //console.log(this.ruleForm);
 
                     this.$http.EditUser(this.ruleForm)
                         .then(response => {
