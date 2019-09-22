@@ -70,11 +70,7 @@ export default {
             this.$http.GetRegistrationCSV(this.Search, this.Status, this.formatDate(this.transDate, 0), this.formatDate(this.transDate, 1))
                 .then(response => {
                     this.$blockUI.Stop();
-
-                    console.log(response.data);
-
-                    //window.location.href = response.data;
-
+                    window.location.href = response.data;
                 })
                 .catch((err) => {
                     this.$blockUI.Stop();
