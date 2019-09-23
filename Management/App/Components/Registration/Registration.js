@@ -60,7 +60,29 @@ export default {
             bankActionIdToReject: ''
         };
     },
+    
     methods: {
+        ExportExcel() {
+            if (this.Search === undefined || this.Search === null || this.Search === "") {
+                this.Search = "";
+            }
+            this.$blockUI.Start();
+            this.$http.GetRegistrationCSV(this.Search, this.Status, this.formatDate(this.transDate, 0), this.formatDate(this.transDate, 1))
+                .then(response => {
+                    this.$blockUI.Stop();
+                    window.location.href = response.data;
+                })
+                .catch((err) => {
+                    this.$blockUI.Stop();
+                    this.$message({
+                        type: 'info',
+                        dangerouslyUseHTMLString: true,
+                        message: '<strong>' + err.response.data + '</strong>'
+                    });
+                    console.error(err);
+                });
+        },
+
         cahngeBankActionIdToReject(BankActionId) {
             this.bankActionIdToReject = BankActionId;
             this.ruleForm.desc = '';

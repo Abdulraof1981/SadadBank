@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -7,11 +9,14 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Management.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 
 namespace Management.Controllers
 {
@@ -26,13 +31,15 @@ namespace Management.Controllers
         private MPay _Mpays;
         private settings _Settings;
         static HttpClient client = new HttpClient();
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public RegistrationController(wallet2Context context, IOptions<MPay> Mpays, IOptions<settings> settings)
+        public RegistrationController(wallet2Context context, IOptions<MPay> Mpays, IOptions<settings> settings, IHostingEnvironment hostingEnvironment)
         {
             _Mpays = Mpays.Value;
             _Settings = settings.Value;
             this.db = context;
             help = new Helper();
+            _hostingEnvironment = hostingEnvironment;
         }
 
         [HttpGet("Get")]
@@ -230,7 +237,314 @@ namespace Management.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+
+
+
+
+        [HttpGet("GetRegistrationCSV")]
+        public IActionResult GetRegistrationCSV(string search, int status, string startDate, string endDate)
+        {
+            try
+            {
+                var userId = this.help.GetCurrentUser(HttpContext);
+                if (userId <= 0)
+                {
+                    return StatusCode(401, "الرجاء الـتأكد من أنك قمت بتسجيل الدخول");
+                }
+
+                dynamic Customers =null;
+
+                DateTime? StartDate = null, EndDate = null;
+                if (!string.IsNullOrEmpty(startDate) && DateTime.TryParse(startDate, out DateTime temp1) && !string.IsNullOrEmpty(endDate) && DateTime.TryParse(endDate, out DateTime temp2))
+                {
+                    StartDate = DateTime.Parse(startDate);
+                    EndDate = DateTime.Parse(endDate);
+                }
+
+                var bankUser = (from rec in db.BanksysUsers
+                                where rec.UserId == userId
+                                select rec).SingleOrDefault();
+                if (bankUser.UserType == 1) // Admin
+                {
+                    var regsTrns = (from rec in db.BanksysBankActions
+                                    where rec.ActionType == 1 && rec.PersonalInfo.Reference == 3
+                                    orderby rec.PersonalInfo.LastModifiedOn descending
+                                    select new
+                                    {
+                                        FirstName = rec.PersonalInfo.Name,
+                                        rec.PersonalInfo.FatherName,
+                                        rec.PersonalInfo.GrandName,
+                                        rec.PersonalInfo.SurName,
+                                        rec.PersonalInfo.BirthDate,
+                                        rec.PersonalInfo.Nid,
+                                        rec.PersonalInfo.Phone,
+                                        LastModifiedOn = rec.ActionDate.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
+
+                                        AllActions = (from a in db.BanksysBankActions
+                                                      where a.PersonalInfoId == rec.PersonalInfo.Id && (a.ActionType == 0 || a.ActionType == 1 || a.ActionType == 2)
+                                                      select new
+                                                      {
+                                                          UserFullName = a.User.FullName,
+                                                          BranchName = a.Branch.Name,
+                                                          BankName = a.Branch.Bank.Name,
+                                                          ActionDate = a.ActionDate.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
+                                                          ActionDateTime = a.ActionDate,
+                                                          a.ActionType,
+                                                          a.UserType,
+                                                          a.Description,
+                                                      }).ToList(),
+
+                                        rec.PersonalInfo.Status,
+                                        rec.Description,
+                                        rec.BankActionId
+                                    });
+
+                    int type = -1;
+                    if (status == 1)
+                        type = 2;
+                    else if (status == 2)
+                        type = 3;
+                    else if (status == 3)
+                        type = 0;
+                    if (type != -1)
+                        regsTrns = regsTrns.Where(t => t.Status == type);
+
+                    if (StartDate != null && EndDate != null)
+                        regsTrns = regsTrns.Where(t => t.AllActions.Where(v => v.ActionDateTime.Date >= StartDate.Value.Date && v.ActionDateTime.Date <= EndDate.Value.Date).Count() > 0);
+
+                    if (search != null && !search.Equals("") && !search.Equals("undefined"))
+                        regsTrns = regsTrns.Where(t => t.Phone.Contains(search));
+                    
+                    Customers = regsTrns.ToList();
+                }
+                else if (bankUser.UserType == 2) // Bank Manager
+                {
+                    long BankId = (from b in db.BanksysBranch where b.BranchId == bankUser.BranchId select b.BankId).SingleOrDefault().Value;
+
+                    var regsTrns = (from rec in db.BanksysBankActions
+                                    where rec.ActionType == 1 && rec.PersonalInfo.Reference == 3 && rec.User.Branch.BankId == BankId
+                                    orderby rec.PersonalInfo.LastModifiedOn descending
+                                    select new
+                                    {
+                                        FirstName = rec.PersonalInfo.Name,
+                                        rec.PersonalInfo.FatherName,
+                                        rec.PersonalInfo.GrandName,
+                                        rec.PersonalInfo.SurName,
+                                        rec.PersonalInfo.BirthDate,
+                                        rec.PersonalInfo.Nid,
+                                        rec.PersonalInfo.Phone,
+                                        LastModifiedOn = rec.ActionDate.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
+                                        rec.ActionDate,
+                                        AllActions = (from a in db.BanksysBankActions
+                                                      where a.PersonalInfoId == rec.PersonalInfo.Id && (a.ActionType == 0 || a.ActionType == 1 || a.ActionType == 2)
+                                                      select new
+                                                      {
+                                                          UserFullName = a.User.FullName,
+                                                          BranchName = a.Branch.Name,
+                                                          BankName = a.Branch.Bank.Name,
+                                                          ActionDate = a.ActionDate.ToString("dd'/'MM'/'yyyy hh:mm:ss"),
+                                                          ActionDateTime = a.ActionDate,
+                                                          a.ActionType,
+                                                          a.UserType,
+                                                          a.Description,
+                                                      }).ToList(),
+                                        rec.PersonalInfo.Status,
+                                        rec.Description,
+                                        rec.BankActionId
+                                    });
+
+                    int type = -1;
+                    if (status == 1)
+                        type = 2;
+                    else if (status == 2)
+                        type = 3;
+                    else if (status == 3)
+                        type = 0;
+                    if (type != -1)
+                        regsTrns = regsTrns.Where(t => t.Status == type);
+
+                    if (StartDate != null && EndDate != null)
+                        regsTrns = regsTrns.Where(t => t.AllActions.Where(v => v.ActionDateTime.Date >= StartDate.Value.Date && v.ActionDateTime.Date <= EndDate.Value.Date).Count() > 0);
+
+                    if (search != null && !search.Equals("") && !search.Equals("undefined"))
+                        regsTrns = regsTrns.Where(t => t.Phone.Contains(search));
+
+                    Customers = regsTrns.ToList();
+                }
+                else if (bankUser.UserType == 3) // Bank Empployee
+                {
+                    var regsTrns = (from rec in db.BanksysBankActions
+                                    where rec.UserId == userId && rec.ActionType == 1 && rec.PersonalInfo.Reference == 3
+                                    orderby rec.PersonalInfo.LastModifiedOn descending
+                                    select new
+                                    {
+                                        FirstName = rec.PersonalInfo.Name,
+                                        rec.PersonalInfo.FatherName,
+                                        rec.PersonalInfo.GrandName,
+                                        rec.PersonalInfo.SurName,
+                                        rec.PersonalInfo.BirthDate,
+                                        rec.PersonalInfo.Nid,
+                                        rec.PersonalInfo.Phone,
+                                        LastModifiedOn = rec.ActionDate.ToString("hh:mm:ss dd'/'MM'/'yyyy"),
+
+                                        AllActions = (from a in db.BanksysBankActions
+                                                      where a.PersonalInfoId == rec.PersonalInfo.Id && (a.ActionType == 0 || a.ActionType == 1 || a.ActionType == 2)
+                                                      select new
+                                                      {
+                                                          UserFullName = a.User.FullName,
+                                                          BranchName = a.Branch.Name,
+                                                          BankName = a.Branch.Bank.Name,
+                                                          ActionDate = a.ActionDate.ToString("dd'/'MM'/'yyyy hh:mm:ss"),
+                                                          ActionDateTime = a.ActionDate,
+                                                          a.ActionType,
+                                                          a.UserType,
+                                                          a.Description,
+                                                      }).ToList(),
+
+                                        rec.PersonalInfo.Status,
+                                        rec.Description,
+                                        rec.BankActionId
+                                    });
+                    int type = -1;
+                    if (status == 1)
+                        type = 2;
+                    else if (status == 2)
+                        type = 3;
+                    else if (status == 3)
+                        type = 0;
+                    if (type != -1)
+                        regsTrns = regsTrns.Where(t => t.Status == type);
+
+                    if (StartDate != null && EndDate != null)
+                        regsTrns = regsTrns.Where(t => t.AllActions.Where(v => v.ActionDateTime.Date >= StartDate.Value.Date && v.ActionDateTime.Date <= EndDate.Value.Date).Count() > 0);
+
+                    if (search != null && !search.Equals("") && !search.Equals("undefined"))
+                        regsTrns = regsTrns.Where(t => t.Phone.Contains(search));
+
+                    Customers = regsTrns.ToList();
+                }
+                
+                string sWebRootFolder = _hostingEnvironment.WebRootPath;
+                string sFileName = @"CustomersExport.xlsx";
+                string URL = string.Format("{0}://{1}/{2}", Request.Scheme, Request.Host, sFileName);
+                FileInfo file = new FileInfo(Path.Combine(sWebRootFolder, sFileName));
+                if (file.Exists)
+                {
+                    file.Delete();
+                    file = new FileInfo(Path.Combine(sWebRootFolder, sFileName));
+                }
+
+                using (ExcelPackage package = new ExcelPackage(file))
+                {
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Sadad Customers");
+
+                    worksheet.Cells[1, 1].Value = "الإسم";
+                    worksheet.Cells[1, 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, 1].Style.Font.Bold = true;
+                    worksheet.Cells[1, 1].Style.Font.Size = 15;
+                    worksheet.Cells[1, 1].AutoFitColumns();
+                    worksheet.Cells[1, 1].Style.Fill.BackgroundColor.SetColor(Color.Orange);
+
+                    worksheet.Cells[1, 2].Value = "الرقم الوطني";
+                    worksheet.Cells[1, 2].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, 2].Style.Font.Bold = true;
+                    worksheet.Cells[1, 2].Style.Font.Size = 15;
+                    worksheet.Cells[1, 2].AutoFitColumns();
+                    worksheet.Cells[1, 2].Style.Fill.BackgroundColor.SetColor(Color.Orange);
+                    
+                    worksheet.Cells[1, 3].Value = "الهاتف";
+                    worksheet.Cells[1, 3].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, 3].Style.Font.Bold = true;
+                    worksheet.Cells[1, 3].Style.Font.Size = 15;
+                    worksheet.Cells[1, 3].AutoFitColumns();
+                    worksheet.Cells[1, 3].Style.Fill.BackgroundColor.SetColor(Color.Orange);
+                    
+                    worksheet.Cells[1, 4].Value = "تاريخ الميلاد";
+                    worksheet.Cells[1, 4].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, 4].Style.Font.Bold = true;
+                    worksheet.Cells[1, 4].Style.Font.Size = 15;
+                    worksheet.Cells[1, 4].AutoFitColumns();
+                    worksheet.Cells[1, 4].Style.Fill.BackgroundColor.SetColor(Color.Orange);
+                    
+                    worksheet.Cells[1, 5].Value = "الحالة";
+                    worksheet.Cells[1, 5].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, 5].Style.Font.Bold = true;
+                    worksheet.Cells[1, 5].Style.Font.Size = 15;
+                    worksheet.Cells[1, 5].AutoFitColumns();
+                    worksheet.Cells[1, 5].Style.Fill.BackgroundColor.SetColor(Color.Orange);
+
+                    worksheet.Cells[1, 6].Value = "معلومات اخري";
+                    worksheet.Cells[1, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, 6].Style.Fill.BackgroundColor.SetColor(Color.Orange);
+                    worksheet.Cells[1, 6].Style.Font.Bold = true;
+                    worksheet.Cells[1, 6].Style.Font.Size = 15;
+                    worksheet.Cells[1, 6].AutoFitColumns();
+                    
+                    worksheet.Cells[1, 7].Value = "تاريخ العملية";
+                    worksheet.Cells[1, 7].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, 7].Style.Fill.BackgroundColor.SetColor(Color.Orange);
+                    worksheet.Cells[1, 7].Style.Font.Bold = true;
+                    worksheet.Cells[1, 7].Style.Font.Size = 15;
+                    worksheet.Cells[1, 7].AutoFitColumns();
+                    int i = 2;
+                    foreach (var x in Customers)
+                    {
+                        worksheet.Cells["A" + i].Value = x.FirstName + " " + x.FatherName + " " + x.GrandName + " " + x.SurName;
+                        worksheet.Cells["A" + i].Style.Font.Size = 12;
+                        worksheet.Cells["A" + i].AutoFitColumns();
+                        worksheet.Cells["A" + i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells["A" + i].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+
+                        worksheet.Cells["B" + i].Value = x.Nid ;
+                        worksheet.Cells["B" + i].Style.Font.Size = 12;
+                        worksheet.Cells["B" + i].AutoFitColumns();
+                        worksheet.Cells["B" + i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells["B" + i].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+
+                        worksheet.Cells["C" + i].Value = x.Phone;
+                        worksheet.Cells["C" + i].Style.Font.Size = 12;
+                        worksheet.Cells["C" + i].AutoFitColumns();
+                        worksheet.Cells["C" + i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells["C" + i].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+
+                        worksheet.Cells["D" + i].Value = x.BirthDate.ToString("dd'/'MM'/'yyyy");
+                        worksheet.Cells["D" + i].Style.Font.Size = 12;
+                        worksheet.Cells["D" + i].AutoFitColumns();
+                        worksheet.Cells["D" + i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells["D" + i].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+
+                        worksheet.Cells["E" + i].Value = (x.Status == 2 ? "تأكيد مبدئي" : (x.Status == 3 ? "تأكيد نهائي" : "مرفوض"));
+                        worksheet.Cells["E" + i].Style.Font.Size = 12;
+                        worksheet.Cells["E" + i].AutoFitColumns();
+                        worksheet.Cells["E" + i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells["E" + i].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+
+                        worksheet.Cells["F" + i].Value = x.AllActions[x.AllActions.Count - 1].Description;
+                        worksheet.Cells["F" + i].Style.Font.Size = 12;
+                        worksheet.Cells["F" + i].AutoFitColumns();
+                        worksheet.Cells["F" + i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells["F" + i].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+
+                        worksheet.Cells["G" + i].Value = x.AllActions[x.AllActions.Count-1].ActionDate;
+                        worksheet.Cells["G" + i].Style.Font.Size = 12;
+                        worksheet.Cells["G" + i].AutoFitColumns();
+                        worksheet.Cells["G" + i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells["G" + i].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+                        
+                        i++;
+                    }
+                   
+                    package.Save(); //Save the workbook.
+                }
+                return Ok(URL);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         
+        }
+
         public class FormOb
         {
             public string Nid { get; set; }
@@ -605,7 +919,7 @@ namespace Management.Controllers
                     action.BranchId = this.help.GetCurrentBranche(HttpContext);
                     action.UserType = this.help.GetCurrentUserType(HttpContext);
                     action.CashInId = null;
-                    action.Description = "رفض التسجيل: " + Environment.NewLine + result.responseString;
+                    action.Description = "رفض التسجيل - السبب: " + Environment.NewLine + result.responseString;
                     action.ActionDate = DateTime.Now;
                     db.BanksysBankActions.Add(action);
 
@@ -619,7 +933,29 @@ namespace Management.Controllers
             }
             catch (Exception e)
             {
-                return Json(new { code = -1, message = "حدث خطا الرجاء المحاولة مرة أخرى" });
+                var bankAction = (from p in db.BanksysBankActions
+                                  where p.BankActionId == BankActionId && p.ActionType == 1
+                                  select new { p.User, p.PersonalInfo, p, p.User.BranchId, p.User.Branch.BankId }).SingleOrDefault();
+
+                var userId = this.help.GetCurrentUser(HttpContext);
+
+                BanksysBankActions action = new BanksysBankActions();
+                action.ActionType = 0;
+                action.PersonalInfoId = bankAction.PersonalInfo.Id;
+                action.UserId = userId;
+                action.BranchId = this.help.GetCurrentBranche(HttpContext);
+                action.UserType = this.help.GetCurrentUserType(HttpContext);
+                action.CashInId = null;
+                action.Description = "رفض التسجيل - السبب: " + Environment.NewLine + e.Message;
+                action.ActionDate = DateTime.Now;
+                db.BanksysBankActions.Add(action);
+
+                bankAction.PersonalInfo.LastModifiedBy = int.Parse(userId.ToString());
+                bankAction.PersonalInfo.LastModifiedOn = DateTime.Now;
+                bankAction.PersonalInfo.Status = 0;
+                db.SaveChanges();
+
+                return Json(new { code = -1, message = "حدث خطا: " + e.Message });
             }
         }
 
