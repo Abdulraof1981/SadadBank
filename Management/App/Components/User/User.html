@@ -17,7 +17,7 @@
                             <div class="row">
                                 <div class="col-lg-2">
                                     <el-select style="width: 200px;" v-model="SelecteUserType" @change="FilterUserType()" filterable placeholder="الصلاحيات">
-                                        <el-option v-for="item in [{id:0,userType:'الكل'},{id:1,userType:'مدير النظام'},{id:2,userType:'مدير المصرف'},{id:3,userType:'موظف المصرف'}]"
+                                        <el-option v-for="item in UserTypeSelect"
                                                    :key="item.id"
                                                    :label="item.userType"
                                                    :value="item.id">

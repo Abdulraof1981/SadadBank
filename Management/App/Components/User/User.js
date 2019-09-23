@@ -4,8 +4,32 @@ import moment from 'moment';
 export default {
     name: 'Users',    
     created() {
-        this.GetUser(this.pageNo);
+       
+        var loginDetails = sessionStorage.getItem('currentUser');
+        this.loginDetails = JSON.parse(loginDetails);
+        if (loginDetails != null) {
+            this.loginDetails = JSON.parse(loginDetails);
+            if (this.loginDetails.userType != 1 && this.loginDetails.userType != 2) {
+                window.location.href = '/Security/Login';
+            }
+            if (this.loginDetails.userType == 1) {
+                this.SelecteUserType = 1;
+                this.UserTypeSelect = [{ id: 0, userType: 'الكل' }, { id: 1, userType: 'مدير النظام' }, { id: 2, userType: 'مدير المصرف' }, { id: 3, userType: 'موظف المصرف' }];
+                this.GetUser(this.pageNo);
+            } else if (this.loginDetails.userType == 2) {
+                this.SelecteUserType = 2;
+                this.UserTypeSelect = [{ id: 0, userType: 'الكل' }, { id: 2, userType: 'مدير المصرف' }, { id: 3, userType: 'موظف المصرف' }];
+                this.GetUser(this.pageNo);
+            } else {
+                this.SelecteUserType = 2;
+                this.UserTypeSelect = [];
+            }
+
+        } else {
+            window.location.href = '/Security/Login';
+        }
         
+
     },
     components: {
         'add-User': addUser,
@@ -22,6 +46,8 @@ export default {
     },
     data() {
         return {
+            loginDetails: {},
+            UserTypeSelect: [],
             pageNo: 1,
             pageSize: 10,
             SelecteUserType:'',

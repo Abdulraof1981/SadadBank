@@ -92,38 +92,92 @@ namespace Management.Controllers
             {
                 
                 IQueryable<BanksysUsers> UserQuery;
+                int UserStatus = this.help.GetCurrentUserType(HttpContext);
 
-                if (userType == 0)
+                if (UserStatus == 1)
                 {
-                    UserQuery = from p in db.BanksysUsers
-                                where p.Status != 9
-                                select p;
-                } else
-                {
-
-                    if (userType == 1)
+                    // if admin user 
+                    if (userType == 0)
                     {
                         UserQuery = from p in db.BanksysUsers
-                                    where p.UserType == userType && p.Status != 9
+                                    where p.Status != 9
                                     select p;
                     }
                     else
                     {
-                        // 2,3
-                        if (BranchId != 0)
-                        {
-                            UserQuery = from p in db.BanksysUsers
-                                        where p.UserType == userType && p.BranchId == BranchId && p.Status != 9
-                                        select p;
-                        } else
+
+                        if (userType == 1)
                         {
                             UserQuery = from p in db.BanksysUsers
                                         where p.UserType == userType && p.Status != 9
                                         select p;
                         }
+                        else
+                        {
+                            // 2,3
+                            if (BranchId != 0)
+                            {
+                                UserQuery = from p in db.BanksysUsers
+                                            where p.UserType == userType && p.BranchId == BranchId && p.Status != 9
+                                            select p;
+                            }
+                            else
+                            {
+                                UserQuery = from p in db.BanksysUsers
+                                            where p.UserType == userType && p.Status != 9
+                                            select p;
+                            }
+                        }
+
+                    }
+                }
+                else if (UserStatus == 2)
+                {
+                    long BranchIdSession = this.help.GetCurrentBranche(HttpContext);
+                    long BankId = (long)db.BanksysBranch.Where(p => p.BranchId == BranchIdSession).SingleOrDefault().BankId;
+                    // if admin user 
+                    if (userType == 0)
+                    {
+                        UserQuery = from p in db.BanksysUsers
+                                    where p.Status != 9 && p.Branch.BankId == BankId
+                                    select p;
+                    }
+                    else
+                    {
+
+                        if (userType == 1)
+                        {
+                            UserQuery = from p in db.BanksysUsers
+                                        where p.UserType == userType && p.Status != 9 && p.Branch.BankId == BankId
+                                        select p;
+                        }
+                        else
+                        {
+                            // 2,3
+                            if (BranchId != 0)
+                            {
+                                UserQuery = from p in db.BanksysUsers
+                                            where p.UserType == userType && p.BranchId == BranchId && p.Status != 9 && p.Branch.BankId == BankId
+                                            select p;
+                            }
+                            else
+                            {
+                                UserQuery = from p in db.BanksysUsers
+                                            where p.UserType == userType && p.Status != 9 && p.Branch.BankId == BankId
+                                            select p;
+                            }
+                        }
+
                     }
 
                 }
+                else
+                {
+                    UserQuery = from p in db.BanksysUsers
+                                where p.Status == -911
+                                select p;
+                }
+               
 
                 var UserCount = (from p in UserQuery
                                  select p).Count();
